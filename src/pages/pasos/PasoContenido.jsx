@@ -1,0 +1,178 @@
+import { useState } from 'react'
+import { BookOpen, Headphones, Play, CheckCircle, AlertCircle } from 'lucide-react'
+import { CONTENIDOS } from '../../data/contenidos'
+
+const TABS = [
+  { key: 'texto', label: 'Leer texto', icono: BookOpen },
+  { key: 'audio', label: 'Escuchar audio', icono: Headphones },
+  { key: 'video', label: 'Ver video', icono: Play },
+]
+
+export default function PasoContenido({ modulo, onAvanzar }) {
+  const contenido = CONTENIDOS[modulo.id] || {}
+  const [tabActiva, setTabActiva] = useState('texto')
+  const [visto, setVisto] = useState(false)
+
+  const videoId = contenido.video_url
+    ? contenido.video_url.match(/(?:youtu\.be\/|v=)([^&\s]+)/)?.[1]
+    : null
+
+  const tieneAudio = !!contenido.audio_url
+  const tieneVideo = !!(contenido.video_url || videoId)
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-purple-100 overflow-hidden">
+      {/* Tabs */}
+      <div className="flex border-b border-gray-100">
+        {TABS.map(({ key, label, icono: Icono }) => {
+          const disponible = key === 'texto' ? true : key === 'audio' ? tieneAudio : tieneVideo
+          return (
+            <button
+              key={key}
+              onClick={() => disponible && setTabActiva(key)}
+              disabled={!disponible}
+              className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-semibold transition-all border-b-2 ${
+                tabActiva === key
+                  ? 'border-morado text-morado bg-purple-50'
+                  : disponible
+                  ? 'border-transparent text-gray-400 hover:text-morado hover:bg-purple-50'
+                  : 'border-transparent text-gray-200 cursor-not-allowed'
+              }`}
+            >
+              <Icono size={16} />
+              <span className="hidden sm:inline">{label}</span>
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="p-6">
+        {/* TAB: TEXTO */}
+        {tabActiva === 'texto' && (
+          <div>
+            <div
+              className="prose prose-sm max-w-none text-gray-700 leading-relaxed space-y-4"
+              style={{ fontSize: '15px', lineHeight: '1.8' }}
+            >
+              {contenido.texto
+                ? contenido.texto.split('\n').map((linea, i) => {
+                    if (linea.startsWith('## ')) return <h2 key={i} className="text-xl font-bold text-morado mt-2 mb-1">{linea.replace('## ', '')}</h2>
+                    if (linea.startsWith('### ')) return <h3 key={i} className="text-base font-bold text-gray-800 mt-4 mb-1">{linea.replace('### ', '')}</h3>
+                    if (linea.startsWith('**') && linea.endsWith('**')) return (
+                      <p key={i} className="bg-purple-50 border-l-4 border-morado px-4 py-3 rounded-r-xl text-morado font-medium italic text-sm">
+                        {linea.replace(/\*\*/g, '')}
+                      </p>
+                    )
+                    if (linea.startsWith('- ')) return (
+                      <div key={i} className="flex items-start gap-2">
+                        <span className="text-dorado mt-1.5 flex-shrink-0">●</span>
+                        <span>{linea.replace('- ', '').replace(/\*\*([^*]+)\*\*/g, (_, t) => t)}</span>
+                      </div>
+                    )
+                    if (linea.match(/^\d+\. /)) return (
+                      <div key={i} className="flex items-start gap-2">
+                        <span className="bg-morado text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          {linea.match(/^(\d+)/)[1]}
+                        </span>
+                        <span>{linea.replace(/^\d+\. /, '').replace(/\*\*([^*]+)\*\*/g, (_, t) => t)}</span>
+                      </div>
+                    )
+                    if (linea.trim() === '') return <div key={i} className="h-1" />
+                    return <p key={i}>{linea.replace(/\*\*([^*]+)\*\*/g, (_, t) => t)}</p>
+                  })
+                : <p className="text-gray-400 italic">Contenido próximamente.</p>
+              }
+            </div>
+          </div>
+        )}
+
+        {/* TAB: AUDIO */}
+        {tabActiva === 'audio' && (
+          <div className="flex flex-col items-center justify-center py-6 gap-4">
+            {tieneAudio ? (
+              <>
+                <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center">
+                  <Headphones size={36} className="text-morado" />
+                </div>
+                <p className="text-sm font-semibold text-gray-700 text-center">
+                  Audio — {modulo.titulo}
+                </p>
+                <audio
+                  controls
+                  src={contenido.audio_url}
+                  className="w-full max-w-sm"
+                  onEnded={() => setVisto(true)}
+                >
+                  Tu navegador no soporta audio HTML5.
+                </audio>
+                <p className="text-xs text-gray-400">El audio se marca como escuchado al terminar</p>
+              </>
+            ) : (
+              <div className="text-center py-4">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Headphones size={28} className="text-gray-300" />
+                </div>
+                <p className="font-semibold text-gray-500 text-sm">Audio no disponible aún</p>
+                <p className="text-xs text-gray-400 mt-1">El facilitador lo agregará próximamente</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB: VIDEO */}
+        {tabActiva === 'video' && (
+          <div>
+            {tieneVideo ? (
+              <div className="aspect-video rounded-xl overflow-hidden bg-gray-100">
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}?rel=0`}
+                  title={`Video: ${modulo.titulo}`}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <div className="aspect-video rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-3">
+                <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                  <Play size={24} className="text-gray-300 ml-1" />
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold text-gray-500 text-sm">Video no disponible aún</p>
+                  <p className="text-xs text-gray-400 mt-1">El facilitador actualizará el enlace</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Confirmación */}
+        <div className="mt-6 pt-5 border-t border-gray-100">
+          <label className="flex items-center gap-3 cursor-pointer group mb-5">
+            <div
+              onClick={() => setVisto(!visto)}
+              className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all flex-shrink-0 cursor-pointer ${
+                visto ? 'bg-morado border-morado' : 'border-gray-300 group-hover:border-morado'
+              }`}
+            >
+              {visto && <CheckCircle size={14} className="text-white" />}
+            </div>
+            <span className="text-sm font-medium text-gray-700">
+              {tabActiva === 'texto' && 'He leído el texto completo y estoy listo/a para continuar'}
+              {tabActiva === 'audio' && 'He escuchado el audio completo y estoy listo/a para continuar'}
+              {tabActiva === 'video' && 'He visto el video completo y estoy listo/a para continuar'}
+            </span>
+          </label>
+
+          <button
+            onClick={onAvanzar}
+            disabled={!visto}
+            className="w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Continuar a la reflexión →
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}

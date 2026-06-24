@@ -1,0 +1,451 @@
+export const MODULOS = [
+  {
+    id: 1,
+    numero: 1,
+    titulo: 'La Persona',
+    objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
+    objetivo_especifico: 'Propiciar que cada participante se reconozca como persona en su dignidad y descubra sus posibilidades de crecer humana y socialmente.',
+    video_url: '',
+    activo: true,
+    preguntas_quiz: [
+      {
+        pregunta: '¿Cuál es el fundamento de la dignidad de la persona según la Doctrina Social de la Iglesia?',
+        opciones: ['Su nivel educativo', 'Su posición económica', 'Ser imagen y semejanza de Dios', 'Su cultura y tradición'],
+        correcta: 2,
+      },
+      {
+        pregunta: '¿Qué implica reconocer la dignidad de la persona en el trabajo?',
+        opciones: ['Solo pagar un salario justo', 'Tratar a cada persona como un fin en sí misma', 'Dar premios de productividad', 'Aplicar las leyes laborales'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Dónde se manifiesta principalmente la dignidad de la persona?',
+        opciones: ['Solo en los actos religiosos', 'En todos los ámbitos de la vida', 'Únicamente en la familia', 'Solo en el trabajo'],
+        correcta: 1,
+      },
+    ],
+    preguntas_reflexion: [
+      '¿Qué importancia tiene para ti vivir como persona?',
+      '¿Cómo manifiestas a las personas el valor que tienen?',
+      '¿En este momento, qué lugar ocupa la persona en la sociedad?',
+    ],
+  },
+  {
+    id: 2,
+    numero: 2,
+    titulo: 'La Centralidad de la Persona',
+    objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
+    objetivo_especifico: 'Reconocer la dignidad de todas las personas, para que, tomando aprecio de su gran valor como seres humanos, se respeten sus derechos y, además, se promueva su desarrollo humano integral, sostenible y solidario, y el de sus familias.',
+    video_url: '',
+    activo: true,
+    preguntas_quiz: [
+      {
+        pregunta: '¿Qué significa que la persona es "central" en la organización social?',
+        opciones: ['Que el individuo está por encima de todo', 'Que las estructuras deben servir al desarrollo de la persona', 'Que solo importa el beneficio personal', 'Que la persona trabaja sola'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Cómo debe orientarse el trabajo según la centralidad de la persona?',
+        opciones: ['Al máximo beneficio económico', 'Al desarrollo integral del ser humano', 'A la competitividad entre compañeros', 'A cumplir metas de producción'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Qué elementos conforman el desarrollo integral de la persona?',
+        opciones: ['Solo el aspecto económico', 'Solo el aspecto espiritual', 'Cuerpo, mente, espíritu y relaciones sociales', 'Solo el aspecto laboral'],
+        correcta: 2,
+      },
+    ],
+    preguntas_reflexion: [
+      '¿Cómo vives tu dignidad y cómo reconoces la de los demás?',
+      '¿Has estado presente cuando una persona es maltratada? ¿Qué sientes?',
+      '¿Te gustaría vivir en un ambiente donde no haya malos tratos para nadie, al contrario, todos tengan posibilidades de vivir bien y desarrollarse? ¿Lo crees posible? Escribe una cosa que puedes hacer en tu casa, en la organización o en el equipo de trabajo para construir ese ambiente.',
+    ],
+  },
+  {
+    id: 3,
+    numero: 3,
+    titulo: 'La Familia',
+    objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
+    objetivo_especifico: 'Ser conscientes de la importancia y centralidad que tiene la familia, para la empresa y sociedad, como generadora de vida y formadora de personas.',
+    video_url: '',
+    activo: true,
+    preguntas_quiz: [
+      {
+        pregunta: '¿Por qué la familia es llamada "célula básica de la sociedad"?',
+        opciones: ['Porque es la unidad más pequeña', 'Porque es el primer espacio de amor, formación y solidaridad', 'Porque vive en una misma casa', 'Porque tiene lazos legales'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Cómo afecta el trabajo a la familia?',
+        opciones: ['No tiene ninguna relación', 'Puede fortalecer o debilitar los vínculos familiares', 'Solo la afecta económicamente', 'La familia no influye en el trabajo'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Qué significa el "salario familiar" según la Doctrina Social?',
+        opciones: ['Un salario que gana toda la familia', 'Una remuneración suficiente para sostener dignamente a la familia', 'Un bono por tener hijos', 'El dinero que se da a la familia'],
+        correcta: 1,
+      },
+    ],
+    preguntas_reflexion: [
+      'Dicen que todo lo bueno sucede en familia, ¿es verdad?, ¿por qué?',
+      'Puedes compartir 2 cosas que has aprendido de tu familia.',
+      'Imagina una sociedad sin la familia… ¿cómo serían las personas? ¿Puedes afectar de alguna forma a tu familia al realizar tu trabajo?',
+    ],
+  },
+  {
+    id: 4,
+    numero: 4,
+    titulo: 'El Amor',
+    objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
+    objetivo_especifico: 'Reconocer la importancia que tiene el amor en la vida personal, familiar, laboral y social.',
+    video_url: '',
+    activo: true,
+    preguntas_quiz: [
+      {
+        pregunta: '¿Cómo se manifiesta el amor en el ámbito del trabajo?',
+        opciones: ['Solo en relaciones románticas', 'En el servicio generoso y el respeto a los demás', 'En dar regalos a los compañeros', 'En decir palabras amables'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Qué es la "caridad social" según la Doctrina Social de la Iglesia?',
+        opciones: ['Dar limosna a los pobres', 'El amor que promueve el bien común y transforma las estructuras', 'Organizaciones de beneficencia', 'Solo ayuda material'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿De qué manera el amor puede transformar el ambiente de trabajo?',
+        opciones: ['Haciendo todo más sentimental', 'Fomentando la colaboración, el respeto y el servicio mutuo', 'Evitando los conflictos a toda costa', 'Siendo indiferente a los problemas'],
+        correcta: 1,
+      },
+    ],
+    preguntas_reflexion: [
+      '¿Qué frase o idea del texto leído hizo resonancia en tu mente y en tu corazón?',
+      '¿Crees que el amor se puede vivir en la empresa? Si tu respuesta es afirmativa, indica cómo.',
+      '¿Qué beneficios puede traer a la empresa si nuestras relaciones humanas y laborales se rigen bajo el principio del amor?',
+    ],
+  },
+  {
+    id: 5,
+    numero: 5,
+    titulo: 'La Educación',
+    objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
+    objetivo_especifico: 'Reconocer que la educación es muy importante para mejorar como personas, como familia y como organización.',
+    video_url: '',
+    activo: true,
+    preguntas_quiz: [
+      {
+        pregunta: '¿Por qué la educación es considerada un derecho fundamental?',
+        opciones: ['Porque aumenta los ingresos económicos', 'Porque permite el desarrollo integral de la persona y la participación social', 'Porque es obligatoria por ley', 'Porque da un título profesional'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Qué es la "educación integral" según los principios del programa?',
+        opciones: ['Solo la educación formal escolar', 'La que desarrolla todas las dimensiones de la persona', 'La educación técnica y profesional', 'La educación religiosa únicamente'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Quiénes son los primeros educadores de una persona?',
+        opciones: ['Los maestros de la escuela', 'El Estado', 'Los padres de familia', 'Los líderes religiosos'],
+        correcta: 2,
+      },
+    ],
+    preguntas_reflexion: [
+      'Con base en los textos anteriores ¿por qué es importante la educación en nuestra vida?',
+      '¿Qué beneficios puede traer a nuestra organización o equipo de trabajo si implementamos proyectos educativos?',
+      '¿Qué proyectos educativos propones?',
+    ],
+  },
+  {
+    id: 6,
+    numero: 6,
+    titulo: 'La Participación',
+    objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
+    objetivo_especifico: 'Reconocer que la participación nos ayuda a lograr el desarrollo integral, sostenible y solidario de las personas en el contexto tanto familiar como laboral.',
+    video_url: '',
+    activo: true,
+    preguntas_quiz: [
+      {
+        pregunta: '¿Qué es la participación según la Doctrina Social de la Iglesia?',
+        opciones: ['Asistir a reuniones obligatorias', 'El compromiso voluntario de contribuir al bien común', 'Votar en elecciones', 'Solo opinar cuando se pide'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Por qué es importante que todos participen en las decisiones del equipo?',
+        opciones: ['Para que el líder no tenga tanto trabajo', 'Porque enriquece las decisiones con diversas perspectivas', 'Para cumplir normas de gestión', 'Porque es más democrático'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Qué impide una participación genuina en un equipo?',
+        opciones: ['Tener muchos miembros', 'El miedo, la exclusión y la falta de información', 'Reunirse frecuentemente', 'Tener roles definidos'],
+        correcta: 1,
+      },
+    ],
+    preguntas_reflexion: [
+      '¿Consideras que en tu familia y en tu lugar o equipo de trabajo todos los integrantes participan en un objetivo común? Si / No ¿por qué?',
+      'En tu lugar o equipo de trabajo, ¿consideras que hay obstáculos que limitan la participación de todos? Si / No ¿cuáles?',
+      'En tu lugar o equipo de trabajo, ¿qué acciones podrían implementarse para lograr que todos participen en un objetivo común?',
+    ],
+  },
+  {
+    id: 7,
+    numero: 7,
+    titulo: 'La Solidaridad',
+    objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo.',
+    objetivo_especifico: 'Reconocer la importancia de la solidaridad en el desarrollo integral de cada persona, así como en la familia y en la vida laboral.',
+    video_url: '',
+    activo: true,
+    preguntas_quiz: [
+      {
+        pregunta: '¿Qué es la solidaridad según la Doctrina Social de la Iglesia?',
+        opciones: [
+          'Un sentimiento ocasional de compasión',
+          'La determinación firme de empeñarse por el bien común',
+          'Una obligación legal entre ciudadanos',
+          'Un programa de gobierno',
+        ],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Cómo nos ayuda la solidaridad a ver al otro?',
+        opciones: [
+          'Como un recurso para explotar',
+          'Como alguien inferior que necesita ayuda',
+          'Como un semejante invitado al banquete de la vida',
+          'Como una carga para la sociedad',
+        ],
+        correcta: 2,
+      },
+      {
+        pregunta: '¿Dónde comienza la solidaridad según los textos?',
+        opciones: [
+          'En las grandes organizaciones internacionales',
+          'En las leyes del gobierno',
+          'Desde el pequeño lugar de cada persona en el mundo',
+          'Solo en momentos de crisis',
+        ],
+        correcta: 2,
+      },
+    ],
+    preguntas_reflexion: [
+      'Escribe una definición personal de solidaridad inspirado en los textos reflexionados.',
+      'Trae a la memoria una situación personal en la que hayas experimentado la solidaridad de parte de alguien y una situación personal en la que hayas sido solidario con alguien.',
+      'Sugiere una práctica que ayude a ser más solidarios como equipo de trabajo y en la empresa, conectándola con lo reflexionado.',
+    ],
+  },
+  {
+    id: 8,
+    numero: 8,
+    titulo: 'La Subsidiaridad',
+    objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
+    objetivo_especifico: 'Reconocer la importancia de la subsidiaridad en el contexto familiar, laboral y social.',
+    video_url: '',
+    activo: true,
+    preguntas_quiz: [
+      {
+        pregunta: '¿Qué establece el principio de subsidiaridad?',
+        opciones: ['Que el Estado debe resolver todo', 'Que las instancias superiores deben ayudar sin suplantar a las menores', 'Que cada uno trabaja solo', 'Que los líderes toman todas las decisiones'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Cómo se aplica la subsidiaridad en un equipo de trabajo?',
+        opciones: ['El jefe decide todo', 'Cada persona tiene autonomía para resolver lo que le corresponde', 'Se ignoran los problemas pequeños', 'Solo los expertos participan'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Qué riesgo evita el principio de subsidiaridad?',
+        opciones: ['La eficiencia excesiva', 'El paternalismo y la dependencia', 'La independencia', 'El trabajo en equipo'],
+        correcta: 1,
+      },
+    ],
+    preguntas_reflexion: [
+      '¿Cómo vives la subsidiaridad en tu vida personal y familiar?',
+      '¿Cómo vives la subsidiaridad en tu ámbito laboral?',
+      '¿Conoces algunos proyectos subsidiarios? Comparte 2 ejemplos.',
+    ],
+  },
+  {
+    id: 9,
+    numero: 9,
+    titulo: 'El Bien Común',
+    objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
+    objetivo_especifico: 'Reconocer la importancia y centralidad del bien común para el adecuado y pleno desarrollo de las familias y organizaciones.',
+    video_url: '',
+    activo: true,
+    preguntas_quiz: [
+      {
+        pregunta: '¿Qué es el bien común según la Doctrina Social?',
+        opciones: ['El beneficio de la mayoría', 'Las condiciones que permiten a todos alcanzar su pleno desarrollo', 'Los bienes materiales compartidos', 'El interés del grupo dominante'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Quién tiene la responsabilidad de promover el bien común?',
+        opciones: ['Solo el Estado', 'Solo los líderes', 'Cada persona y toda la sociedad', 'Las organizaciones internacionales'],
+        correcta: 2,
+      },
+      {
+        pregunta: '¿Cuándo una decisión favorece el bien común?',
+        opciones: ['Cuando beneficia solo a quien decide', 'Cuando es rentable económicamente', 'Cuando permite que todos puedan desarrollarse plenamente', 'Cuando agrada a la mayoría'],
+        correcta: 2,
+      },
+    ],
+    preguntas_reflexion: [
+      '¿Por qué es importante el bien común en la familia y en la organización o equipo de trabajo?',
+      '¿De qué manera colaboras en el bien común de tu organización o equipo de trabajo?',
+      '¿Puedes escribir tres bienes comunes que actualmente hay en tu organización o equipo de trabajo? ¿Cómo se construyen? Menciona una actitud personal con la que colaboras al fortalecimiento de esos bienes comunes.',
+    ],
+  },
+  {
+    id: 10,
+    numero: 10,
+    titulo: 'La Verdad',
+    objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
+    objetivo_especifico: 'Reflexionar sobre la importancia de la verdad en cada momento de nuestra vida.',
+    video_url: '',
+    activo: true,
+    preguntas_quiz: [
+      {
+        pregunta: '¿Por qué la verdad es esencial en las relaciones de trabajo?',
+        opciones: ['Porque evita conflictos legales', 'Porque construye confianza y permite relaciones justas y sanas', 'Porque es una norma de comportamiento', 'Porque impresiona a los demás'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Qué implica ser una persona honesta en el trabajo?',
+        opciones: ['Solo no robar', 'Actuar con integridad en palabras, hechos y omisiones', 'Decir lo que los demás quieren escuchar', 'Cumplir los contratos legales'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Cuál es el impacto de la mentira en un equipo de trabajo?',
+        opciones: ['Puede ser útil para proteger a alguien', 'Destruye la confianza y daña las relaciones', 'No tiene impacto si no se descubre', 'Solo afecta al que miente'],
+        correcta: 1,
+      },
+    ],
+    preguntas_reflexion: [
+      '¿Qué importancia tiene en tu vida la verdad?',
+      '¿Qué sucede en tu vida cuando pudiendo decir la verdad la evitas o evitas expresarla?',
+      '¿Cómo podemos vivir la verdad en nuestras relaciones humanas, familiares, grupales y laborales?',
+    ],
+  },
+  {
+    id: 11,
+    numero: 11,
+    titulo: 'La Libertad',
+    objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
+    objetivo_especifico: 'Comprender la importancia del ejercicio de la libertad en nuestra vida.',
+    video_url: '',
+    activo: true,
+    preguntas_quiz: [
+      {
+        pregunta: '¿Qué es la libertad auténtica según la Doctrina Social?',
+        opciones: ['Hacer lo que uno quiera sin consecuencias', 'La capacidad de elegir el bien y actuar de manera responsable', 'No tener ninguna restricción', 'Independencia total de los demás'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Cómo se relacionan libertad y responsabilidad?',
+        opciones: ['Son opuestas', 'La libertad verdadera implica responsabilidad por nuestras elecciones', 'La responsabilidad limita la libertad', 'No tienen relación'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Qué amenaza la libertad de las personas en el trabajo?',
+        opciones: ['Tener demasiadas opciones', 'La presión, el miedo y las estructuras injustas', 'El trabajo en equipo', 'Tener un horario definido'],
+        correcta: 1,
+      },
+    ],
+    preguntas_reflexion: [
+      'En el actual ambiente social y laboral en que vivimos, ¿es posible vivir adecuadamente la libertad? ¿por qué?',
+      'Según los textos reflexionados: ¿cuáles son los verdaderos criterios para ser libres?',
+      '¿Cómo podemos respetar la libertad de los demás?',
+    ],
+  },
+  {
+    id: 12,
+    numero: 12,
+    titulo: 'La Justicia',
+    objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
+    objetivo_especifico: 'Conocer la importancia de la justicia en la vida de cada persona, así como su vivencia plena en la familia, en el trabajo y la sociedad.',
+    video_url: '',
+    activo: true,
+    preguntas_quiz: [
+      {
+        pregunta: '¿Qué es la justicia como virtud social?',
+        opciones: ['Aplicar las leyes con exactitud', 'La firme voluntad de dar a cada uno lo que le corresponde', 'Castigar a quien hace el mal', 'Repartir todo por igual'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Cuáles son los tipos de justicia mencionados en la Doctrina Social?',
+        opciones: ['Justicia civil y penal', 'Justicia conmutativa, distributiva y social', 'Justicia laboral y familiar', 'Justicia retributiva y restaurativa'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Cómo se manifiesta la injusticia en el ámbito laboral?',
+        opciones: ['En diferencias de opinión', 'En la discriminación, salarios injustos y falta de oportunidades', 'En el trabajo competitivo', 'En tener jefes exigentes'],
+        correcta: 1,
+      },
+    ],
+    preguntas_reflexion: [
+      '¿Por qué es importante practicar la justicia en nuestra vida?',
+      '¿Cómo podemos vivir la justicia en la familia, en la organización o el equipo de trabajo?',
+      '¿Qué acción concreta puedes tomar para promover la justicia en tu entorno?',
+    ],
+  },
+  {
+    id: 13,
+    numero: 13,
+    titulo: 'La Participación Ciudadana',
+    objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
+    objetivo_especifico: 'Reconocer la importancia de nuestra participación ciudadana y política en la sociedad, con el fin de colaborar en la construcción del bien común.',
+    video_url: '',
+    activo: true,
+    preguntas_quiz: [
+      {
+        pregunta: '¿Qué es la participación ciudadana?',
+        opciones: ['Solo votar en las elecciones', 'El involucramiento activo de la persona en la vida política, social y comunitaria', 'Pagar impuestos', 'Obedecer las leyes'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Por qué los trabajadores tienen un papel importante en la ciudadanía?',
+        opciones: ['Porque son mayoría en la población', 'Porque desde el trabajo contribuyen al bien común y tienen derechos que defender', 'Porque están organizados en sindicatos', 'Porque pagan los impuestos'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Qué impide la participación ciudadana activa?',
+        opciones: ['Tener muchas responsabilidades', 'El desconocimiento de derechos, la apatía y la exclusión', 'Vivir en una ciudad grande', 'Trabajar muchas horas'],
+        correcta: 1,
+      },
+    ],
+    preguntas_reflexion: [
+      'En nuestro actual medio social y político, ¿por qué es importante la participación ciudadana?',
+      '¿Qué acciones ciudadanas ayudarían a mejorar nuestra sociedad?',
+      'Desde el ámbito laboral o apostólico ¿cómo podemos contribuir a la realización del bien común en nuestra sociedad?',
+    ],
+  },
+  {
+    id: 14,
+    numero: 14,
+    titulo: 'La Ecología Integral',
+    objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
+    objetivo_especifico: 'Descubrir la importancia de tener una visión integral sobre la ecología para que, conscientes de los daños que el ser humano ha causado a la naturaleza, exista un compromiso, como parte de la solución, para restaurarla.',
+    video_url: '',
+    activo: true,
+    preguntas_quiz: [
+      {
+        pregunta: '¿Qué es la ecología integral según la encíclica Laudato Si\'?',
+        opciones: ['Solo el cuidado del medio ambiente natural', 'Una visión que conecta el cuidado de la tierra con la justicia social y humana', 'Un movimiento político ecologista', 'El reciclaje y ahorro de energía'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Cuál es nuestra responsabilidad con la "casa común"?',
+        opciones: ['Solo la tienen los científicos y políticos', 'Cuidarla y transmitirla en buen estado a las generaciones futuras', 'Aprovechar sus recursos para el desarrollo', 'Solo los países ricos tienen esa responsabilidad'],
+        correcta: 1,
+      },
+      {
+        pregunta: '¿Cómo se relaciona el trabajo con el cuidado de la creación?',
+        opciones: ['No tienen relación', 'El trabajo puede ser un medio de cuidado o de destrucción del ambiente', 'Solo las industrias contaminan', 'El trabajo siempre daña el medio ambiente'],
+        correcta: 1,
+      },
+    ],
+    preguntas_reflexion: [
+      'Subraya la frase o idea del texto que haya hecho resonancia en tu mente y corazón. Explica brevemente porqué.',
+      'Para ti ¿qué es lo que más ha dañado a la naturaleza?',
+      '¿Qué compromiso personal puedes asumir para contribuir al cuidado de nuestra casa común desde tu trabajo y vida diaria?',
+    ],
+  },
+]
