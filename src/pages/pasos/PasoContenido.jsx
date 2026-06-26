@@ -75,16 +75,16 @@ export default function PasoContenido({ modulo, onAvanzar }) {
         {tabActiva === 'texto' && (
           <div>
             {/* Botón TTS */}
-            <div className="flex justify-end mb-4">
+            <div className="flex justify-end mb-3">
               <button
                 onClick={escucharTexto}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   leyendo
                     ? 'bg-red-100 text-red-600 hover:bg-red-200'
                     : 'bg-purple-100 text-morado hover:bg-purple-200'
                 }`}
               >
-                {leyendo ? <><Square size={14} /> Detener</> : <><Play size={14} /> Escuchar texto</>}
+                {leyendo ? <><Square size={11} /> Detener</> : <><Play size={11} /> Escuchar audio</>}
               </button>
             </div>
 
