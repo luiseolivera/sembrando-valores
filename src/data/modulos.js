@@ -5,7 +5,7 @@ export const MODULOS = [
     titulo: 'La Persona',
     objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
     objetivo_especifico: 'Propiciar que cada participante se reconozca como persona en su dignidad y descubra sus posibilidades de crecer humana y socialmente.',
-    video_url: '',
+    audio_url: '',
     activo: true,
     preguntas_quiz: [
       {
@@ -36,7 +36,7 @@ export const MODULOS = [
     titulo: 'La Centralidad de la Persona',
     objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
     objetivo_especifico: 'Reconocer la dignidad de todas las personas, para que, tomando aprecio de su gran valor como seres humanos, se respeten sus derechos y, además, se promueva su desarrollo humano integral, sostenible y solidario, y el de sus familias.',
-    video_url: '',
+    audio_url: '',
     activo: true,
     preguntas_quiz: [
       {
@@ -67,7 +67,7 @@ export const MODULOS = [
     titulo: 'La Familia',
     objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
     objetivo_especifico: 'Ser conscientes de la importancia y centralidad que tiene la familia, para la empresa y sociedad, como generadora de vida y formadora de personas.',
-    video_url: '',
+    audio_url: '',
     activo: true,
     preguntas_quiz: [
       {
@@ -98,7 +98,7 @@ export const MODULOS = [
     titulo: 'El Amor',
     objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
     objetivo_especifico: 'Reconocer la importancia que tiene el amor en la vida personal, familiar, laboral y social.',
-    video_url: '',
+    audio_url: '',
     activo: true,
     preguntas_quiz: [
       {
@@ -129,7 +129,7 @@ export const MODULOS = [
     titulo: 'La Educación',
     objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
     objetivo_especifico: 'Reconocer que la educación es muy importante para mejorar como personas, como familia y como organización.',
-    video_url: '',
+    audio_url: '',
     activo: true,
     preguntas_quiz: [
       {
@@ -160,7 +160,7 @@ export const MODULOS = [
     titulo: 'La Participación',
     objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
     objetivo_especifico: 'Reconocer que la participación nos ayuda a lograr el desarrollo integral, sostenible y solidario de las personas en el contexto tanto familiar como laboral.',
-    video_url: '',
+    audio_url: '',
     activo: true,
     preguntas_quiz: [
       {
@@ -191,7 +191,7 @@ export const MODULOS = [
     titulo: 'La Solidaridad',
     objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo.',
     objetivo_especifico: 'Reconocer la importancia de la solidaridad en el desarrollo integral de cada persona, así como en la familia y en la vida laboral.',
-    video_url: '',
+    audio_url: '',
     activo: true,
     preguntas_quiz: [
       {
@@ -237,7 +237,7 @@ export const MODULOS = [
     titulo: 'La Subsidiaridad',
     objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
     objetivo_especifico: 'Reconocer la importancia de la subsidiaridad en el contexto familiar, laboral y social.',
-    video_url: '',
+    audio_url: '',
     activo: true,
     preguntas_quiz: [
       {
@@ -268,7 +268,7 @@ export const MODULOS = [
     titulo: 'El Bien Común',
     objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
     objetivo_especifico: 'Reconocer la importancia y centralidad del bien común para el adecuado y pleno desarrollo de las familias y organizaciones.',
-    video_url: '',
+    audio_url: '',
     activo: true,
     preguntas_quiz: [
       {
@@ -299,7 +299,7 @@ export const MODULOS = [
     titulo: 'La Verdad',
     objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
     objetivo_especifico: 'Reflexionar sobre la importancia de la verdad en cada momento de nuestra vida.',
-    video_url: '',
+    audio_url: '',
     activo: true,
     preguntas_quiz: [
       {
@@ -330,7 +330,7 @@ export const MODULOS = [
     titulo: 'La Libertad',
     objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
     objetivo_especifico: 'Comprender la importancia del ejercicio de la libertad en nuestra vida.',
-    video_url: '',
+    audio_url: '',
     activo: true,
     preguntas_quiz: [
       {
@@ -361,7 +361,7 @@ export const MODULOS = [
     titulo: 'La Justicia',
     objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
     objetivo_especifico: 'Conocer la importancia de la justicia en la vida de cada persona, así como su vivencia plena en la familia, en el trabajo y la sociedad.',
-    video_url: '',
+    audio_url: '',
     activo: true,
     preguntas_quiz: [
       {
@@ -392,7 +392,7 @@ export const MODULOS = [
     titulo: 'La Participación Ciudadana',
     objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
     objetivo_especifico: 'Reconocer la importancia de nuestra participación ciudadana y política en la sociedad, con el fin de colaborar en la construcción del bien común.',
-    video_url: '',
+    audio_url: '',
     activo: true,
     preguntas_quiz: [
       {
@@ -423,7 +423,7 @@ export const MODULOS = [
     titulo: 'La Ecología Integral',
     objetivo_general: 'Fortalecer la unidad y fraternidad de la organización o equipo de trabajo y obtener los conocimientos y el consejo adecuado para impregnar su trabajo con los principios y valores éticos universales.',
     objetivo_especifico: 'Descubrir la importancia de tener una visión integral sobre la ecología para que, conscientes de los daños que el ser humano ha causado a la naturaleza, exista un compromiso, como parte de la solución, para restaurarla.',
-    video_url: '',
+    audio_url: '',
     activo: true,
     preguntas_quiz: [
       {

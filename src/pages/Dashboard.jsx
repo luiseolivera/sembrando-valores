@@ -144,7 +144,7 @@ export default function Dashboard() {
                   <span className="text-xs text-gray-400">{pct}% completado</span>
                   {!completado && (
                     <span className="text-xs text-morado font-medium capitalize">
-                      {paso === 'video' && '▶ Ver video'}
+                      {paso === 'video' && '🎧 Escuchar audio'}
                       {paso === 'quiz' && '📝 Hacer quiz'}
                       {paso === 'reflexion' && '✍️ Reflexionar'}
                       {paso === 'sesion' && '👥 Sesión grupal'}

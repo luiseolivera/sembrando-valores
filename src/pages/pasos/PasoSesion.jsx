@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
-import { Users, Calendar, Video, Target, Trophy, ExternalLink, CheckCircle } from 'lucide-react'
+import { Users, Calendar, Headphones, Target, Trophy, ExternalLink, CheckCircle } from 'lucide-react'
 
 export default function PasoSesion({ modulo, perfil, onAvanzar }) {
   const [sesion, setSesion] = useState(null)

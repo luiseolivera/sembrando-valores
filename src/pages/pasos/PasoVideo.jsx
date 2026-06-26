@@ -1,50 +1,57 @@
 import { useState } from 'react'
-import { Play, CheckCircle, AlertCircle } from 'lucide-react'
+import { Headphones, CheckCircle, AlertCircle } from 'lucide-react'
+import { CONTENIDOS } from '../../data/contenidos'
 
 export default function PasoVideo({ modulo, onAvanzar }) {
-  const [visto, setVisto] = useState(false)
-
-  const videoId = modulo.video_url
-    ? modulo.video_url.match(/(?:youtu\.be\/|v=)([^&\s]+)/)?.[1] || modulo.video_url.match(/embed\/([^?]+)/)?.[1]
-    : null
+  const [escuchado, setEscuchado] = useState(false)
+  const contenido = CONTENIDOS[modulo.id] || {}
+  const audioUrl = contenido.audio_url || modulo.audio_url || ''
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6">
       <h2 className="font-bold text-morado text-lg mb-2 flex items-center gap-2">
-        <Play size={20} className="text-dorado" /> Paso 1 — Video del módulo
+        <Headphones size={20} className="text-dorado" /> Paso 1 — Audio del módulo
       </h2>
       <p className="text-sm text-gray-500 mb-5">
-        Ve el video completo antes de continuar al quiz.
+        Escucha el audio completo antes de continuar al quiz.
       </p>
 
-      {/* Video */}
-      <div className="aspect-video bg-gray-100 rounded-xl overflow-hidden mb-5">
-        {videoId ? (
-          <iframe
-            src={`https://www.youtube.com/embed/${videoId}?rel=0`}
-            title={`Video: ${modulo.titulo}`}
-            className="w-full h-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
+      {/* Audio */}
+      <div className="bg-purple-50 rounded-xl p-6 mb-5 flex flex-col items-center gap-4">
+        {audioUrl ? (
+          <>
+            <div className="w-20 h-20 bg-morado rounded-full flex items-center justify-center shadow-md">
+              <Headphones size={36} className="text-white" />
+            </div>
+            <p className="text-sm font-semibold text-morado text-center">{modulo.titulo}</p>
+            <audio
+              controls
+              src={audioUrl}
+              className="w-full max-w-sm"
+              onEnded={() => setEscuchado(true)}
+            >
+              Tu navegador no soporta audio HTML5.
+            </audio>
+            <p className="text-xs text-gray-400">El audio se marca como escuchado al terminar</p>
+          </>
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-gray-400">
+          <div className="flex flex-col items-center gap-3 py-4 text-gray-400">
             <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-              <Play size={28} className="text-gray-400 ml-1" />
+              <Headphones size={28} className="text-gray-400" />
             </div>
             <div className="text-center">
-              <p className="font-semibold text-sm">Video próximamente</p>
-              <p className="text-xs mt-1">El facilitador actualizará el enlace del video</p>
+              <p className="font-semibold text-sm">Audio próximamente</p>
+              <p className="text-xs mt-1">El facilitador actualizará el enlace del audio</p>
             </div>
           </div>
         )}
       </div>
 
-      {!videoId && (
+      {!audioUrl && (
         <div className="flex items-start gap-2 bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs p-3 rounded-xl mb-5">
           <AlertCircle size={15} className="flex-shrink-0 mt-0.5" />
           <span>
-            Este módulo aún no tiene video configurado. Puedes marcar que viste el contenido
+            Este módulo aún no tiene audio configurado. Puedes marcar que escuchaste el contenido
             y continuar si tu facilitador ya lo compartió por otro medio.
           </span>
         </div>
@@ -54,20 +61,20 @@ export default function PasoVideo({ modulo, onAvanzar }) {
         <label className="flex items-center gap-3 cursor-pointer group">
           <div
             className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all flex-shrink-0 ${
-              visto ? 'bg-morado border-morado' : 'border-gray-300 group-hover:border-morado'
+              escuchado ? 'bg-morado border-morado' : 'border-gray-300 group-hover:border-morado'
             }`}
-            onClick={() => setVisto(!visto)}
+            onClick={() => setEscuchado(!escuchado)}
           >
-            {visto && <CheckCircle size={14} className="text-white" />}
+            {escuchado && <CheckCircle size={14} className="text-white" />}
           </div>
           <span className="text-sm font-medium text-gray-700">
-            He visto el video completo y estoy listo/a para continuar
+            He escuchado el audio completo y estoy listo/a para continuar
           </span>
         </label>
 
         <button
           onClick={onAvanzar}
-          disabled={!visto}
+          disabled={!escuchado}
           className="mt-5 w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           Continuar al Quiz →

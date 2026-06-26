@@ -36,7 +36,7 @@ create table if not exists modulos (
   titulo               text not null,
   objetivo_general     text,
   objetivo_especifico  text,
-  video_url            text,
+  audio_url            text,
   activo               boolean default true,
   created_at           timestamptz default now()
 );
@@ -195,7 +195,7 @@ create policy "compromisos_write" on compromisos
 -- =============================================
 -- Datos iniciales: 14 módulos
 -- =============================================
-insert into modulos (numero, titulo, objetivo_general, objetivo_especifico, video_url) values
+insert into modulos (numero, titulo, objetivo_general, objetivo_especifico, audio_url) values
   (1,  'La Persona',               'Reconocer la dignidad intrínseca de cada persona como fundamento de la vida social.', 'Comprender que cada ser humano posee un valor único e irrepetible que debe ser respetado en todos los ámbitos de la vida.', ''),
   (2,  'La Centralidad de la Persona', 'Comprender que la persona debe ser el centro de toda organización social, económica y política.', 'Identificar cómo las estructuras de trabajo pueden estar al servicio del desarrollo integral de la persona.', ''),
   (3,  'La Familia',               'Valorar la familia como núcleo fundamental de la sociedad y apoyo esencial para la vida laboral.', 'Reconocer cómo el equilibrio entre familia y trabajo contribuye al bienestar integral.', ''),
