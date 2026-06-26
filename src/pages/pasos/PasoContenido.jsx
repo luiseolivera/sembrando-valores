@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { BookOpen, Headphones, CheckCircle } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { BookOpen, Headphones, CheckCircle, Play, Square } from 'lucide-react'
 import { CONTENIDOS } from '../../data/contenidos'
 
 const TABS = [
@@ -7,12 +7,42 @@ const TABS = [
   { key: 'audio', label: 'Escuchar audio', icono: Headphones },
 ]
 
+function limpiarTexto(texto) {
+  return texto
+    .replace(/^## /gm, '')
+    .replace(/^### /gm, '')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/^- /gm, '')
+    .replace(/^\d+\. /gm, '')
+    .trim()
+}
+
 export default function PasoContenido({ modulo, onAvanzar }) {
   const contenido = CONTENIDOS[modulo.id] || {}
   const [tabActiva, setTabActiva] = useState('texto')
   const [visto, setVisto] = useState(false)
+  const [leyendo, setLeyendo] = useState(false)
+  const utteranceRef = useRef(null)
 
   const tieneAudio = !!contenido.audio_url
+
+  function escucharTexto() {
+    if (!('speechSynthesis' in window)) return
+    if (leyendo) {
+      window.speechSynthesis.cancel()
+      setLeyendo(false)
+      return
+    }
+    const textoLimpio = limpiarTexto(contenido.texto || '')
+    const utterance = new SpeechSynthesisUtterance(textoLimpio)
+    utterance.lang = 'es-MX'
+    utterance.rate = 0.9
+    utterance.onend = () => { setLeyendo(false); setVisto(true) }
+    utterance.onerror = () => setLeyendo(false)
+    utteranceRef.current = utterance
+    window.speechSynthesis.speak(utterance)
+    setLeyendo(true)
+  }
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-purple-100 overflow-hidden">
@@ -44,6 +74,20 @@ export default function PasoContenido({ modulo, onAvanzar }) {
         {/* TAB: TEXTO */}
         {tabActiva === 'texto' && (
           <div>
+            {/* Botón TTS */}
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={escucharTexto}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  leyendo
+                    ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                    : 'bg-purple-100 text-morado hover:bg-purple-200'
+                }`}
+              >
+                {leyendo ? <><Square size={14} /> Detener</> : <><Play size={14} /> Escuchar texto</>}
+              </button>
+            </div>
+
             <div
               className="prose prose-sm max-w-none text-gray-700 leading-relaxed space-y-4"
               style={{ fontSize: '15px', lineHeight: '1.8' }}
