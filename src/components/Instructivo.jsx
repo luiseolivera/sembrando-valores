@@ -1,12 +1,12 @@
 import {
-  UserPlus, BookOpen, Play, CheckSquare, PenLine, Users, Target,
+  UserPlus, BookOpen, Headphones, CheckSquare, PenLine, Users, Target,
   ClipboardList, Share2, Zap, FileText, Calendar, MessageSquare, Award
 } from 'lucide-react'
 
 const pasosParticipante = [
   { icono: UserPlus, texto: 'Regístrate con tu nombre y correo' },
   { icono: BookOpen, texto: 'Selecciona el módulo que tu grupo trabaja' },
-  { icono: Play, texto: 'Ve el video completo y marca que lo viste' },
+  { icono: Headphones, texto: 'Escucha el audio completo y marca que lo escuchaste' },
   { icono: CheckSquare, texto: 'Responde el quiz de comprensión (mínimo 70% para avanzar)' },
   { icono: PenLine, texto: 'Escribe tu reflexión personal y envíala' },
   { icono: Users, texto: 'Conéctate a la sesión grupal en la fecha acordada' },

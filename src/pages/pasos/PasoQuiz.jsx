@@ -65,7 +65,7 @@ export default function PasoQuiz({ modulo, perfil, onAvanzar }) {
               {aprobado ? `¡Excelente! Obtuviste ${puntaje}%` : `Obtuviste ${puntaje}% — necesitas 70%`}
             </p>
             <p className={`text-xs ${aprobado ? 'text-green-600' : 'text-red-500'}`}>
-              {aprobado ? 'Puedes continuar a la reflexión personal.' : 'Regresa a ver el video e inténtalo de nuevo.'}
+              {aprobado ? 'Puedes continuar a la reflexión personal.' : 'Regresa a escuchar el audio e inténtalo de nuevo.'}
             </p>
           </div>
         </div>
@@ -135,7 +135,7 @@ export default function PasoQuiz({ modulo, perfil, onAvanzar }) {
             onClick={reintentar}
             className="flex-1 bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors flex items-center justify-center gap-2"
           >
-            <RefreshCw size={16} /> Volver al video e intentar de nuevo
+            <RefreshCw size={16} /> Volver al audio e intentar de nuevo
           </button>
         )}
       </div>

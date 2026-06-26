@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { BookOpen, Headphones, Play, CheckCircle, AlertCircle } from 'lucide-react'
+import { BookOpen, Headphones, CheckCircle } from 'lucide-react'
 import { CONTENIDOS } from '../../data/contenidos'
 
 const TABS = [
   { key: 'texto', label: 'Leer texto', icono: BookOpen },
   { key: 'audio', label: 'Escuchar audio', icono: Headphones },
-  { key: 'video', label: 'Ver video', icono: Play },
 ]
 
 export default function PasoContenido({ modulo, onAvanzar }) {
@@ -13,19 +12,14 @@ export default function PasoContenido({ modulo, onAvanzar }) {
   const [tabActiva, setTabActiva] = useState('texto')
   const [visto, setVisto] = useState(false)
 
-  const videoId = contenido.video_url
-    ? contenido.video_url.match(/(?:youtu\.be\/|v=)([^&\s]+)/)?.[1]
-    : null
-
   const tieneAudio = !!contenido.audio_url
-  const tieneVideo = !!(contenido.video_url || videoId)
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-purple-100 overflow-hidden">
       {/* Tabs */}
       <div className="flex border-b border-gray-100">
         {TABS.map(({ key, label, icono: Icono }) => {
-          const disponible = key === 'texto' ? true : key === 'audio' ? tieneAudio : tieneVideo
+          const disponible = key === 'texto' ? true : tieneAudio
           return (
             <button
               key={key}
@@ -119,33 +113,6 @@ export default function PasoContenido({ modulo, onAvanzar }) {
           </div>
         )}
 
-        {/* TAB: VIDEO */}
-        {tabActiva === 'video' && (
-          <div>
-            {tieneVideo ? (
-              <div className="aspect-video rounded-xl overflow-hidden bg-gray-100">
-                <iframe
-                  src={`https://www.youtube.com/embed/${videoId}?rel=0`}
-                  title={`Video: ${modulo.titulo}`}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            ) : (
-              <div className="aspect-video rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-3">
-                <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
-                  <Play size={24} className="text-gray-300 ml-1" />
-                </div>
-                <div className="text-center">
-                  <p className="font-semibold text-gray-500 text-sm">Video no disponible aún</p>
-                  <p className="text-xs text-gray-400 mt-1">El facilitador actualizará el enlace</p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Confirmación */}
         <div className="mt-6 pt-5 border-t border-gray-100">
           <label className="flex items-center gap-3 cursor-pointer group mb-5">
@@ -160,7 +127,6 @@ export default function PasoContenido({ modulo, onAvanzar }) {
             <span className="text-sm font-medium text-gray-700">
               {tabActiva === 'texto' && 'He leído el texto completo y estoy listo/a para continuar'}
               {tabActiva === 'audio' && 'He escuchado el audio completo y estoy listo/a para continuar'}
-              {tabActiva === 'video' && 'He visto el video completo y estoy listo/a para continuar'}
             </span>
           </label>
 

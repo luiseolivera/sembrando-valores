@@ -66,7 +66,7 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-morado text-white text-sm font-bold px-4 py-2 rounded-xl hover:bg-morado-dark transition-colors"
             >
-              <Video size={16} /> Unirse a la sesión <ExternalLink size={14} />
+              <ExternalLink size={16} /> Unirse a la sesión
             </a>
           )}
         </div>
