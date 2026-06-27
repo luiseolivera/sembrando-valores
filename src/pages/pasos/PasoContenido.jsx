@@ -169,8 +169,7 @@ export default function PasoContenido({ modulo, onAvanzar }) {
               {visto && <CheckCircle size={14} className="text-white" />}
             </div>
             <span className="text-sm font-medium text-gray-700">
-              {tabActiva === 'texto' && 'He leído el texto completo y estoy listo/a para continuar'}
-              {tabActiva === 'audio' && 'He escuchado el audio completo y estoy listo/a para continuar'}
+              He leído los textos completos y/o escuchado los audios y estoy listo/a para continuar
             </span>
           </label>
 
