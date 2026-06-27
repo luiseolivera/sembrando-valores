@@ -7,42 +7,98 @@ const TABS = [
   { key: 'audio', label: 'Escuchar audio', icono: Headphones },
 ]
 
-function limpiarTexto(texto) {
-  return texto
-    .replace(/^## /gm, '')
-    .replace(/^### /gm, '')
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
-    .replace(/^- /gm, '')
-    .replace(/^\d+\. /gm, '')
+// Divide el texto en: título principal + array de secciones {titulo, cuerpo}
+function parsearSecciones(texto) {
+  if (!texto) return { titulo: '', secciones: [] }
+  const lineas = texto.split('\n')
+  let titulo = ''
+  const secciones = []
+  let seccionActual = null
+
+  for (const linea of lineas) {
+    if (linea.startsWith('## ')) {
+      titulo = linea.replace('## ', '')
+    } else if (linea.startsWith('### ')) {
+      if (seccionActual) secciones.push(seccionActual)
+      seccionActual = { titulo: linea.replace('### ', ''), lineas: [] }
+    } else if (seccionActual) {
+      seccionActual.lineas.push(linea)
+    }
+  }
+  if (seccionActual) secciones.push(seccionActual)
+  return { titulo, secciones }
+}
+
+function limpiarParaTTS(lineas) {
+  return lineas
+    .map(l => l.replace(/\*\*/g, '').replace(/^- /, '').replace(/^\d+\. /, ''))
+    .join(' ')
     .trim()
 }
 
-export default function PasoContenido({ modulo, onAvanzar }) {
-  const contenido = CONTENIDOS[modulo.id] || {}
-  const [tabActiva, setTabActiva] = useState('texto')
-  const [visto, setVisto] = useState(false)
+function RenderLinea({ linea, i }) {
+  if (linea.startsWith('**') && linea.endsWith('**')) return (
+    <p key={i} className="bg-purple-50 border-l-4 border-morado px-4 py-3 rounded-r-xl text-morado font-medium italic text-sm">
+      {linea.replace(/\*\*/g, '')}
+    </p>
+  )
+  if (linea.startsWith('- ')) return (
+    <div key={i} className="flex items-start gap-2">
+      <span className="text-dorado mt-1.5 flex-shrink-0">●</span>
+      <span>{linea.replace('- ', '').replace(/\*\*([^*]+)\*\*/g, (_, t) => t)}</span>
+    </div>
+  )
+  if (linea.match(/^\d+\. /)) return (
+    <div key={i} className="flex items-start gap-2">
+      <span className="bg-morado text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+        {linea.match(/^(\d+)/)[1]}
+      </span>
+      <span>{linea.replace(/^\d+\. /, '').replace(/\*\*([^*]+)\*\*/g, (_, t) => t)}</span>
+    </div>
+  )
+  if (linea.trim() === '') return <div key={i} className="h-1" />
+  return <p key={i}>{linea.replace(/\*\*([^*]+)\*\*/g, (_, t) => t)}</p>
+}
+
+function BotonTTS({ texto, label }) {
   const [leyendo, setLeyendo] = useState(false)
-  const utteranceRef = useRef(null)
 
-  const tieneAudio = !!contenido.audio_url
-
-  function escucharTexto() {
+  function toggleLeer() {
     if (!('speechSynthesis' in window)) return
     if (leyendo) {
       window.speechSynthesis.cancel()
       setLeyendo(false)
       return
     }
-    const textoLimpio = limpiarTexto(contenido.texto || '')
-    const utterance = new SpeechSynthesisUtterance(textoLimpio)
+    const utterance = new SpeechSynthesisUtterance(texto)
     utterance.lang = 'es-MX'
     utterance.rate = 0.9
-    utterance.onend = () => { setLeyendo(false); setVisto(true) }
+    utterance.onend = () => setLeyendo(false)
     utterance.onerror = () => setLeyendo(false)
-    utteranceRef.current = utterance
     window.speechSynthesis.speak(utterance)
     setLeyendo(true)
   }
+
+  return (
+    <button
+      onClick={toggleLeer}
+      className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all flex-shrink-0 ${
+        leyendo
+          ? 'bg-red-100 text-red-600 hover:bg-red-200'
+          : 'bg-purple-100 text-morado hover:bg-purple-200'
+      }`}
+    >
+      {leyendo ? <><Square size={10} /> Detener</> : <><Play size={10} /> Escuchar</>}
+    </button>
+  )
+}
+
+export default function PasoContenido({ modulo, onAvanzar }) {
+  const contenido = CONTENIDOS[modulo.id] || {}
+  const [tabActiva, setTabActiva] = useState('texto')
+  const [visto, setVisto] = useState(false)
+  const tieneAudio = !!contenido.audio_url
+  const { titulo, secciones } = parsearSecciones(contenido.texto)
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-purple-100 overflow-hidden">
@@ -73,54 +129,28 @@ export default function PasoContenido({ modulo, onAvanzar }) {
       <div className="p-6">
         {/* TAB: TEXTO */}
         {tabActiva === 'texto' && (
-          <div>
-            {/* Botón TTS */}
-            <div className="flex justify-end mb-3">
-              <button
-                onClick={escucharTexto}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  leyendo
-                    ? 'bg-red-100 text-red-600 hover:bg-red-200'
-                    : 'bg-purple-100 text-morado hover:bg-purple-200'
-                }`}
-              >
-                {leyendo ? <><Square size={11} /> Detener</> : <><Play size={11} /> Escuchar audio</>}
-              </button>
-            </div>
+          <div className="space-y-6" style={{ fontSize: '15px', lineHeight: '1.8' }}>
+            {titulo && (
+              <h2 className="text-xl font-bold text-morado">{titulo}</h2>
+            )}
 
-            <div
-              className="prose prose-sm max-w-none text-gray-700 leading-relaxed space-y-4"
-              style={{ fontSize: '15px', lineHeight: '1.8' }}
-            >
-              {contenido.texto
-                ? contenido.texto.split('\n').map((linea, i) => {
-                    if (linea.startsWith('## ')) return <h2 key={i} className="text-xl font-bold text-morado mt-2 mb-1">{linea.replace('## ', '')}</h2>
-                    if (linea.startsWith('### ')) return <h3 key={i} className="text-base font-bold text-gray-800 mt-4 mb-1">{linea.replace('### ', '')}</h3>
-                    if (linea.startsWith('**') && linea.endsWith('**')) return (
-                      <p key={i} className="bg-purple-50 border-l-4 border-morado px-4 py-3 rounded-r-xl text-morado font-medium italic text-sm">
-                        {linea.replace(/\*\*/g, '')}
-                      </p>
-                    )
-                    if (linea.startsWith('- ')) return (
-                      <div key={i} className="flex items-start gap-2">
-                        <span className="text-dorado mt-1.5 flex-shrink-0">●</span>
-                        <span>{linea.replace('- ', '').replace(/\*\*([^*]+)\*\*/g, (_, t) => t)}</span>
-                      </div>
-                    )
-                    if (linea.match(/^\d+\. /)) return (
-                      <div key={i} className="flex items-start gap-2">
-                        <span className="bg-morado text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                          {linea.match(/^(\d+)/)[1]}
-                        </span>
-                        <span>{linea.replace(/^\d+\. /, '').replace(/\*\*([^*]+)\*\*/g, (_, t) => t)}</span>
-                      </div>
-                    )
-                    if (linea.trim() === '') return <div key={i} className="h-1" />
-                    return <p key={i}>{linea.replace(/\*\*([^*]+)\*\*/g, (_, t) => t)}</p>
-                  })
-                : <p className="text-gray-400 italic">Contenido próximamente.</p>
-              }
-            </div>
+            {secciones.length > 0 ? secciones.map((sec, si) => (
+              <div key={si} className="border border-purple-50 rounded-xl p-4 bg-gray-50">
+                {/* Encabezado de sección con botón */}
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-base font-bold text-gray-800">{sec.titulo}</h3>
+                  <BotonTTS texto={limpiarParaTTS(sec.lineas)} label={sec.titulo} />
+                </div>
+                {/* Contenido de la sección */}
+                <div className="space-y-2 text-gray-700">
+                  {sec.lineas.map((linea, i) => (
+                    <RenderLinea key={i} linea={linea} i={i} />
+                  ))}
+                </div>
+              </div>
+            )) : (
+              <p className="text-gray-400 italic">Contenido próximamente.</p>
+            )}
           </div>
         )}
 
