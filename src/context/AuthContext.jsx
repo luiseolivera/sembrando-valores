@@ -34,7 +34,13 @@ export function AuthProvider({ children }) {
   async function cargarPerfil(userId) {
     try {
       const { data } = await supabase.from('usuarios').select('*').eq('id', userId).single()
-      setPerfil(data)
+      if (data) { setPerfil(data); setLoading(false); return }
+      // Reintenta hasta 5 veces con 800ms entre intentos (por si el insert aún no terminó)
+      for (let i = 0; i < 5; i++) {
+        await new Promise(r => setTimeout(r, 800))
+        const { data: d2 } = await supabase.from('usuarios').select('*').eq('id', userId).single()
+        if (d2) { setPerfil(d2); setLoading(false); return }
+      }
     } catch {}
     setLoading(false)
   }
