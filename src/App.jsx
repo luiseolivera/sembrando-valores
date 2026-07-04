@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard'
 import Modulo from './pages/Modulo'
 import PanelFacilitador from './pages/PanelFacilitador'
 import InstructivoPage from './pages/InstructivoPage'
+import UnirseGrupo from './pages/UnirseGrupo'
 
 function RutaProtegida({ children }) {
   const { user, loading } = useAuth()
@@ -77,6 +78,7 @@ export default function App() {
               </RutaProtegida>
             }
           />
+          <Route path="/unirse/:codigo" element={<Layout><UnirseGrupo /></Layout>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
