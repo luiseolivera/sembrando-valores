@@ -26,7 +26,7 @@ const FAQS = [
   },
   {
     pregunta: '¿Cuál es el papel del facilitador?',
-    respuesta: 'El facilitador es un guía, no un expositor. Su labor es promover que las sesiones se lleven a cabo con buen ritmo, participación y en los tiempos marcados. Además revisa las reflexiones escritas por los participantes antes de la sesión grupal, conduce la puesta en común, y al finalizar pregunta cómo se está viviendo el valor en la organización para definir compromisos.',
+    respuesta: 'El facilitador es un guía, no un expositor. Desde la plataforma puede crear uno o varios grupos —cada uno con su propio código e invitación—, compartir el link de registro con los participantes, activar el módulo que trabajará el grupo, revisar el progreso y las reflexiones escritas antes de la sesión, agendar el enlace de reunión (Google Meet o Zoom), y registrar los compromisos grupales al finalizar.',
   },
   {
     pregunta: '¿Qué son los compromisos grupales?',
@@ -34,7 +34,7 @@ const FAQS = [
   },
   {
     pregunta: '¿Cómo me uno a un grupo?',
-    respuesta: 'Tu facilitador creará el grupo y te compartirá un código de 6 caracteres (ej. AB12CD). Después de registrarte en la plataforma, verás en tu pantalla principal un campo para ingresar ese código. Al hacerlo, quedas asociado al grupo y podrás ver el módulo activo, los compromisos y el enlace de la sesión.',
+    respuesta: 'Tu facilitador creará el grupo y te compartirá un link de invitación (ej. s-valores.vercel.app/unirse/AB12CD) o un código de 6 caracteres. Si abres el link, solo tienes que registrarte y quedas unido automáticamente. Si te dan el código, ingrésalo en el campo que aparece en tu pantalla principal después de registrarte.',
   },
   {
     pregunta: '¿Qué necesito para usar la plataforma digital?',
