@@ -9,11 +9,19 @@ create extension if not exists "uuid-ossp";
 -- Tabla: grupos
 -- -----------------------------------------------
 create table if not exists grupos (
-  id          uuid primary key default uuid_generate_v4(),
-  nombre      text not null,
-  facilitador_id uuid references auth.users(id) on delete set null,
-  created_at  timestamptz default now()
+  id              uuid primary key default uuid_generate_v4(),
+  nombre          text not null,
+  facilitador_id  uuid references auth.users(id) on delete set null,
+  codigo          text unique,           -- código corto para que participantes se unan
+  modulo_activo_id int,                  -- módulo que el facilitador activó para el grupo
+  created_at      timestamptz default now()
 );
+
+-- Migración: agregar columnas si la tabla ya existe
+alter table grupos add column if not exists codigo text unique;
+alter table grupos add column if not exists modulo_activo_id int;
+-- Generar código para grupos existentes sin código
+update grupos set codigo = upper(substring(replace(id::text, '-', ''), 1, 6)) where codigo is null;
 
 -- -----------------------------------------------
 -- Tabla: usuarios (perfil extendido de auth.users)

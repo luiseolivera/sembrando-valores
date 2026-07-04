@@ -3,15 +3,18 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
-import { Play, CheckCircle, Lock, ChevronRight, Target, BookOpen, Trophy } from 'lucide-react'
-
-const PASOS = ['video', 'quiz', 'reflexion', 'sesion']
+import { Play, CheckCircle, ChevronRight, Target, BookOpen, Trophy, Users, Zap } from 'lucide-react'
 
 export default function Dashboard() {
   const { perfil } = useAuth()
   const [progresos, setProgresos] = useState({})
   const [compromisos, setCompromisos] = useState([])
+  const [moduloActivoId, setModuloActivoId] = useState(null)
   const [cargando, setCargando] = useState(true)
+  const [codigoInput, setCodigoInput] = useState('')
+  const [uniendose, setUniendose] = useState(false)
+  const [errorUnirse, setErrorUnirse] = useState('')
+  const [exitoUnirse, setExitoUnirse] = useState('')
 
   useEffect(() => {
     if (perfil) cargarDatos()
@@ -21,18 +24,26 @@ export default function Dashboard() {
     setCargando(false)
     if (!perfil) return
 
-    const [quizRes, reflexRes, sesionRes, compRes] = await Promise.all([
+    const queries = [
       supabase.from('quiz_respuestas').select('modulo_id, aprobado').eq('usuario_id', perfil.id),
       supabase.from('reflexiones').select('modulo_id').eq('usuario_id', perfil.id),
-      supabase.from('sesiones_grupales').select('modulo_id').eq('grupo_id', perfil.grupo_id || ''),
-      supabase.from('compromisos').select('*').eq('grupo_id', perfil.grupo_id || '').order('created_at', { ascending: false }).limit(6),
-    ])
+    ]
+
+    if (perfil.grupo_id) {
+      queries.push(
+        supabase.from('sesiones_grupales').select('modulo_id').eq('grupo_id', perfil.grupo_id),
+        supabase.from('compromisos').select('*').eq('grupo_id', perfil.grupo_id).order('created_at', { ascending: false }).limit(6),
+        supabase.from('grupos').select('modulo_activo_id').eq('id', perfil.grupo_id).maybeSingle(),
+      )
+    }
+
+    const [quizRes, reflexRes, sesionRes, compRes, grupoRes] = await Promise.all(queries)
 
     const mapa = {}
     MODULOS.forEach((m) => {
       const quiz = quizRes.data?.find((r) => r.modulo_id === m.id)
       const reflex = reflexRes.data?.some((r) => r.modulo_id === m.id)
-      const sesion = sesionRes.data?.some((r) => r.modulo_id === m.id)
+      const sesion = sesionRes?.data?.some((r) => r.modulo_id === m.id)
       mapa[m.id] = {
         video: quiz?.aprobado || reflex || sesion,
         quiz: quiz?.aprobado,
@@ -41,7 +52,41 @@ export default function Dashboard() {
       }
     })
     setProgresos(mapa)
-    setCompromisos(compRes.data || [])
+    setCompromisos(compRes?.data || [])
+    if (grupoRes?.data?.modulo_activo_id) setModuloActivoId(grupoRes.data.modulo_activo_id)
+  }
+
+  async function unirseAlGrupo() {
+    setErrorUnirse('')
+    setExitoUnirse('')
+    const codigo = codigoInput.trim().toUpperCase()
+    if (!codigo) return
+    setUniendose(true)
+
+    const { data: grupo, error } = await supabase
+      .from('grupos')
+      .select('id, nombre')
+      .eq('codigo', codigo)
+      .maybeSingle()
+
+    if (error || !grupo) {
+      setErrorUnirse('No se encontró un grupo con ese código. Verifícalo con tu facilitador.')
+      setUniendose(false)
+      return
+    }
+
+    const { error: upErr } = await supabase
+      .from('usuarios')
+      .update({ grupo_id: grupo.id })
+      .eq('id', perfil.id)
+
+    if (upErr) {
+      setErrorUnirse('Ocurrió un error al unirte. Intenta de nuevo.')
+    } else {
+      setExitoUnirse(`¡Te uniste al grupo "${grupo.nombre}"!`)
+      setTimeout(() => window.location.reload(), 1500)
+    }
+    setUniendose(false)
   }
 
   function pasoActual(moduloId) {
@@ -71,12 +116,13 @@ export default function Dashboard() {
   }
 
   const totalCompletados = MODULOS.filter((m) => pasoActual(m.id) === 'completado').length
+  const moduloActivo = moduloActivoId ? MODULOS.find((m) => m.id === moduloActivoId) : null
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-5xl mx-auto px-4">
         {/* Saludo */}
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="text-2xl font-bold text-morado">
             Hola, {perfil?.nombre?.split(' ')[0]} 👋
           </h1>
@@ -84,6 +130,62 @@ export default function Dashboard() {
             {perfil?.rol === 'facilitador' ? 'Panel de facilitador' : 'Continúa tu formación en valores'}
           </p>
         </div>
+
+        {/* Banner: unirse a grupo (participante sin grupo) */}
+        {perfil?.rol === 'participante' && !perfil?.grupo_id && (
+          <div className="bg-white rounded-2xl border border-purple-200 shadow-sm p-5 mb-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Users size={20} className="text-morado" />
+              </div>
+              <div>
+                <p className="font-bold text-morado text-sm">Únete a tu grupo</p>
+                <p className="text-xs text-gray-500">Pídele el código de 6 letras a tu facilitador</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={codigoInput}
+                onChange={(e) => setCodigoInput(e.target.value.toUpperCase())}
+                onKeyDown={(e) => e.key === 'Enter' && unirseAlGrupo()}
+                placeholder="Ej: AB12CD"
+                maxLength={8}
+                className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-morado uppercase"
+              />
+              <button
+                onClick={unirseAlGrupo}
+                disabled={uniendose || !codigoInput.trim()}
+                className="bg-morado text-white font-bold px-5 py-2.5 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40"
+              >
+                {uniendose ? '...' : 'Unirme'}
+              </button>
+            </div>
+            {errorUnirse && <p className="text-red-500 text-xs mt-2">{errorUnirse}</p>}
+            {exitoUnirse && <p className="text-green-600 text-xs mt-2 font-semibold">{exitoUnirse}</p>}
+          </div>
+        )}
+
+        {/* Módulo activo del grupo */}
+        {moduloActivo && (
+          <div className="bg-morado rounded-2xl p-4 mb-6 flex items-center gap-4">
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+              <Zap size={20} className="text-dorado" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-purple-200 text-xs font-medium">Módulo activo del grupo</p>
+              <p className="text-white font-bold text-sm truncate">
+                Módulo {moduloActivo.numero} — {moduloActivo.titulo}
+              </p>
+            </div>
+            <Link
+              to={`/modulo/${moduloActivo.id}`}
+              className="flex-shrink-0 bg-dorado text-morado font-bold text-xs px-4 py-2 rounded-xl hover:bg-yellow-400 transition-colors"
+            >
+              Ir al módulo
+            </Link>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-8">
@@ -110,28 +212,34 @@ export default function Dashboard() {
             const paso = pasoActual(modulo.id)
             const pct = porciento(modulo.id)
             const completado = paso === 'completado'
+            const esActivo = modulo.id === moduloActivoId
 
             return (
               <Link
                 key={modulo.id}
                 to={`/modulo/${modulo.id}`}
                 className={`bg-white rounded-2xl border shadow-sm p-5 hover:shadow-md transition-all group ${
-                  completado ? 'border-green-200' : 'border-purple-100 hover:border-morado'
+                  completado ? 'border-green-200' : esActivo ? 'border-morado ring-1 ring-morado' : 'border-purple-100 hover:border-morado'
                 }`}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
-                      completado ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-morado'
+                      completado ? 'bg-green-100 text-green-700' : esActivo ? 'bg-morado text-white' : 'bg-purple-100 text-morado'
                     }`}>
-                      {completado ? <CheckCircle size={20} /> : modulo.numero}
+                      {completado ? <CheckCircle size={20} /> : esActivo ? <Zap size={18} /> : modulo.numero}
                     </div>
                     <div>
                       <p className="text-xs text-gray-400 font-medium">Módulo {modulo.numero}</p>
                       <h3 className="font-bold text-gray-800 text-sm">{modulo.titulo}</h3>
                     </div>
                   </div>
-                  <ChevronRight size={18} className="text-gray-300 group-hover:text-morado transition-colors mt-1" />
+                  {esActivo && !completado && (
+                    <span className="text-xs bg-morado text-white px-2 py-0.5 rounded-full font-semibold flex-shrink-0">Activo</span>
+                  )}
+                  {!esActivo && (
+                    <ChevronRight size={18} className="text-gray-300 group-hover:text-morado transition-colors mt-1" />
+                  )}
                 </div>
 
                 <div className="w-full bg-gray-100 rounded-full h-1.5 mb-2">
@@ -143,8 +251,7 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-400">{pct}% completado</span>
                   {!completado && (
-                    <span className="text-xs text-morado font-medium capitalize">
-                      {paso === 'video' && ''}
+                    <span className="text-xs text-morado font-medium">
                       {paso === 'quiz' && '📝 Hacer quiz'}
                       {paso === 'reflexion' && '✍️ Reflexionar'}
                       {paso === 'sesion' && '👥 Sesión grupal'}

@@ -5,7 +5,8 @@ import {
 
 const pasosParticipante = [
   { icono: UserPlus, texto: 'Regístrate con tu nombre y correo' },
-  { icono: BookOpen, texto: 'Selecciona el módulo que tu grupo trabaja' },
+  { icono: Share2, texto: 'Únete a tu grupo con el código que te comparte el facilitador' },
+  { icono: BookOpen, texto: 'Selecciona el módulo activo de tu grupo' },
   { icono: Headphones, texto: 'Escucha el audio completo y marca que lo escuchaste' },
   { icono: CheckSquare, texto: 'Responde el quiz de comprensión (mínimo 70% para avanzar)' },
   { icono: PenLine, texto: 'Escribe tu reflexión personal y envíala' },

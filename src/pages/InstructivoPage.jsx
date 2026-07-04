@@ -33,8 +33,12 @@ const FAQS = [
     respuesta: 'Son acuerdos concretos que el grupo establece al final de cada sesión para impulsar a vivir el valor trabajado. Se sugiere no generar más de 3 compromisos por sesión. Quedan registrados en la plataforma y son visibles para todo el grupo, lo que favorece la rendición de cuentas y el seguimiento.',
   },
   {
+    pregunta: '¿Cómo me uno a un grupo?',
+    respuesta: 'Tu facilitador creará el grupo y te compartirá un código de 6 caracteres (ej. AB12CD). Después de registrarte en la plataforma, verás en tu pantalla principal un campo para ingresar ese código. Al hacerlo, quedas asociado al grupo y podrás ver el módulo activo, los compromisos y el enlace de la sesión.',
+  },
+  {
     pregunta: '¿Qué necesito para usar la plataforma digital?',
-    respuesta: 'Solo necesitas un dispositivo con acceso a internet (computadora, tablet o celular), tu correo electrónico para registrarte, y las ganas de participar. El facilitador de tu grupo te indicará cuándo comenzar cada módulo. Si no tienes grupo asignado aún, puedes explorar el contenido en modo demo.',
+    respuesta: 'Solo necesitas un dispositivo con acceso a internet (computadora, tablet o celular), tu correo electrónico para registrarte, y el código de grupo que te comparte tu facilitador. Una vez dentro, el facilitador activa el módulo que trabajarán y tú puedes seguir los pasos desde tu cuenta.',
   },
   {
     pregunta: '¿Cuánto tiempo toma completar un módulo?',
