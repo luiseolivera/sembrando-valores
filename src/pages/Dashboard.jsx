@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
-import { Play, CheckCircle, ChevronRight, Target, BookOpen, Trophy, Users, Zap } from 'lucide-react'
+import { CheckCircle, ChevronRight, Target, BookOpen, Trophy, Users, Zap, Calendar, ExternalLink } from 'lucide-react'
 
 export default function Dashboard() {
   const { perfil } = useAuth()
   const [progresos, setProgresos] = useState({})
   const [compromisos, setCompromisos] = useState([])
   const [moduloActivoId, setModuloActivoId] = useState(null)
+  const [sesionActiva, setSesionActiva] = useState(null)
   const [cargando, setCargando] = useState(true)
   const [codigoInput, setCodigoInput] = useState('')
   const [uniendose, setUniendose] = useState(false)
@@ -31,7 +32,7 @@ export default function Dashboard() {
 
     if (perfil.grupo_id) {
       queries.push(
-        supabase.from('sesiones_grupales').select('modulo_id').eq('grupo_id', perfil.grupo_id),
+        supabase.from('sesiones_grupales').select('modulo_id, fecha, link_reunion').eq('grupo_id', perfil.grupo_id),
         supabase.from('compromisos').select('*').eq('grupo_id', perfil.grupo_id).order('created_at', { ascending: false }).limit(6),
         supabase.from('grupos').select('modulo_activo_id').eq('id', perfil.grupo_id).maybeSingle(),
       )
@@ -53,7 +54,12 @@ export default function Dashboard() {
     })
     setProgresos(mapa)
     setCompromisos(compRes?.data || [])
-    if (grupoRes?.data?.modulo_activo_id) setModuloActivoId(grupoRes.data.modulo_activo_id)
+    if (grupoRes?.data?.modulo_activo_id) {
+      const activoId = grupoRes.data.modulo_activo_id
+      setModuloActivoId(activoId)
+      const sesion = sesionRes?.data?.find(s => s.modulo_id === activoId)
+      if (sesion?.link_reunion) setSesionActiva(sesion)
+    }
   }
 
   async function unirseAlGrupo() {
@@ -184,6 +190,37 @@ export default function Dashboard() {
             >
               Ir al módulo
             </Link>
+          </div>
+        )}
+
+        {/* Tarjeta de sesión grupal */}
+        {sesionActiva && (
+          <div className="bg-white rounded-2xl border border-blue-200 shadow-sm p-4 mb-6">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Calendar size={20} className="text-blue-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-gray-800 text-sm">Sesión grupal agendada</p>
+                {sesionActiva.fecha && (
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {new Date(sesionActiva.fecha).toLocaleString('es-MX', {
+                      weekday: 'long', day: 'numeric', month: 'long',
+                      hour: '2-digit', minute: '2-digit'
+                    })}
+                  </p>
+                )}
+                <p className="text-xs text-gray-400 mt-0.5 truncate">{sesionActiva.link_reunion}</p>
+              </div>
+              <a
+                href={sesionActiva.link_reunion}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 flex items-center gap-1.5 bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors"
+              >
+                <ExternalLink size={13} /> Entrar
+              </a>
+            </div>
           </div>
         )}
 

@@ -10,7 +10,7 @@ const pasosParticipante = [
   { icono: Headphones, texto: 'Escucha el audio completo y marca que lo escuchaste' },
   { icono: CheckSquare, texto: 'Responde el quiz de comprensión (mínimo 70% para avanzar)' },
   { icono: PenLine, texto: 'Escribe tu reflexión personal y envíala' },
-  { icono: Users, texto: 'Conéctate a la sesión grupal en la fecha acordada' },
+  { icono: Users, texto: 'Conéctate a la sesión grupal — el link y la fecha aparecen en tu pantalla principal' },
   { icono: Target, texto: 'Revisa los compromisos registrados por el grupo' },
 ]
 

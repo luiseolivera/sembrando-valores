@@ -29,6 +29,10 @@ const FAQS = [
     respuesta: 'El facilitador es un guía, no un expositor. Desde la plataforma puede crear uno o varios grupos —cada uno con su propio código e invitación—, compartir el link de registro con los participantes, activar el módulo que trabajará el grupo, revisar el progreso y las reflexiones escritas antes de la sesión, agendar el enlace de reunión (Google Meet o Zoom), y registrar los compromisos grupales al finalizar.',
   },
   {
+    pregunta: '¿Cómo me entero de cuándo y dónde es la sesión grupal?',
+    respuesta: 'El facilitador agenda la sesión desde su panel: elige la fecha, hora y pega el enlace de Google Meet o Zoom. En cuanto lo guarda, aparece automáticamente en tu pantalla principal (Inicio) una tarjeta azul con la fecha, hora y un botón "Entrar" que te lleva directo a la videollamada. No necesitas pedirle el link a nadie — solo abre la app y estará ahí.',
+  },
+  {
     pregunta: '¿Qué son los compromisos grupales?',
     respuesta: 'Son acuerdos concretos que el grupo establece al final de cada sesión para impulsar a vivir el valor trabajado. Se sugiere no generar más de 3 compromisos por sesión. Quedan registrados en la plataforma y son visibles para todo el grupo, lo que favorece la rendición de cuentas y el seguimiento.',
   },
