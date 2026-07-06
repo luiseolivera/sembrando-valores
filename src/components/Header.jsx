@@ -22,9 +22,9 @@ export default function Header() {
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
-          <img src="/logommt.png" alt="MMT" className="h-10 w-auto object-contain" />
-          <div>
+        <Link to="/" className="flex items-center gap-3 min-w-0">
+          <img src="/logommt.png" alt="MMT" className="h-10 w-auto object-contain flex-shrink-0" />
+          <div className="hidden sm:block">
             <p className="text-morado font-bold text-sm leading-tight">Sembrando Valores Digital</p>
             <p className="text-dorado-dark text-xs font-medium">Misioneros en el Mundo del Trabajo</p>
           </div>
@@ -89,7 +89,7 @@ export default function Header() {
           <div className="flex gap-3">
             <Link
               to="/login"
-              className="text-gray-600 hover:text-morado text-sm font-medium transition-colors"
+              className="hidden sm:block text-gray-600 hover:text-morado text-sm font-medium transition-colors"
             >
               Iniciar sesión
             </Link>

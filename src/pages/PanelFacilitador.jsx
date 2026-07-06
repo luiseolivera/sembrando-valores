@@ -21,7 +21,7 @@ function generarCodigo() {
 }
 
 // ─── Vista: lista de grupos ───────────────────────────────────────────────────
-function ListaGrupos({ grupos, onSeleccionar, onCrear, creando, nombreNuevo, setNombreNuevo }) {
+function ListaGrupos({ grupos, onSeleccionar, onCrear, creando, nombreNuevo, setNombreNuevo, errorCrear }) {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-3xl mx-auto px-4">
@@ -59,6 +59,7 @@ function ListaGrupos({ grupos, onSeleccionar, onCrear, creando, nombreNuevo, set
                 Crear
               </button>
             </div>
+            {errorCrear && <p className="text-red-500 text-xs mt-2">{errorCrear}</p>}
           </div>
         )}
 
@@ -523,6 +524,7 @@ export default function PanelFacilitador() {
   const [cargando, setCargando] = useState(true)
   const [creando, setCreando] = useState(false)
   const [nombreNuevo, setNombreNuevo] = useState('')
+  const [errorCrear, setErrorCrear] = useState('')
 
   useEffect(() => { if (perfil) cargarGrupos() }, [perfil])
 
@@ -543,17 +545,33 @@ export default function PanelFacilitador() {
     if (!creando) { setCreando(true); return }
     if (!nombreNuevo.trim()) { setCreando(false); return }
 
+    setErrorCrear('')
     const codigo = generarCodigo()
-    const { data, error } = await supabase
+
+    // Intentar con codigo; si falla por columna inexistente, intentar sin él
+    let data, error
+    ;({ data, error } = await supabase
       .from('grupos')
       .insert({ nombre: nombreNuevo.trim(), facilitador_id: perfil.id, codigo })
-      .select().single()
+      .select().single())
 
-    if (!error) {
-      setGrupos(prev => [...prev, { ...data, participantes_count: 0 }])
-      setNombreNuevo('')
-      setCreando(false)
+    if (error?.message?.includes('codigo') || error?.code === '42703') {
+      // Columna aún no existe — insertar sin ella y usar el id como código temporal
+      ;({ data, error } = await supabase
+        .from('grupos')
+        .insert({ nombre: nombreNuevo.trim(), facilitador_id: perfil.id })
+        .select().single())
+      if (data) data.codigo = data.id.substring(0, 6).toUpperCase()
     }
+
+    if (error) {
+      setErrorCrear('No se pudo crear el grupo. Verifica tu conexión e intenta de nuevo.')
+      return
+    }
+
+    setGrupos(prev => [...prev, { ...data, participantes_count: 0 }])
+    setNombreNuevo('')
+    setCreando(false)
   }
 
   function actualizarGrupoEnLista(grupoActualizado) {
@@ -583,6 +601,7 @@ export default function PanelFacilitador() {
       creando={creando}
       nombreNuevo={nombreNuevo}
       setNombreNuevo={setNombreNuevo}
+      errorCrear={errorCrear}
     />
   )
 }
