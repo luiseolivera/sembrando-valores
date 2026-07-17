@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import DiagramaFlujo from '../components/DiagramaFlujo'
 import Instructivo from '../components/Instructivo'
 import { useAuth } from '../context/AuthContext'
-import { Sprout, ArrowRight, Eye } from 'lucide-react'
+import { Sprout, ArrowRight, Eye, Heart } from 'lucide-react'
 
 export default function Bienvenida() {
   const { entrarComoDemo } = useAuth()
@@ -50,6 +50,14 @@ export default function Bienvenida() {
             >
               Ya tengo cuenta
             </Link>
+            <a
+              href="https://donorbox.org/misioneros-en-el-mundo-del-trabajo"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 bg-dorado text-morado font-bold px-8 py-3 rounded-full text-base hover:bg-yellow-400 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+            >
+              <Heart size={18} /> Donar
+            </a>
           </div>
           <div className="mt-5 flex flex-col sm:flex-row gap-3 justify-center">
             <p className="text-purple-300 text-sm self-center">¿Solo quieres explorar?</p>
