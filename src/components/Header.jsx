@@ -20,7 +20,7 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-white border-b border-gray-200 shadow-sm">
+    <header className="bg-white border-b border-gray-200 shadow-sm print:hidden">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3 min-w-0">
           <img src="/logommt.png" alt="MMT" className="h-10 w-auto object-contain flex-shrink-0" />

@@ -11,6 +11,7 @@ import Modulo from './pages/Modulo'
 import PanelFacilitador from './pages/PanelFacilitador'
 import InstructivoPage from './pages/InstructivoPage'
 import UnirseGrupo from './pages/UnirseGrupo'
+import MiResumen from './pages/MiResumen'
 
 function RutaProtegida({ children }) {
   const { user, loading } = useAuth()
@@ -67,6 +68,10 @@ export default function App() {
           <Route
             path="/modulo/:id"
             element={<RutaProtegida><Layout><Modulo /></Layout></RutaProtegida>}
+          />
+          <Route
+            path="/mi-resumen"
+            element={<RutaProtegida><Layout><MiResumen /></Layout></RutaProtegida>}
           />
           <Route
             path="/facilitador"
