@@ -47,6 +47,7 @@ function createMockClient() {
           maybeSingle: async () => ({ data: null, error: null }),
           limit: () => ({ data: [], error: null }),
           in: () => ({ data: [], error: null }),
+          order: () => ({ data: [], error: null }),
         }),
         in: () => ({ data: [], error: null }),
         maybeSingle: async () => ({ data: null, error: null }),

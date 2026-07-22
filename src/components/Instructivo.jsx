@@ -1,25 +1,25 @@
 import {
   UserPlus, BookOpen, Headphones, CheckSquare, PenLine, Users, Target,
-  ClipboardList, Share2, Zap, FileText, Calendar, MessageSquare, Award
+  ClipboardList, Share2, Zap, FileText, Calendar, MessageSquare, Award, Printer
 } from 'lucide-react'
 
 const pasosParticipante = [
   { icono: UserPlus, texto: 'Regístrate con tu nombre y correo' },
-  { icono: Share2, texto: 'Únete a tu grupo con el código que te comparte el facilitador' },
-  { icono: BookOpen, texto: 'Selecciona el módulo activo de tu grupo' },
+  { icono: Share2, texto: 'Únete a tu grupo con el código o link que te comparte el facilitador — te lleva directo al módulo activo' },
   { icono: Headphones, texto: 'Escucha el audio completo y marca que lo escuchaste' },
   { icono: CheckSquare, texto: 'Responde el quiz de comprensión (mínimo 70% para avanzar)' },
   { icono: PenLine, texto: 'Escribe tu reflexión personal y envíala' },
+  { icono: Target, texto: 'Registra tus compromisos personales para el módulo' },
   { icono: Users, texto: 'Conéctate a la sesión grupal — el link y la fecha aparecen en tu pantalla principal' },
-  { icono: Target, texto: 'Revisa los compromisos registrados por el grupo' },
+  { icono: Printer, texto: 'Imprime tus reflexiones y compromisos desde "Mis reflexiones y compromisos"' },
 ]
 
 const pasosFacilitador = [
-  { icono: UserPlus, texto: 'Regístrate como facilitador y crea tu grupo' },
-  { icono: Share2, texto: 'Comparte el código de grupo con los participantes' },
+  { icono: UserPlus, texto: 'Regístrate como facilitador y crea uno o varios grupos (uno por cada equipo que acompañes)' },
+  { icono: Share2, texto: 'Comparte el código o link de cada grupo desde la app o por WhatsApp' },
   { icono: Zap, texto: 'Activa el módulo que trabajarán' },
-  { icono: FileText, texto: 'Revisa el resumen de reflexiones antes de la sesión' },
-  { icono: Calendar, texto: 'Agenda la sesión grupal con Google Meet o Zoom' },
+  { icono: FileText, texto: 'Revisa el progreso y las reflexiones y compromisos de cada participante' },
+  { icono: Calendar, texto: 'Agenda la sesión grupal (Zoom, Meet o Teams) — el link se habilita solo para quienes completaron el quiz y su reflexión' },
   { icono: MessageSquare, texto: 'Usa las preguntas del manual como guía durante la sesión' },
   { icono: Award, texto: 'Registra hasta 3 compromisos grupales al terminar' },
 ]

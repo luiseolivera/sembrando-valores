@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
-import { CheckCircle, ChevronRight, Target, BookOpen, Trophy, Users, Zap, Calendar, ExternalLink } from 'lucide-react'
+import { CheckCircle, ChevronRight, Target, BookOpen, Trophy, Users, Zap, Calendar, ExternalLink, Printer, Lock } from 'lucide-react'
 
 export default function Dashboard() {
   const { perfil } = useAuth()
@@ -123,18 +123,31 @@ export default function Dashboard() {
 
   const totalCompletados = MODULOS.filter((m) => pasoActual(m.id) === 'completado').length
   const moduloActivo = moduloActivoId ? MODULOS.find((m) => m.id === moduloActivoId) : null
+  const moduloActivoListo = moduloActivoId
+    ? Boolean(progresos[moduloActivoId]?.quiz && progresos[moduloActivoId]?.reflexion)
+    : false
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-5xl mx-auto px-4">
         {/* Saludo */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-morado">
-            Hola, {perfil?.nombre?.split(' ')[0]} 👋
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            {perfil?.rol === 'facilitador' ? 'Panel de facilitador' : 'Continúa tu formación en valores'}
-          </p>
+        <div className="flex items-start justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-morado">
+              Hola, {perfil?.nombre?.split(' ')[0]} 👋
+            </h1>
+            <p className="text-gray-500 text-sm mt-1">
+              {perfil?.rol === 'facilitador' ? 'Panel de facilitador' : 'Continúa tu formación en valores'}
+            </p>
+          </div>
+          {perfil?.rol === 'participante' && (
+            <Link
+              to="/mi-resumen"
+              className="flex-shrink-0 flex items-center gap-2 bg-white border border-purple-200 text-morado text-xs font-bold px-4 py-2 rounded-xl hover:bg-purple-50 transition-colors"
+            >
+              <Printer size={14} /> Mis reflexiones y compromisos
+            </Link>
+          )}
         </div>
 
         {/* Banner: unirse a grupo (participante sin grupo) */}
@@ -210,16 +223,28 @@ export default function Dashboard() {
                     })}
                   </p>
                 )}
-                <p className="text-xs text-gray-400 mt-0.5 truncate">{sesionActiva.link_reunion}</p>
+                {moduloActivoListo ? (
+                  <p className="text-xs text-gray-400 mt-0.5 truncate">{sesionActiva.link_reunion}</p>
+                ) : (
+                  <p className="text-xs text-yellow-600 mt-0.5">
+                    Termina el quiz y tu reflexión de este módulo para desbloquear el link.
+                  </p>
+                )}
               </div>
-              <a
-                href={sesionActiva.link_reunion}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-shrink-0 flex items-center gap-1.5 bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors"
-              >
-                <ExternalLink size={13} /> Entrar
-              </a>
+              {moduloActivoListo ? (
+                <a
+                  href={sesionActiva.link_reunion}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-shrink-0 flex items-center gap-1.5 bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors"
+                >
+                  <ExternalLink size={13} /> Entrar
+                </a>
+              ) : (
+                <span className="flex-shrink-0 flex items-center gap-1.5 bg-gray-100 text-gray-400 text-xs font-bold px-4 py-2 rounded-xl">
+                  <Lock size={13} /> Bloqueado
+                </span>
+              )}
             </div>
           </div>
         )}

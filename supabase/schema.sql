@@ -236,3 +236,13 @@ alter table compromisos_personales enable row level security;
 
 create policy "compromisos_personales_self" on compromisos_personales
   for all using (usuario_id = auth.uid());
+
+create policy "compromisos_personales_facilitador" on compromisos_personales
+  for select using (
+    exists (
+      select 1 from usuarios u
+      join grupos g on g.id = u.grupo_id
+      where u.id = compromisos_personales.usuario_id
+        and g.facilitador_id = auth.uid()
+    )
+  );

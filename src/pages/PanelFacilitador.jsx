@@ -5,7 +5,7 @@ import { MODULOS } from '../data/modulos'
 import {
   Users, CheckCircle, FileText, Calendar, Plus, Link as LinkIcon,
   Target, Star, ChevronDown, ChevronUp, Save, Clipboard, Zap,
-  CheckSquare, XCircle, ArrowLeft, PlusCircle
+  CheckSquare, XCircle, ArrowLeft, PlusCircle, MessageCircle
 } from 'lucide-react'
 
 const PREGUNTAS_EVALUACION = [
@@ -117,6 +117,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
   )
   const [participantes, setParticipantes] = useState([])
   const [reflexiones, setReflexiones] = useState([])
+  const [compromisosPersonales, setCompromisosPersonales] = useState([])
   const [quizResultados, setQuizResultados] = useState([])
   const [compromisoTexto, setCompromisoTexto] = useState(['', '', ''])
   const [sesionForm, setSesionForm] = useState({ fecha: '', link: '' })
@@ -143,12 +144,14 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
 
   async function cargarDatosModulo() {
     const ids = participantes.map(p => p.id)
-    if (ids.length === 0) { setReflexiones([]); setQuizResultados([]); return }
-    const [refRes, quizRes] = await Promise.all([
+    if (ids.length === 0) { setReflexiones([]); setCompromisosPersonales([]); setQuizResultados([]); return }
+    const [refRes, compRes, quizRes] = await Promise.all([
       supabase.from('reflexiones').select('*, usuarios(nombre)').eq('modulo_id', moduloSeleccionado.id).in('usuario_id', ids),
+      supabase.from('compromisos_personales').select('*').eq('modulo_id', moduloSeleccionado.id).in('usuario_id', ids),
       supabase.from('quiz_respuestas').select('*').eq('modulo_id', moduloSeleccionado.id).in('usuario_id', ids),
     ])
     setReflexiones(refRes.data || [])
+    setCompromisosPersonales(compRes.data || [])
     setQuizResultados(quizRes.data || [])
   }
 
@@ -199,11 +202,25 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
     setTimeout(() => setCopiadoLink(false), 2000)
   }
 
+  function enviarPorWhatsapp() {
+    const link = `${window.location.origin}/unirse/${grupo.codigo}`
+    const mensaje = `Únete al grupo "${grupo.nombre}" de Sembrando Valores Digital con este link: ${link}`
+    window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank')
+  }
+
   const reflexionesPorUsuario = reflexiones.reduce((acc, r) => {
-    if (!acc[r.usuario_id]) acc[r.usuario_id] = { nombre: r.usuarios?.nombre, preguntas: [] }
+    if (!acc[r.usuario_id]) acc[r.usuario_id] = { nombre: r.usuarios?.nombre, preguntas: [], compromisos: [] }
     acc[r.usuario_id].preguntas.push(r)
     return acc
   }, {})
+
+  compromisosPersonales.forEach((c) => {
+    if (!reflexionesPorUsuario[c.usuario_id]) {
+      const p = participantes.find(p => p.id === c.usuario_id)
+      reflexionesPorUsuario[c.usuario_id] = { nombre: p?.nombre, preguntas: [], compromisos: [] }
+    }
+    reflexionesPorUsuario[c.usuario_id].compromisos.push(c)
+  })
 
   if (cargando) return (
     <div className="min-h-screen flex items-center justify-center">
@@ -255,6 +272,9 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
               <button onClick={copiarLink} className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-lg transition-all ${copiadoLink ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-morado hover:bg-purple-200'}`}>
                 {copiadoLink ? '✓ Copiado' : 'Copiar link'}
               </button>
+              <button onClick={enviarPorWhatsapp} className="flex-shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition-all">
+                <MessageCircle size={12} /> WhatsApp
+              </button>
             </div>
             <p className="text-xs text-gray-400 mt-2">Quien abra el link se registra y queda unido automáticamente</p>
           </div>
@@ -299,9 +319,9 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
         <div className="flex gap-1 bg-gray-100 p-1 rounded-xl mb-6 overflow-x-auto">
           {[
             { key: 'progreso', label: 'Progreso', icono: CheckCircle },
-            { key: 'reflexiones', label: 'Reflexiones', icono: FileText },
+            { key: 'reflexiones', label: 'Reflexiones y compromisos', icono: FileText },
             { key: 'sesion', label: 'Sesión', icono: Calendar },
-            { key: 'compromisos', label: 'Compromisos', icono: Target },
+            { key: 'compromisos', label: 'Compromisos del grupo', icono: Target },
             { key: 'evaluacion', label: 'Evaluación', icono: Star },
           ].map(({ key, label, icono: Icono }) => (
             <button
@@ -390,7 +410,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
             {Object.keys(reflexionesPorUsuario).length === 0 ? (
               <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-8 text-center text-gray-400">
                 <FileText size={32} className="mx-auto mb-2 opacity-30" />
-                <p className="text-sm">Aún no hay reflexiones enviadas para este módulo.</p>
+                <p className="text-sm">Aún no hay reflexiones ni compromisos enviados para este módulo.</p>
               </div>
             ) : Object.entries(reflexionesPorUsuario).map(([uid, data]) => (
               <div key={uid} className="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden">
@@ -416,6 +436,25 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                         <p className="text-sm text-gray-700">{r.respuesta_texto}</p>
                       </div>
                     ))}
+                    {data.compromisos.length > 0 && (
+                      <div className="pt-2">
+                        <p className="text-xs font-bold text-dorado-dark uppercase tracking-wide mb-2 flex items-center gap-1">
+                          <Target size={12} /> Compromisos personales
+                        </p>
+                        <div className="space-y-2">
+                          {data.compromisos.map(c => (
+                            <div key={c.id} className="flex items-start gap-2 bg-yellow-50 rounded-xl p-3">
+                              {c.cumplido
+                                ? <CheckCircle size={14} className="text-green-600 flex-shrink-0 mt-0.5" />
+                                : <span className="w-3.5 h-3.5 rounded-full border-2 border-yellow-400 flex-shrink-0 mt-0.5" />}
+                              <p className={`text-sm ${c.cumplido ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                                {c.compromiso_texto}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -437,7 +476,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                   className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-morado" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Enlace (Google Meet o Zoom)</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Enlace (Zoom, Google Meet o Teams)</label>
                 <div className="relative">
                   <LinkIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input type="url" value={sesionForm.link}
