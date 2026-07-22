@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { supabase } from '../../lib/supabase'
-import { CheckSquare, XCircle, CheckCircle, RefreshCw, ArrowRight } from 'lucide-react'
+import { supabase, esPerfilExploracion } from '../../lib/supabase'
+import { CheckSquare, XCircle, CheckCircle, RefreshCw, ArrowRight, AlertTriangle } from 'lucide-react'
 
 export default function PasoQuiz({ modulo, perfil, onAvanzar }) {
   const preguntas = modulo.preguntas_quiz
@@ -8,6 +8,7 @@ export default function PasoQuiz({ modulo, perfil, onAvanzar }) {
   const [enviado, setEnviado] = useState(false)
   const [puntaje, setPuntaje] = useState(0)
   const [guardando, setGuardando] = useState(false)
+  const [exploracion, setExploracion] = useState(false)
 
   function seleccionar(pregIdx, opIdx) {
     if (enviado) return
@@ -18,6 +19,7 @@ export default function PasoQuiz({ modulo, perfil, onAvanzar }) {
 
   async function enviar() {
     if (respuestas.some((r) => r === null)) return
+    if (esPerfilExploracion(perfil)) { setExploracion(true); return }
     const correctas = preguntas.filter((p, i) => respuestas[i] === p.correcta).length
     const pct = Math.round((correctas / preguntas.length) * 100)
     setPuntaje(pct)
@@ -51,6 +53,12 @@ export default function PasoQuiz({ modulo, perfil, onAvanzar }) {
       <p className="text-sm text-gray-500 mb-5">
         Necesitas al menos 70% para continuar. Responde con cuidado.
       </p>
+
+      {exploracion && (
+        <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm px-4 py-3 rounded-xl mb-6">
+          <AlertTriangle size={16} /> Estás en modo de exploración — regístrate o inicia sesión para guardar tus resultados.
+        </div>
+      )}
 
       {enviado && (
         <div className={`flex items-center gap-3 p-4 rounded-xl mb-6 ${

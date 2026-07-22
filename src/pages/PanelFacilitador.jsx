@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { supabase } from '../lib/supabase'
+import { supabase, esPerfilExploracion } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
 import {
   Users, CheckCircle, FileText, Calendar, Plus, Link as LinkIcon,
   Target, Star, ChevronDown, ChevronUp, Save, Clipboard, Zap,
-  CheckSquare, XCircle, ArrowLeft, PlusCircle, MessageCircle
+  CheckSquare, XCircle, ArrowLeft, PlusCircle, MessageCircle, AlertTriangle
 } from 'lucide-react'
 
 const PREGUNTAS_EVALUACION = [
@@ -129,6 +129,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
   const [guardandoSesion, setGuardandoSesion] = useState(false)
   const [activandoModulo, setActivandoModulo] = useState(false)
   const [exito, setExito] = useState('')
+  const [avisoExploracion, setAvisoExploracion] = useState(false)
   const [reflexionesExpandidas, setReflexionesExpandidas] = useState({})
   const [copiado, setCopiado] = useState(false)
   const [copiadoLink, setCopiadoLink] = useState(false)
@@ -155,7 +156,15 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
     setQuizResultados(quizRes.data || [])
   }
 
+  function bloqueadoPorExploracion() {
+    if (!esPerfilExploracion({ id: facilitadorId })) return false
+    setAvisoExploracion(true)
+    setTimeout(() => setAvisoExploracion(false), 4000)
+    return true
+  }
+
   async function activarModulo() {
+    if (bloqueadoPorExploracion()) return
     setActivandoModulo(true)
     await supabase.from('grupos').update({ modulo_activo_id: moduloSeleccionado.id }).eq('id', grupo.id)
     setModuloActivoId(moduloSeleccionado.id)
@@ -168,6 +177,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
   async function guardarCompromisos() {
     const validos = compromisoTexto.filter(c => c.trim())
     if (!validos.length) return
+    if (bloqueadoPorExploracion()) return
     setGuardandoCompromisos(true)
     await supabase.from('compromisos').insert(
       validos.map(texto => ({ grupo_id: grupo.id, modulo_id: moduloSeleccionado.id, compromiso_texto: texto, facilitador_id: facilitadorId }))
@@ -180,6 +190,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
 
   async function guardarSesion() {
     if (!sesionForm.link) return
+    if (bloqueadoPorExploracion()) return
     setGuardandoSesion(true)
     await supabase.from('sesiones_grupales').upsert({
       grupo_id: grupo.id, modulo_id: moduloSeleccionado.id,
@@ -246,6 +257,12 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
         {exito && (
           <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl mb-6">
             <CheckCircle size={16} /> {exito}
+          </div>
+        )}
+
+        {avisoExploracion && (
+          <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm px-4 py-3 rounded-xl mb-6">
+            <AlertTriangle size={16} /> Estás en modo de exploración — regístrate o inicia sesión para guardar cambios reales.
           </div>
         )}
 
@@ -585,6 +602,10 @@ export default function PanelFacilitador() {
     if (!nombreNuevo.trim()) { setCreando(false); return }
 
     setErrorCrear('')
+    if (esPerfilExploracion(perfil)) {
+      setErrorCrear('Estás en modo de exploración — regístrate o inicia sesión para crear grupos reales.')
+      return
+    }
     const codigo = generarCodigo()
 
     // Intentar con codigo; si falla por columna inexistente, intentar sin él

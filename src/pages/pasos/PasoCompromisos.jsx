@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { supabase, DEMO_MODE } from '../../lib/supabase'
-import { Target, Plus, CheckCircle, Trash2, Trophy, Sparkles } from 'lucide-react'
+import { supabase, DEMO_MODE, esPerfilExploracion } from '../../lib/supabase'
+import { Target, Plus, CheckCircle, Trash2, Trophy, Sparkles, AlertTriangle } from 'lucide-react'
 
 const SUGERENCIAS = {
   1: ['Llamar a alguien por su nombre y mirarle a los ojos al hablar', 'Reconocer en voz alta un aporte de un compañero esta semana', 'Evitar hablar de alguien en términos que reduzcan su dignidad'],
@@ -24,6 +24,7 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
   const [guardados, setGuardados] = useState([])
   const [guardando, setGuardando] = useState(false)
   const [exito, setExito] = useState(false)
+  const [exploracion, setExploracion] = useState(false)
   const sugerencias = SUGERENCIAS[modulo.id] || []
 
   useEffect(() => {
@@ -52,6 +53,7 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
   async function guardar() {
     const validos = compromisos.filter(c => c.trim().length > 0)
     if (!validos.length) return
+    if (esPerfilExploracion(perfil)) { setExploracion(true); return }
     setGuardando(true)
 
     if (!DEMO_MODE) {
@@ -152,6 +154,12 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
               />
             </div>
           ))}
+        </div>
+      )}
+
+      {exploracion && (
+        <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm px-4 py-3 rounded-xl mb-5">
+          <AlertTriangle size={16} /> Estás en modo de exploración — regístrate o inicia sesión para guardar tus compromisos.
         </div>
       )}
 

@@ -6,6 +6,12 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 // Modo demo cuando no hay credenciales configuradas
 export const DEMO_MODE = !supabaseUrl || !supabaseAnonKey
 
+// true cuando el usuario usa "Ver como participante/facilitador" (perfil de prueba)
+// sobre un backend real — hay que bloquear escrituras porque "demo-user" no es un UUID válido.
+export function esPerfilExploracion(perfil) {
+  return !DEMO_MODE && perfil?.id === 'demo-user'
+}
+
 export const supabase = DEMO_MODE
   ? createMockClient()
   : createClient(supabaseUrl, supabaseAnonKey)

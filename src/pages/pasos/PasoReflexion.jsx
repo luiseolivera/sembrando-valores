@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../../lib/supabase'
-import { PenLine, CheckCircle, Save } from 'lucide-react'
+import { supabase, esPerfilExploracion } from '../../lib/supabase'
+import { PenLine, CheckCircle, Save, AlertTriangle } from 'lucide-react'
 
 export default function PasoReflexion({ modulo, perfil, onAvanzar }) {
   const preguntas = modulo.preguntas_reflexion
@@ -8,6 +8,7 @@ export default function PasoReflexion({ modulo, perfil, onAvanzar }) {
   const [guardado, setGuardado] = useState(false)
   const [guardando, setGuardando] = useState(false)
   const [cargando, setCargando] = useState(true)
+  const [exploracion, setExploracion] = useState(false)
 
   useEffect(() => {
     cargarReflexiones()
@@ -30,6 +31,7 @@ export default function PasoReflexion({ modulo, perfil, onAvanzar }) {
 
   async function guardar() {
     if (respuestas.some((r) => r.trim().length < 10)) return
+    if (esPerfilExploracion(perfil)) { setExploracion(true); return }
     setGuardando(true)
     const registros = preguntas.map((_, i) => ({
       usuario_id: perfil.id,
@@ -83,6 +85,12 @@ export default function PasoReflexion({ modulo, perfil, onAvanzar }) {
           </div>
         ))}
       </div>
+
+      {exploracion && (
+        <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm px-4 py-3 rounded-xl mt-5">
+          <AlertTriangle size={16} /> Estás en modo de exploración — regístrate o inicia sesión para guardar tu reflexión.
+        </div>
+      )}
 
       {guardado && (
         <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl mt-5">

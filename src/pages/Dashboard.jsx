@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { supabase } from '../lib/supabase'
+import { supabase, esPerfilExploracion } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
 import { CheckCircle, ChevronRight, Target, BookOpen, Trophy, Users, Zap, Calendar, ExternalLink, Printer, Lock } from 'lucide-react'
 
@@ -67,6 +67,10 @@ export default function Dashboard() {
     setExitoUnirse('')
     const codigo = codigoInput.trim().toUpperCase()
     if (!codigo) return
+    if (esPerfilExploracion(perfil)) {
+      setErrorUnirse('Estás en modo de exploración — regístrate o inicia sesión para unirte a un grupo real.')
+      return
+    }
     setUniendose(true)
 
     const { data: grupo, error } = await supabase
