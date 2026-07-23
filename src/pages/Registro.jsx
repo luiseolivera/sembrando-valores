@@ -1,7 +1,15 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { User, Mail, Lock, Users, Hash, Sprout, AlertCircle, CheckCircle } from 'lucide-react'
+import { User, Mail, Lock, Users, Hash, Sprout, AlertCircle, CheckCircle, Clock, Send } from 'lucide-react'
+
+const CORREO_APROBACION = 'info@misionerosmt.org'
+
+function mailtoSolicitud(nombre, correo) {
+  const asunto = 'Solicitud de facilitador — Sembrando Valores Digital'
+  const cuerpo = `Hola,\n\nSolicito autorización para ser facilitador en la plataforma Sembrando Valores Digital.\n\nNombre: ${nombre}\nCorreo registrado: ${correo}\n\nGracias.`
+  return `mailto:${CORREO_APROBACION}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
+}
 
 export default function Registro() {
   const { registro } = useAuth()
@@ -50,10 +58,38 @@ export default function Registro() {
           ? 'Esta es una vista previa — el registro se activa cuando se conecte la base de datos.'
           : 'Ocurrió un error al registrarte. Verifica que el correo no esté ya registrado.'
       )
+    } else if (form.rol === 'facilitador') {
+      setExito(true)
     } else {
       setExito(true)
       setTimeout(() => navigate('/dashboard'), 2500)
     }
+  }
+
+  if (exito && form.rol === 'facilitador') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4">
+        <div className="text-center max-w-sm">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-yellow-100 rounded-full mb-4">
+            <Clock size={40} className="text-dorado-dark" />
+          </div>
+          <h2 className="text-xl font-bold text-morado mb-2">Cuenta creada — pendiente de aprobación</h2>
+          <p className="text-gray-600 text-sm mb-6">
+            Tu cuenta de facilitador necesita ser autorizada por el equipo de Misioneros en el Mundo del Trabajo
+            antes de poder crear y gestionar grupos.
+          </p>
+          <a
+            href={mailtoSolicitud(form.nombre, form.correo)}
+            className="w-full inline-flex items-center justify-center gap-2 bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors mb-3"
+          >
+            <Send size={16} /> Enviar solicitud de aprobación
+          </a>
+          <Link to="/dashboard" className="text-morado text-sm font-semibold hover:underline">
+            Ir a mi panel mientras tanto →
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   if (exito) {

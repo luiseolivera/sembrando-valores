@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase, esPerfilExploracion } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
-import { CheckCircle, ChevronRight, Target, BookOpen, Trophy, Users, Zap, Calendar, ExternalLink, Printer, Lock } from 'lucide-react'
+import { CheckCircle, ChevronRight, Target, BookOpen, Trophy, Users, Zap, Calendar, ExternalLink, Printer, Lock, Clock, Send } from 'lucide-react'
 
 export default function Dashboard() {
   const { perfil } = useAuth()
@@ -153,6 +153,27 @@ export default function Dashboard() {
             </Link>
           )}
         </div>
+
+        {/* Banner: facilitador pendiente de aprobación */}
+        {perfil?.rol === 'facilitador' && !perfil?.aprobado && (
+          <div className="bg-white rounded-2xl border border-yellow-200 shadow-sm p-5 mb-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Clock size={20} className="text-dorado-dark" />
+              </div>
+              <div>
+                <p className="font-bold text-morado text-sm">Cuenta de facilitador pendiente de aprobación</p>
+                <p className="text-xs text-gray-500">El equipo de Misioneros en el Mundo del Trabajo debe autorizarte antes de crear grupos.</p>
+              </div>
+            </div>
+            <a
+              href={`mailto:info@misionerosmt.org?subject=${encodeURIComponent('Solicitud de facilitador — Sembrando Valores Digital')}&body=${encodeURIComponent(`Hola,\n\nSolicito autorización para ser facilitador en la plataforma Sembrando Valores Digital.\n\nNombre: ${perfil?.nombre}\nCorreo registrado: ${perfil?.correo}\n\nGracias.`)}`}
+              className="inline-flex items-center gap-2 bg-morado text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-morado-dark transition-colors"
+            >
+              <Send size={13} /> Reenviar solicitud de aprobación
+            </a>
+          </div>
+        )}
 
         {/* Banner: unirse a grupo (participante sin grupo) */}
         {perfil?.rol === 'participante' && !perfil?.grupo_id && (

@@ -39,10 +39,15 @@ export default function Header() {
               <Link to="/instructivo" className="text-gray-600 hover:text-morado transition-colors text-sm font-medium">
                 ¿Cómo funciona?
               </Link>
-              {perfil.rol === 'facilitador' && (
+              {perfil.rol === 'facilitador' && (perfil.aprobado || DEMO_MODE) && (
                 <Link to="/facilitador" className="text-gray-600 hover:text-morado transition-colors text-sm font-medium">
                   Panel Facilitador
                 </Link>
+              )}
+              {perfil.rol === 'facilitador' && !perfil.aprobado && !DEMO_MODE && (
+                <span className="text-xs text-yellow-600 bg-yellow-50 border border-yellow-200 px-2.5 py-1 rounded-full font-semibold">
+                  Facilitador pendiente
+                </span>
               )}
               <div className="flex items-center gap-3 border-l border-gray-200 pl-6">
                 <div className="text-right">
@@ -107,7 +112,7 @@ export default function Header() {
         <div className="md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-3">
           <Link to="/dashboard" className="block text-gray-700 text-sm py-1" onClick={() => setMenuAbierto(false)}>Inicio</Link>
           <Link to="/instructivo" className="block text-gray-700 text-sm py-1" onClick={() => setMenuAbierto(false)}>¿Cómo funciona?</Link>
-          {perfil.rol === 'facilitador' && (
+          {perfil.rol === 'facilitador' && (perfil.aprobado || DEMO_MODE) && (
             <Link to="/facilitador" className="block text-gray-700 text-sm py-1" onClick={() => setMenuAbierto(false)}>Panel Facilitador</Link>
           )}
           <button onClick={handleLogout} className="flex items-center gap-2 text-morado text-sm py-1">

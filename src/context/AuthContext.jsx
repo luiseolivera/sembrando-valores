@@ -62,6 +62,7 @@ export function AuthProvider({ children }) {
         correo,
         rol,
         grupo_id: null,
+        aprobado: rol !== 'facilitador',
       })
       if (perfilError) return { error: perfilError }
     }

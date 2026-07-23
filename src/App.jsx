@@ -28,7 +28,7 @@ function RutaFacilitador({ children }) {
   const { perfil, loading } = useAuth()
   if (loading) return null
   if (DEMO_MODE) return children
-  return perfil?.rol === 'facilitador' ? children : <Navigate to="/dashboard" replace />
+  return perfil?.rol === 'facilitador' && perfil?.aprobado ? children : <Navigate to="/dashboard" replace />
 }
 
 function DemoBanner() {

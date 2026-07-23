@@ -32,8 +32,12 @@ create table if not exists usuarios (
   correo      text not null,
   rol         text not null check (rol in ('participante', 'facilitador')),
   grupo_id    uuid references grupos(id) on delete set null,
+  aprobado    boolean not null default true,
   created_at  timestamptz default now()
 );
+
+-- Migración: agregar columna si la tabla ya existe (aprobación de facilitadores)
+alter table usuarios add column if not exists aprobado boolean not null default true;
 
 -- -----------------------------------------------
 -- Tabla: modulos (catálogo — se puede editar desde Supabase)
@@ -244,5 +248,45 @@ create policy "compromisos_personales_facilitador" on compromisos_personales
       join grupos g on g.id = u.grupo_id
       where u.id = compromisos_personales.usuario_id
         and g.facilitador_id = auth.uid()
+    )
+  );
+
+-- -----------------------------------------------
+-- Migración: aprobación de facilitadores
+-- Solo un usuario con rol 'facilitador' Y aprobado = true puede
+-- escribir grupos, sesiones o compromisos grupales. Antes de esto,
+-- cualquier usuario autenticado (aunque fuera participante) podía
+-- crear un grupo llamando directo a la API de Supabase, sin pasar
+-- por la UI. Ejecutar este bloque reemplaza esas 3 políticas.
+-- -----------------------------------------------
+drop policy if exists "grupos_facilitador_write" on grupos;
+create policy "grupos_facilitador_write" on grupos
+  for all using (
+    facilitador_id = auth.uid()
+    and exists (
+      select 1 from usuarios u
+      where u.id = auth.uid() and u.rol = 'facilitador' and u.aprobado = true
+    )
+  );
+
+drop policy if exists "sesiones_write" on sesiones_grupales;
+create policy "sesiones_write" on sesiones_grupales
+  for all using (
+    exists (
+      select 1 from grupos g
+      join usuarios u on u.id = auth.uid()
+      where g.id = sesiones_grupales.grupo_id
+        and g.facilitador_id = auth.uid()
+        and u.rol = 'facilitador' and u.aprobado = true
+    )
+  );
+
+drop policy if exists "compromisos_write" on compromisos;
+create policy "compromisos_write" on compromisos
+  for insert with check (
+    facilitador_id = auth.uid()
+    and exists (
+      select 1 from usuarios u
+      where u.id = auth.uid() and u.rol = 'facilitador' and u.aprobado = true
     )
   );
