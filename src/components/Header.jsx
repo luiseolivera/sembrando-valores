@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { DEMO_MODE } from '../lib/supabase'
-import { LogOut, BookOpen, Menu, X } from 'lucide-react'
+import { DEMO_MODE, esAdmin } from '../lib/supabase'
+import { LogOut, BookOpen, Menu, X, ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Header() {
@@ -48,6 +48,11 @@ export default function Header() {
                 <span className="text-xs text-yellow-600 bg-yellow-50 border border-yellow-200 px-2.5 py-1 rounded-full font-semibold">
                   Facilitador pendiente
                 </span>
+              )}
+              {esAdmin(perfil) && (
+                <Link to="/admin" className="flex items-center gap-1 text-gray-600 hover:text-morado transition-colors text-sm font-medium">
+                  <ShieldCheck size={15} /> Aprobaciones
+                </Link>
               )}
               <div className="flex items-center gap-3 border-l border-gray-200 pl-6">
                 <div className="text-right">
@@ -114,6 +119,9 @@ export default function Header() {
           <Link to="/instructivo" className="block text-gray-700 text-sm py-1" onClick={() => setMenuAbierto(false)}>¿Cómo funciona?</Link>
           {perfil.rol === 'facilitador' && (perfil.aprobado || DEMO_MODE) && (
             <Link to="/facilitador" className="block text-gray-700 text-sm py-1" onClick={() => setMenuAbierto(false)}>Panel Facilitador</Link>
+          )}
+          {esAdmin(perfil) && (
+            <Link to="/admin" className="block text-gray-700 text-sm py-1" onClick={() => setMenuAbierto(false)}>Aprobaciones</Link>
           )}
           <button onClick={handleLogout} className="flex items-center gap-2 text-morado text-sm py-1">
             <LogOut size={16} /> Cerrar sesión

@@ -144,6 +144,15 @@ create policy "usuarios_grupo_facilitador" on usuarios
     )
   );
 
+-- Admin (info@misionerosmt.org): ve y aprueba solicitudes de facilitador
+create policy "usuarios_admin_write" on usuarios
+  for all using (
+    exists (
+      select 1 from usuarios admin
+      where admin.id = auth.uid() and admin.correo = 'info@misionerosmt.org'
+    )
+  );
+
 -- grupos: cualquier autenticado puede leer; solo el facilitador modifica
 create policy "grupos_read" on grupos
   for select using (auth.role() = 'authenticated');

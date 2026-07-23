@@ -12,6 +12,7 @@ import PanelFacilitador from './pages/PanelFacilitador'
 import InstructivoPage from './pages/InstructivoPage'
 import UnirseGrupo from './pages/UnirseGrupo'
 import MiResumen from './pages/MiResumen'
+import Admin from './pages/Admin'
 
 function RutaProtegida({ children }) {
   const { user, loading } = useAuth()
@@ -72,6 +73,10 @@ export default function App() {
           <Route
             path="/mi-resumen"
             element={<RutaProtegida><Layout><MiResumen /></Layout></RutaProtegida>}
+          />
+          <Route
+            path="/admin"
+            element={<RutaProtegida><Layout><Admin /></Layout></RutaProtegida>}
           />
           <Route
             path="/facilitador"

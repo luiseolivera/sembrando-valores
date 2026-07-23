@@ -12,6 +12,13 @@ export function esPerfilExploracion(perfil) {
   return !DEMO_MODE && perfil?.id === 'demo-user'
 }
 
+// Correo con permiso para aprobar solicitudes de facilitador desde /admin
+export const ADMIN_EMAIL = 'info@misionerosmt.org'
+
+export function esAdmin(perfil) {
+  return perfil?.correo === ADMIN_EMAIL
+}
+
 export const supabase = DEMO_MODE
   ? createMockClient()
   : createClient(supabaseUrl, supabaseAnonKey)

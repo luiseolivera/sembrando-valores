@@ -167,7 +167,7 @@ export default function Dashboard() {
               </div>
             </div>
             <a
-              href={`mailto:info@misionerosmt.org?subject=${encodeURIComponent('Solicitud de facilitador — Sembrando Valores Digital')}&body=${encodeURIComponent(`Hola,\n\nSolicito autorización para ser facilitador en la plataforma Sembrando Valores Digital.\n\nNombre: ${perfil?.nombre}\nCorreo registrado: ${perfil?.correo}\n\nGracias.`)}`}
+              href={`mailto:info@misionerosmt.org?subject=${encodeURIComponent('Solicitud de facilitador — Sembrando Valores Digital')}&body=${encodeURIComponent(`Hola,\n\nSolicito autorización para ser facilitador en la plataforma Sembrando Valores Digital.\n\nNombre: ${perfil?.nombre}\nCorreo registrado: ${perfil?.correo}\n\nPara aprobar la cuenta, entren a:\n${window.location.origin}/admin?id=${perfil?.id}\n\nGracias.`)}`}
               className="inline-flex items-center gap-2 bg-morado text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-morado-dark transition-colors"
             >
               <Send size={13} /> Reenviar solicitud de aprobación

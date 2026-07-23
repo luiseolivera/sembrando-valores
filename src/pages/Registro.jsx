@@ -5,9 +5,10 @@ import { User, Mail, Lock, Users, Hash, Sprout, AlertCircle, CheckCircle, Clock,
 
 const CORREO_APROBACION = 'info@misionerosmt.org'
 
-function mailtoSolicitud(nombre, correo) {
+function mailtoSolicitud(nombre, correo, usuarioId) {
+  const linkAprobacion = `${window.location.origin}/admin${usuarioId ? `?id=${usuarioId}` : ''}`
   const asunto = 'Solicitud de facilitador — Sembrando Valores Digital'
-  const cuerpo = `Hola,\n\nSolicito autorización para ser facilitador en la plataforma Sembrando Valores Digital.\n\nNombre: ${nombre}\nCorreo registrado: ${correo}\n\nGracias.`
+  const cuerpo = `Hola,\n\nSolicito autorización para ser facilitador en la plataforma Sembrando Valores Digital.\n\nNombre: ${nombre}\nCorreo registrado: ${correo}\n\nPara aprobar la cuenta, entren a:\n${linkAprobacion}\n\nGracias.`
   return `mailto:${CORREO_APROBACION}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
 }
 
@@ -26,6 +27,7 @@ export default function Registro() {
   const [error, setError] = useState('')
   const [exito, setExito] = useState(false)
   const [cargando, setCargando] = useState(false)
+  const [usuarioId, setUsuarioId] = useState(null)
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -43,7 +45,7 @@ export default function Registro() {
       return
     }
     setCargando(true)
-    const { error: err } = await registro(
+    const { data, error: err } = await registro(
       form.nombre,
       form.correo,
       form.contrasena,
@@ -51,6 +53,7 @@ export default function Registro() {
       null
     )
     setCargando(false)
+    if (data?.user?.id) setUsuarioId(data.user.id)
     if (err) {
       const esModoDemo = err.message?.includes('demo') || err.message?.includes('Modo demo')
       setError(
@@ -79,7 +82,7 @@ export default function Registro() {
             antes de poder crear y gestionar grupos.
           </p>
           <a
-            href={mailtoSolicitud(form.nombre, form.correo)}
+            href={mailtoSolicitud(form.nombre, form.correo, usuarioId)}
             className="w-full inline-flex items-center justify-center gap-2 bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors mb-3"
           >
             <Send size={16} /> Enviar solicitud de aprobación
