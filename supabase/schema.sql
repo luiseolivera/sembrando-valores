@@ -40,6 +40,35 @@ create table if not exists usuarios (
 alter table usuarios add column if not exists aprobado boolean not null default true;
 
 -- -----------------------------------------------
+-- Trigger: crear el perfil en "usuarios" automáticamente al registrarse
+-- Se ejecuta con privilegios elevados (security definer), por lo que
+-- funciona aunque el correo todavía no esté confirmado y no haya sesión
+-- activa — antes se intentaba insertar desde el navegador y RLS lo
+-- bloqueaba en ese caso.
+-- -----------------------------------------------
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_nombre text := coalesce(new.raw_user_meta_data->>'nombre', '');
+  v_rol    text := coalesce(new.raw_user_meta_data->>'rol', 'participante');
+begin
+  insert into public.usuarios (id, nombre, correo, rol, grupo_id, aprobado)
+  values (new.id, v_nombre, new.email, v_rol, null, v_rol <> 'facilitador')
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
+
+-- -----------------------------------------------
 -- Tabla: modulos (catálogo — se puede editar desde Supabase)
 -- -----------------------------------------------
 create table if not exists modulos (

@@ -53,20 +53,15 @@ export function AuthProvider({ children }) {
 
   async function registro(nombre, correo, contrasena, rol) {
     if (DEMO_MODE) return { error: { message: 'Modo demo — configura Supabase para registrarte.' } }
-    const { data, error } = await supabase.auth.signUp({ email: correo, password: contrasena })
-    if (error) return { error }
-    if (data.user) {
-      const { error: perfilError } = await supabase.from('usuarios').insert({
-        id: data.user.id,
-        nombre,
-        correo,
-        rol,
-        grupo_id: null,
-        aprobado: rol !== 'facilitador',
-      })
-      if (perfilError) return { error: perfilError }
-    }
-    return { data }
+    // El perfil en "usuarios" lo crea un trigger en la base de datos (handle_new_user),
+    // leyendo nombre/rol de estos metadatos — así funciona aunque el correo todavía
+    // no esté confirmado y no haya sesión activa en este momento.
+    const { data, error } = await supabase.auth.signUp({
+      email: correo,
+      password: contrasena,
+      options: { data: { nombre, rol } },
+    })
+    return { data, error }
   }
 
   function entrarComoDemo(rol) {

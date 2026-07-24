@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { User, Mail, Lock, Users, Hash, Sprout, AlertCircle, CheckCircle, Clock, Send } from 'lucide-react'
+import { User, Mail, Lock, Users, Hash, Sprout, AlertCircle, CheckCircle, Clock, Send, MailCheck } from 'lucide-react'
 
 const CORREO_APROBACION = 'luiso@rederac.com'
 
@@ -26,6 +26,7 @@ export default function Registro() {
   })
   const [error, setError] = useState('')
   const [exito, setExito] = useState(false)
+  const [requiereConfirmacion, setRequiereConfirmacion] = useState(false)
   const [cargando, setCargando] = useState(false)
   const [usuarioId, setUsuarioId] = useState(null)
 
@@ -59,14 +60,43 @@ export default function Registro() {
       setError(
         esModoDemo
           ? 'Esta es una vista previa — el registro se activa cuando se conecte la base de datos.'
-          : 'Ocurrió un error al registrarte. Verifica que el correo no esté ya registrado.'
+          : err.message?.includes('already registered') || err.message?.includes('already been registered')
+          ? 'Ese correo ya tiene una cuenta. Intenta iniciar sesión.'
+          : `Ocurrió un error al registrarte: ${err.message || 'intenta de nuevo.'}`
       )
+    } else if (!data?.session) {
+      // Requiere confirmar el correo antes de tener sesión activa
+      setRequiereConfirmacion(true)
     } else if (form.rol === 'facilitador') {
       setExito(true)
     } else {
       setExito(true)
       setTimeout(() => navigate('/dashboard'), 2500)
     }
+  }
+
+  if (requiereConfirmacion) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4">
+        <div className="text-center max-w-sm">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-full mb-4">
+            <MailCheck size={40} className="text-blue-600" />
+          </div>
+          <h2 className="text-xl font-bold text-morado mb-2">Confirma tu correo</h2>
+          <p className="text-gray-600 text-sm mb-2">
+            Te enviamos un link de confirmación a <strong>{form.correo}</strong>. Ábrelo para activar tu cuenta.
+          </p>
+          {form.rol === 'facilitador' && (
+            <p className="text-gray-500 text-xs mb-6">
+              Después de confirmar, tu cuenta de facilitador también necesitará ser autorizada por el equipo antes de poder crear grupos.
+            </p>
+          )}
+          <Link to="/login" className="text-morado text-sm font-semibold hover:underline">
+            Ya confirmé, iniciar sesión →
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   if (exito && form.rol === 'facilitador') {
