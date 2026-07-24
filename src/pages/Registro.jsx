@@ -260,7 +260,14 @@ export default function Registro() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
+          <p className="text-center text-xs text-gray-400 mt-4">
+            Al crear tu cuenta aceptas nuestro{' '}
+            <Link to="/privacidad" className="text-morado hover:underline">
+              Aviso de Privacidad
+            </Link>
+          </p>
+
+          <p className="text-center text-sm text-gray-500 mt-4">
             ¿Ya tienes cuenta?{' '}
             <Link to="/login" className="text-morado font-semibold hover:underline">
               Inicia sesión

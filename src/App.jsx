@@ -13,6 +13,7 @@ import InstructivoPage from './pages/InstructivoPage'
 import UnirseGrupo from './pages/UnirseGrupo'
 import MiResumen from './pages/MiResumen'
 import Admin from './pages/Admin'
+import AvisoPrivacidad from './pages/AvisoPrivacidad'
 
 function RutaProtegida({ children }) {
   const { user, loading } = useAuth()
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="/login" element={<Layout><Login /></Layout>} />
           <Route path="/registro" element={<Layout><Registro /></Layout>} />
           <Route path="/instructivo" element={<Layout><InstructivoPage /></Layout>} />
+          <Route path="/privacidad" element={<Layout><AvisoPrivacidad /></Layout>} />
           <Route
             path="/dashboard"
             element={<RutaProtegida><Layout><Dashboard /></Layout></RutaProtegida>}

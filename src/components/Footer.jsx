@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 export default function Footer() {
   return (
     <footer className="bg-morado-dark text-white mt-auto py-6 print:hidden">
@@ -20,6 +22,9 @@ export default function Footer() {
         <p className="text-xs text-purple-400 mt-3">
           Programa Sembrando Valores — Pastoral Social © {new Date().getFullYear()}
         </p>
+        <Link to="/privacidad" className="text-xs text-purple-300 hover:text-dorado transition-colors underline mt-1 inline-block">
+          Aviso de Privacidad
+        </Link>
       </div>
     </footer>
   )
