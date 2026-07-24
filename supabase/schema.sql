@@ -349,3 +349,29 @@ create policy "compromisos_write" on compromisos
   for insert with check (
     facilitador_id = auth.uid() and public.es_facilitador_aprobado()
   );
+
+-- -----------------------------------------------
+-- Tabla: retroalimentacion_sesiones
+-- El facilitador deja un comentario libre por grupo+módulo sobre cómo
+-- fue la sesión y/o sugerencias para la app. Solo el propio facilitador
+-- y el admin (luiso@rederac.com) pueden leerla.
+-- -----------------------------------------------
+create table if not exists retroalimentacion_sesiones (
+  id             uuid primary key default uuid_generate_v4(),
+  grupo_id       uuid references grupos(id) on delete cascade,
+  modulo_id      int references modulos(id) on delete cascade,
+  facilitador_id uuid references usuarios(id) on delete set null,
+  comentario     text not null,
+  created_at     timestamptz default now(),
+  unique (grupo_id, modulo_id)
+);
+
+alter table retroalimentacion_sesiones enable row level security;
+
+create policy "retroalimentacion_facilitador" on retroalimentacion_sesiones
+  for all using (
+    facilitador_id = auth.uid() and public.es_facilitador_aprobado()
+  );
+
+create policy "retroalimentacion_admin_read" on retroalimentacion_sesiones
+  for select using (public.es_admin());

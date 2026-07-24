@@ -8,13 +8,7 @@ import {
   CheckSquare, XCircle, ArrowLeft, PlusCircle, MessageCircle, AlertTriangle
 } from 'lucide-react'
 
-const PREGUNTAS_EVALUACION = [
-  '¿El tema del módulo fue trabajado de manera adecuada?',
-  '¿Los materiales utilizados fueron apropiados para el grupo?',
-  '¿El espacio donde se realizó la sesión fue adecuado?',
-  '¿La participación del grupo fue activa y significativa?',
-  '¿Hay observaciones o sugerencias para mejorar la próxima sesión?',
-]
+const PREGUNTA_RETROALIMENTACION = '¿Hay observaciones o sugerencias para mejorar la próxima sesión y/o para mejorar esta aplicación?'
 
 function generarCodigo() {
   return Math.random().toString(36).substring(2, 8).toUpperCase()
@@ -121,7 +115,8 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
   const [quizResultados, setQuizResultados] = useState([])
   const [compromisoTexto, setCompromisoTexto] = useState(['', '', ''])
   const [sesionForm, setSesionForm] = useState({ fecha: '', link: '' })
-  const [evaluacion, setEvaluacion] = useState(Array(5).fill(''))
+  const [retroalimentacion, setRetroalimentacion] = useState('')
+  const [guardandoRetro, setGuardandoRetro] = useState(false)
   const [tabActiva, setTabActiva] = useState('progreso')
   const [moduloActivoId, setModuloActivoId] = useState(grupo.modulo_activo_id || null)
   const [cargando, setCargando] = useState(true)
@@ -144,6 +139,14 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
   }
 
   async function cargarDatosModulo() {
+    const { data: retroData } = await supabase
+      .from('retroalimentacion_sesiones')
+      .select('comentario')
+      .eq('grupo_id', grupo.id)
+      .eq('modulo_id', moduloSeleccionado.id)
+      .maybeSingle()
+    setRetroalimentacion(retroData?.comentario || '')
+
     const ids = participantes.map(p => p.id)
     if (ids.length === 0) { setReflexiones([]); setCompromisosPersonales([]); setQuizResultados([]); return }
     const [refRes, compRes, quizRes] = await Promise.all([
@@ -198,6 +201,19 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
     }, { onConflict: 'grupo_id,modulo_id' })
     setGuardandoSesion(false)
     setExito('Sesión guardada.')
+    setTimeout(() => setExito(''), 4000)
+  }
+
+  async function guardarRetroalimentacion() {
+    if (!retroalimentacion.trim()) return
+    if (bloqueadoPorExploracion()) return
+    setGuardandoRetro(true)
+    await supabase.from('retroalimentacion_sesiones').upsert({
+      grupo_id: grupo.id, modulo_id: moduloSeleccionado.id,
+      facilitador_id: facilitadorId, comentario: retroalimentacion,
+    }, { onConflict: 'grupo_id,modulo_id' })
+    setGuardandoRetro(false)
+    setExito('¡Gracias por tu retroalimentación!')
     setTimeout(() => setExito(''), 4000)
   }
 
@@ -339,7 +355,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
             { key: 'reflexiones', label: 'Reflexiones y compromisos', icono: FileText },
             { key: 'sesion', label: 'Sesión', icono: Calendar },
             { key: 'compromisos', label: 'Compromisos del grupo', icono: Target },
-            { key: 'evaluacion', label: 'Evaluación', icono: Star },
+            { key: 'evaluacion', label: 'Retroalimentación', icono: Star },
           ].map(({ key, label, icono: Icono }) => (
             <button
               key={key}
@@ -534,36 +550,28 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
           </div>
         )}
 
-        {/* Tab: Evaluación */}
+        {/* Tab: Retroalimentación */}
         {tabActiva === 'evaluacion' && (
           <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-6">
             <h3 className="font-bold text-morado text-lg mb-4 flex items-center gap-2">
-              <Star size={18} className="text-dorado" /> Evaluación de la sesión
+              <Star size={18} className="text-dorado" /> Retroalimentación
             </h3>
-            <div className="space-y-5">
-              {PREGUNTAS_EVALUACION.map((pregunta, i) => (
-                <div key={i} className="border border-gray-100 rounded-xl p-4">
-                  <p className="font-semibold text-gray-800 text-sm mb-3">{i + 1}. {pregunta}</p>
-                  {i < 4 ? (
-                    <div className="flex gap-2">
-                      {['1','2','3','4','5'].map(n => (
-                        <button key={n} onClick={() => { const e = [...evaluacion]; e[i] = n; setEvaluacion(e) }}
-                          className={`w-10 h-10 rounded-xl border-2 text-sm font-bold transition-all ${evaluacion[i] === n ? 'border-morado bg-morado text-white' : 'border-gray-200 text-gray-500 hover:border-morado'}`}>
-                          {n}
-                        </button>
-                      ))}
-                      <span className="text-xs text-gray-400 self-center ml-1">(1=bajo, 5=excelente)</span>
-                    </div>
-                  ) : (
-                    <textarea value={evaluacion[i]} rows={3} placeholder="Escribe tus observaciones..."
-                      onChange={e => { const ev = [...evaluacion]; ev[i] = e.target.value; setEvaluacion(ev) }}
-                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-morado resize-none" />
-                  )}
-                </div>
-              ))}
+            <div className="border border-gray-100 rounded-xl p-4">
+              <p className="font-semibold text-gray-800 text-sm mb-3">{PREGUNTA_RETROALIMENTACION}</p>
+              <textarea
+                value={retroalimentacion}
+                rows={4}
+                placeholder="Escribe tus observaciones..."
+                onChange={e => setRetroalimentacion(e.target.value)}
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-morado resize-none"
+              />
             </div>
-            <button className="mt-5 w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors flex items-center justify-center gap-2">
-              <Save size={16} /> Guardar evaluación
+            <button
+              onClick={guardarRetroalimentacion}
+              disabled={!retroalimentacion.trim() || guardandoRetro}
+              className="mt-5 w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+            >
+              <Save size={16} /> {guardandoRetro ? 'Guardando...' : 'Guardar retroalimentación'}
             </button>
           </div>
         )}

@@ -2,18 +2,20 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase, esAdmin } from '../lib/supabase'
-import { ShieldCheck, CheckCircle, Clock, Mail, ShieldAlert } from 'lucide-react'
+import { MODULOS } from '../data/modulos'
+import { ShieldCheck, CheckCircle, Clock, Mail, ShieldAlert, MessageSquare, Users } from 'lucide-react'
 
 export default function Admin() {
   const { perfil } = useAuth()
   const [searchParams] = useSearchParams()
   const idDestacado = searchParams.get('id')
   const [pendientes, setPendientes] = useState([])
+  const [retros, setRetros] = useState([])
   const [cargando, setCargando] = useState(true)
   const [aprobando, setAprobando] = useState(null)
 
   useEffect(() => {
-    if (esAdmin(perfil)) cargarPendientes()
+    if (esAdmin(perfil)) { cargarPendientes(); cargarRetros() }
     else setCargando(false)
   }, [perfil])
 
@@ -27,6 +29,14 @@ export default function Admin() {
       .order('created_at')
     setPendientes(data || [])
     setCargando(false)
+  }
+
+  async function cargarRetros() {
+    const { data } = await supabase
+      .from('retroalimentacion_sesiones')
+      .select('*, grupos(nombre), usuarios(nombre, correo)')
+      .order('created_at', { ascending: false })
+    setRetros(data || [])
   }
 
   async function aprobar(id) {
@@ -97,6 +107,44 @@ export default function Admin() {
                 >
                   <CheckCircle size={15} /> {aprobando === p.id ? 'Aprobando...' : 'Aprobar'}
                 </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex items-center gap-3 mt-10 mb-6">
+          <div className="w-10 h-10 bg-dorado rounded-full flex items-center justify-center">
+            <MessageSquare size={20} className="text-morado" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-morado">Retroalimentación de facilitadores</h2>
+            <p className="text-gray-500 text-sm">Comentarios y sugerencias dejados por cada grupo.</p>
+          </div>
+        </div>
+
+        {retros.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-10 text-center text-gray-400">
+            <MessageSquare size={32} className="mx-auto mb-3 opacity-30" />
+            <p className="text-sm">Todavía no hay retroalimentación registrada.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {retros.map((r) => (
+              <div key={r.id} className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+                <div className="flex items-center gap-2 text-xs text-gray-400 mb-2 flex-wrap">
+                  <span className="flex items-center gap-1 font-semibold text-morado">
+                    <Users size={11} /> {r.grupos?.nombre || 'Grupo'}
+                  </span>
+                  <span>·</span>
+                  <span>Módulo {MODULOS.find(m => m.id === r.modulo_id)?.numero} — {MODULOS.find(m => m.id === r.modulo_id)?.titulo}</span>
+                  <span>·</span>
+                  <span>{r.usuarios?.nombre} ({r.usuarios?.correo})</span>
+                  <span>·</span>
+                  <span className="flex items-center gap-1">
+                    <Clock size={11} /> {new Date(r.created_at).toLocaleDateString('es-MX')}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-700 whitespace-pre-wrap">{r.comentario}</p>
               </div>
             ))}
           </div>
