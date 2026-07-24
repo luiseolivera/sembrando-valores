@@ -76,6 +76,7 @@ export function AuthProvider({ children }) {
       correo: 'demo@sembrando.org',
       rol,
       grupo_id: null,
+      aprobado: true,
     }
     setUser({ id: 'demo-user' })
     setPerfil(perfilDemo)
