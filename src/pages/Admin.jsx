@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase, esAdmin } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
-import { ShieldCheck, CheckCircle, Clock, Mail, ShieldAlert, MessageSquare, Users } from 'lucide-react'
+import { ShieldCheck, CheckCircle, Clock, Mail, ShieldAlert, MessageSquare, Users, XCircle, Trash2 } from 'lucide-react'
 
 export default function Admin() {
   const { perfil } = useAuth()
@@ -13,6 +13,8 @@ export default function Admin() {
   const [retros, setRetros] = useState([])
   const [cargando, setCargando] = useState(true)
   const [aprobando, setAprobando] = useState(null)
+  const [rechazando, setRechazando] = useState(null)
+  const [eliminando, setEliminando] = useState(null)
 
   useEffect(() => {
     if (esAdmin(perfil)) { cargarPendientes(); cargarRetros() }
@@ -44,6 +46,22 @@ export default function Admin() {
     await supabase.from('usuarios').update({ aprobado: true }).eq('id', id)
     setPendientes((prev) => prev.filter((p) => p.id !== id))
     setAprobando(null)
+  }
+
+  async function rechazar(id) {
+    if (!confirm('¿Rechazar esta solicitud? La cuenta seguirá existiendo como participante, pero perderá el rol de facilitador.')) return
+    setRechazando(id)
+    await supabase.from('usuarios').update({ rol: 'participante' }).eq('id', id)
+    setPendientes((prev) => prev.filter((p) => p.id !== id))
+    setRechazando(null)
+  }
+
+  async function eliminarRetro(id) {
+    if (!confirm('¿Eliminar esta retroalimentación? No se puede deshacer.')) return
+    setEliminando(id)
+    await supabase.from('retroalimentacion_sesiones').delete().eq('id', id)
+    setRetros((prev) => prev.filter((r) => r.id !== id))
+    setEliminando(null)
   }
 
   if (!esAdmin(perfil)) {
@@ -100,13 +118,22 @@ export default function Admin() {
                     <Clock size={11} /> Solicitado el {new Date(p.created_at).toLocaleDateString('es-MX')}
                   </p>
                 </div>
-                <button
-                  onClick={() => aprobar(p.id)}
-                  disabled={aprobando === p.id}
-                  className="flex-shrink-0 flex items-center gap-2 bg-morado text-white font-bold text-sm px-4 py-2.5 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-50"
-                >
-                  <CheckCircle size={15} /> {aprobando === p.id ? 'Aprobando...' : 'Aprobar'}
-                </button>
+                <div className="flex-shrink-0 flex items-center gap-2">
+                  <button
+                    onClick={() => rechazar(p.id)}
+                    disabled={rechazando === p.id || aprobando === p.id}
+                    className="flex items-center gap-1.5 bg-gray-100 text-gray-500 font-semibold text-sm px-3.5 py-2.5 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                  >
+                    <XCircle size={15} /> {rechazando === p.id ? 'Rechazando...' : 'Rechazar'}
+                  </button>
+                  <button
+                    onClick={() => aprobar(p.id)}
+                    disabled={aprobando === p.id || rechazando === p.id}
+                    className="flex items-center gap-2 bg-morado text-white font-bold text-sm px-4 py-2.5 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-50"
+                  >
+                    <CheckCircle size={15} /> {aprobando === p.id ? 'Aprobando...' : 'Aprobar'}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -131,18 +158,28 @@ export default function Admin() {
           <div className="space-y-3">
             {retros.map((r) => (
               <div key={r.id} className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
-                <div className="flex items-center gap-2 text-xs text-gray-400 mb-2 flex-wrap">
-                  <span className="flex items-center gap-1 font-semibold text-morado">
-                    <Users size={11} /> {r.grupos?.nombre || 'Grupo'}
-                  </span>
-                  <span>·</span>
-                  <span>Módulo {MODULOS.find(m => m.id === r.modulo_id)?.numero} — {MODULOS.find(m => m.id === r.modulo_id)?.titulo}</span>
-                  <span>·</span>
-                  <span>{r.usuarios?.nombre} ({r.usuarios?.correo})</span>
-                  <span>·</span>
-                  <span className="flex items-center gap-1">
-                    <Clock size={11} /> {new Date(r.created_at).toLocaleDateString('es-MX')}
-                  </span>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2 text-xs text-gray-400 mb-2 flex-wrap">
+                    <span className="flex items-center gap-1 font-semibold text-morado">
+                      <Users size={11} /> {r.grupos?.nombre || 'Grupo'}
+                    </span>
+                    <span>·</span>
+                    <span>Módulo {MODULOS.find(m => m.id === r.modulo_id)?.numero} — {MODULOS.find(m => m.id === r.modulo_id)?.titulo}</span>
+                    <span>·</span>
+                    <span>{r.usuarios?.nombre} ({r.usuarios?.correo})</span>
+                    <span>·</span>
+                    <span className="flex items-center gap-1">
+                      <Clock size={11} /> {new Date(r.created_at).toLocaleDateString('es-MX')}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => eliminarRetro(r.id)}
+                    disabled={eliminando === r.id}
+                    className="flex-shrink-0 text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50"
+                    title="Eliminar"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
                 <p className="text-sm text-gray-700 whitespace-pre-wrap">{r.comentario}</p>
               </div>

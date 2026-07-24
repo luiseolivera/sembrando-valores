@@ -375,3 +375,6 @@ create policy "retroalimentacion_facilitador" on retroalimentacion_sesiones
 
 create policy "retroalimentacion_admin_read" on retroalimentacion_sesiones
   for select using (public.es_admin());
+
+create policy "retroalimentacion_admin_delete" on retroalimentacion_sesiones
+  for delete using (public.es_admin());
