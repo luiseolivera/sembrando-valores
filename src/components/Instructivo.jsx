@@ -1,11 +1,13 @@
+import { Link } from 'react-router-dom'
 import {
   UserPlus, BookOpen, Headphones, CheckSquare, PenLine, Users, Target,
-  ClipboardList, Share2, Zap, FileText, Calendar, MessageSquare, Award, Printer, Star
+  ClipboardList, Share2, Zap, FileText, Calendar, MessageSquare, Award, Printer, Star,
+  UserCheck, Building2, ArrowRight
 } from 'lucide-react'
 
 const pasosParticipante = [
   { icono: UserPlus, texto: 'Regístrate con tu nombre y correo' },
-  { icono: Share2, texto: 'Únete a tu grupo con el código o link que te comparte el facilitador — te lleva directo al módulo activo' },
+  { icono: Share2, texto: '(Opcional) Si tu equipo tiene un código de grupo, únete con él — te lleva directo al módulo activo. Si no tienes uno, puedes recorrer los módulos por tu cuenta.' },
   { icono: Headphones, texto: 'Escucha el audio completo y marca que lo escuchaste' },
   { icono: CheckSquare, texto: 'Responde el quiz de comprensión (mínimo 70% para avanzar)' },
   { icono: PenLine, texto: 'Escribe tu reflexión personal y envíala' },
@@ -27,6 +29,7 @@ const pasosFacilitador = [
 
 export default function Instructivo() {
   return (
+    <div>
     <div className="grid md:grid-cols-2 gap-6">
       <div className="bg-white rounded-2xl shadow-md border border-purple-100 p-6">
         <div className="flex items-center gap-3 mb-5">
@@ -77,6 +80,36 @@ export default function Instructivo() {
           })}
         </ol>
       </div>
+    </div>
+
+    <div className="grid md:grid-cols-2 gap-6 mt-6">
+      <div className="bg-purple-50 rounded-2xl border border-purple-100 p-5 flex items-start gap-3">
+        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+          <UserCheck size={18} className="text-morado" />
+        </div>
+        <div>
+          <p className="font-bold text-morado text-sm mb-1">¿No tienes un equipo?</p>
+          <p className="text-xs text-gray-600 leading-relaxed">
+            Puedes usar la app de forma individual, sin unirte a ningún grupo ni depender de un facilitador.
+            Recorres los 14 módulos a tu propio ritmo y tu progreso se completa al registrar tus compromisos personales.
+          </p>
+        </div>
+      </div>
+      <div className="bg-yellow-50 rounded-2xl border border-yellow-100 p-5 flex items-start gap-3">
+        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+          <Building2 size={18} className="text-dorado-dark" />
+        </div>
+        <div>
+          <p className="font-bold text-morado text-sm mb-1">¿Eres una empresa?</p>
+          <p className="text-xs text-gray-600 leading-relaxed mb-2">
+            Lleva el programa a todos los equipos de tu organización, con reportes agregados, constancias y facturación disponible.
+          </p>
+          <Link to="/empresas" className="text-xs font-semibold text-morado hover:underline inline-flex items-center gap-1">
+            Conoce nuestra propuesta empresarial <ArrowRight size={12} />
+          </Link>
+        </div>
+      </div>
+    </div>
     </div>
   )
 }
