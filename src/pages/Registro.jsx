@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { User, Mail, Lock, Users, Hash, Sprout, AlertCircle, CheckCircle, Clock, Send } from 'lucide-react'
 
-const CORREO_APROBACION = 'info@misionerosmt.org'
+const CORREO_APROBACION = 'luiso@rederac.com'
 
 function mailtoSolicitud(nombre, correo, usuarioId) {
   const linkAprobacion = `${window.location.origin}/admin${usuarioId ? `?id=${usuarioId}` : ''}`

@@ -13,7 +13,7 @@ export function esPerfilExploracion(perfil) {
 }
 
 // Correo con permiso para aprobar solicitudes de facilitador desde /admin
-export const ADMIN_EMAIL = 'info@misionerosmt.org'
+export const ADMIN_EMAIL = 'luiso@rederac.com'
 
 export function esAdmin(perfil) {
   return perfil?.correo === ADMIN_EMAIL
