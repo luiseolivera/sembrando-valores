@@ -174,13 +174,24 @@ create policy "usuarios_grupo_facilitador" on usuarios
   );
 
 -- Admin (luiso@rederac.com): ve y aprueba solicitudes de facilitador
-create policy "usuarios_admin_write" on usuarios
-  for all using (
-    exists (
-      select 1 from usuarios admin
-      where admin.id = auth.uid() and admin.correo = 'luiso@rederac.com'
-    )
+-- Usa una función security definer para evitar que la política de "usuarios"
+-- se consulte a sí misma (Postgres no lo permite: "infinite recursion
+-- detected in policy for relation").
+create or replace function public.es_admin()
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from usuarios where id = auth.uid() and correo = 'luiso@rederac.com'
   );
+$$;
+
+drop policy if exists "usuarios_admin_write" on usuarios;
+create policy "usuarios_admin_write" on usuarios
+  for all using (public.es_admin());
 
 -- grupos: cualquier autenticado puede leer; solo el facilitador modifica
 create policy "grupos_read" on grupos
