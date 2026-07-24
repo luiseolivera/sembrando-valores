@@ -51,7 +51,7 @@ export default function Header() {
               )}
               {esAdmin(perfil) && (
                 <Link to="/admin" className="flex items-center gap-1 text-gray-600 hover:text-morado transition-colors text-sm font-medium">
-                  <ShieldCheck size={15} /> Aprobaciones
+                  <ShieldCheck size={15} /> Aprobaciones/Retroalimentación
                 </Link>
               )}
               <div className="flex items-center gap-3 border-l border-gray-200 pl-6">
@@ -121,7 +121,7 @@ export default function Header() {
             <Link to="/facilitador" className="block text-gray-700 text-sm py-1" onClick={() => setMenuAbierto(false)}>Panel Facilitador</Link>
           )}
           {esAdmin(perfil) && (
-            <Link to="/admin" className="block text-gray-700 text-sm py-1" onClick={() => setMenuAbierto(false)}>Aprobaciones</Link>
+            <Link to="/admin" className="block text-gray-700 text-sm py-1" onClick={() => setMenuAbierto(false)}>Aprobaciones/Retroalimentación</Link>
           )}
           <button onClick={handleLogout} className="flex items-center gap-2 text-morado text-sm py-1">
             <LogOut size={16} /> Cerrar sesión

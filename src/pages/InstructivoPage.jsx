@@ -26,11 +26,15 @@ const FAQS = [
   },
   {
     pregunta: '¿Cuál es el papel del facilitador?',
-    respuesta: 'El facilitador es un guía, no un expositor. Desde la plataforma puede crear uno o varios grupos —cada uno con su propio código e invitación—, compartir el link de registro con los participantes, activar el módulo que trabajará el grupo, revisar el progreso y las reflexiones escritas antes de la sesión, agendar el enlace de reunión (Google Meet o Zoom), y registrar los compromisos grupales al finalizar.',
+    respuesta: 'El facilitador es un guía, no un expositor. Su cuenta debe ser aprobada por el equipo de MMT antes de poder operar. Una vez aprobado, desde la plataforma puede crear uno o varios grupos —cada uno con su propio código e invitación—, compartir el link con los participantes (por la app o WhatsApp), activar el módulo que trabajará el grupo, revisar el progreso y las reflexiones y compromisos de cada participante, agendar el enlace de reunión (Zoom, Google Meet o Teams), registrar los compromisos grupales al finalizar, y dejar retroalimentación sobre la sesión.',
+  },
+  {
+    pregunta: '¿Cómo se aprueba a un nuevo facilitador?',
+    respuesta: 'Al registrarse eligiendo el rol de Facilitador, la cuenta queda creada pero pendiente de aprobación. La app le ofrece enviar un correo de solicitud al equipo de MMT, quien la aprueba desde una sección administrativa. Mientras esté pendiente, la persona puede usar la app como participante, pero no puede crear ni gestionar grupos.',
   },
   {
     pregunta: '¿Cómo me entero de cuándo y dónde es la sesión grupal?',
-    respuesta: 'El facilitador agenda la sesión desde su panel: elige la fecha, hora y pega el enlace de Google Meet o Zoom. En cuanto lo guarda, aparece automáticamente en tu pantalla principal (Inicio) una tarjeta azul con la fecha, hora y un botón "Entrar" que te lleva directo a la videollamada. No necesitas pedirle el link a nadie — solo abre la app y estará ahí.',
+    respuesta: 'El facilitador agenda la sesión desde su panel: elige la fecha, hora y pega el enlace de Zoom, Google Meet o Teams. En cuanto lo guarda, aparece automáticamente en tu pantalla principal (Inicio) una tarjeta con la fecha y hora. El botón para entrar se habilita solo cuando terminas el quiz y tu reflexión de ese módulo — mientras tanto lo verás bloqueado.',
   },
   {
     pregunta: '¿Qué son los compromisos grupales?',

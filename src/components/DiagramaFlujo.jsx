@@ -1,16 +1,16 @@
 import {
-  UserPlus, BookOpen, Headphones, CheckSquare, PenLine,
+  UserPlus, Share2, Headphones, CheckSquare, PenLine,
   Users, Target, ChevronRight, ArrowRight
 } from 'lucide-react'
 
 const pasos = [
   { icono: UserPlus, titulo: 'Registro', color: 'bg-purple-700', num: 1 },
-  { icono: BookOpen, titulo: 'Selecciona Módulo', color: 'bg-purple-600', num: 2 },
+  { icono: Share2, titulo: 'Únete al Grupo', color: 'bg-purple-600', num: 2 },
   { icono: Headphones, titulo: 'Escucha el Audio', color: 'bg-purple-500', num: 3 },
   { icono: CheckSquare, titulo: 'Quiz', color: 'bg-yellow-500', num: 4 },
   { icono: PenLine, titulo: 'Reflexión Personal', color: 'bg-yellow-600', num: 5 },
-  { icono: Users, titulo: 'Sesión Grupal', color: 'bg-purple-700', num: 6 },
-  { icono: Target, titulo: 'Compromisos', color: 'bg-purple-800', num: 7 },
+  { icono: Target, titulo: 'Compromisos', color: 'bg-purple-800', num: 6 },
+  { icono: Users, titulo: 'Sesión Grupal', color: 'bg-purple-700', num: 7 },
   { icono: ArrowRight, titulo: 'Siguiente Módulo', color: 'bg-morado', num: 8 },
 ]
 
