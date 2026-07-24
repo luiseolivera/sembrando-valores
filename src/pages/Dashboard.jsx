@@ -9,6 +9,8 @@ export default function Dashboard() {
   const { perfil } = useAuth()
   const [progresos, setProgresos] = useState({})
   const [compromisos, setCompromisos] = useState([])
+  const [compromisosPersonalesCount, setCompromisosPersonalesCount] = useState(0)
+  const [banneroculto, setBanneroculto] = useState(() => localStorage.getItem('svd_oculto_banner_grupo') === '1')
   const [moduloActivoId, setModuloActivoId] = useState(null)
   const [sesionActiva, setSesionActiva] = useState(null)
   const [cargando, setCargando] = useState(true)
@@ -28,6 +30,7 @@ export default function Dashboard() {
     const queries = [
       supabase.from('quiz_respuestas').select('modulo_id, aprobado').eq('usuario_id', perfil.id),
       supabase.from('reflexiones').select('modulo_id').eq('usuario_id', perfil.id),
+      supabase.from('compromisos_personales').select('modulo_id').eq('usuario_id', perfil.id),
     ]
 
     if (perfil.grupo_id) {
@@ -38,22 +41,25 @@ export default function Dashboard() {
       )
     }
 
-    const [quizRes, reflexRes, sesionRes, compRes, grupoRes] = await Promise.all(queries)
+    const [quizRes, reflexRes, compPersRes, sesionRes, compRes, grupoRes] = await Promise.all(queries)
 
     const mapa = {}
     MODULOS.forEach((m) => {
       const quiz = quizRes.data?.find((r) => r.modulo_id === m.id)
       const reflex = reflexRes.data?.some((r) => r.modulo_id === m.id)
       const sesion = sesionRes?.data?.some((r) => r.modulo_id === m.id)
+      const compPersonal = compPersRes.data?.some((r) => r.modulo_id === m.id)
       mapa[m.id] = {
-        video: quiz?.aprobado || reflex || sesion,
+        video: quiz?.aprobado || reflex || sesion || compPersonal,
         quiz: quiz?.aprobado,
         reflexion: reflex,
         sesion: sesion,
+        compromisos: compPersonal,
       }
     })
     setProgresos(mapa)
     setCompromisos(compRes?.data || [])
+    setCompromisosPersonalesCount(compPersRes.data?.length || 0)
     if (grupoRes?.data?.modulo_activo_id) {
       const activoId = grupoRes.data.modulo_activo_id
       setModuloActivoId(activoId)
@@ -104,13 +110,20 @@ export default function Dashboard() {
     if (!p.video) return 'video'
     if (!p.quiz) return 'quiz'
     if (!p.reflexion) return 'reflexion'
-    if (!p.sesion) return 'sesion'
+    // Sin grupo (modo individual) no hay sesión grupal: el módulo se
+    // completa al registrar los compromisos personales.
+    if (perfil?.grupo_id) {
+      if (!p.sesion) return 'sesion'
+    } else {
+      if (!p.compromisos) return 'compromisos'
+    }
     return 'completado'
   }
 
   function porciento(moduloId) {
     const p = progresos[moduloId] || {}
-    const completados = [p.video, p.quiz, p.reflexion, p.sesion].filter(Boolean).length
+    const cuartoPaso = perfil?.grupo_id ? p.sesion : p.compromisos
+    const completados = [p.video, p.quiz, p.reflexion, cuartoPaso].filter(Boolean).length
     return Math.round((completados / 4) * 100)
   }
 
@@ -176,15 +189,15 @@ export default function Dashboard() {
         )}
 
         {/* Banner: unirse a grupo (participante sin grupo) */}
-        {perfil?.rol === 'participante' && !perfil?.grupo_id && (
+        {perfil?.rol === 'participante' && !perfil?.grupo_id && !banneroculto && (
           <div className="bg-white rounded-2xl border border-purple-200 shadow-sm p-5 mb-6">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <Users size={20} className="text-morado" />
               </div>
               <div>
-                <p className="font-bold text-morado text-sm">Únete a tu grupo</p>
-                <p className="text-xs text-gray-500">Pídele el código de 6 letras a tu facilitador</p>
+                <p className="font-bold text-morado text-sm">¿Tu equipo tiene un código de grupo?</p>
+                <p className="text-xs text-gray-500">Pídele el código de 6 letras a tu facilitador — es opcional, también puedes usar la app por tu cuenta</p>
               </div>
             </div>
             <div className="flex gap-2">
@@ -207,6 +220,12 @@ export default function Dashboard() {
             </div>
             {errorUnirse && <p className="text-red-500 text-xs mt-2">{errorUnirse}</p>}
             {exitoUnirse && <p className="text-green-600 text-xs mt-2 font-semibold">{exitoUnirse}</p>}
+            <button
+              onClick={() => { localStorage.setItem('svd_oculto_banner_grupo', '1'); setBanneroculto(true) }}
+              className="text-xs text-gray-400 hover:text-gray-600 mt-3 underline"
+            >
+              No tengo grupo, prefiero usarlo por mi cuenta — no volver a mostrar
+            </button>
           </div>
         )}
 
@@ -285,8 +304,12 @@ export default function Dashboard() {
             <p className="text-xs text-gray-500 mt-1 font-medium">Por completar</p>
           </div>
           <div className="bg-white rounded-2xl p-5 border border-purple-100 shadow-sm text-center">
-            <div className="text-3xl font-extrabold text-morado">{compromisos.length}</div>
-            <p className="text-xs text-gray-500 mt-1 font-medium">Compromisos del grupo</p>
+            <div className="text-3xl font-extrabold text-morado">
+              {perfil?.grupo_id ? compromisos.length : compromisosPersonalesCount}
+            </div>
+            <p className="text-xs text-gray-500 mt-1 font-medium">
+              {perfil?.grupo_id ? 'Compromisos del grupo' : 'Compromisos personales'}
+            </p>
           </div>
         </div>
 
@@ -342,6 +365,7 @@ export default function Dashboard() {
                       {paso === 'quiz' && '📝 Hacer quiz'}
                       {paso === 'reflexion' && '✍️ Reflexionar'}
                       {paso === 'sesion' && '👥 Sesión grupal'}
+                      {paso === 'compromisos' && '🎯 Registrar compromisos'}
                     </span>
                   )}
                   {completado && (

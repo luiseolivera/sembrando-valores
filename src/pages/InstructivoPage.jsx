@@ -45,6 +45,10 @@ const FAQS = [
     respuesta: 'Tu facilitador creará el grupo y te compartirá un link de invitación (ej. s-valores.vercel.app/unirse/AB12CD) o un código de 6 caracteres. Si abres el link, solo tienes que registrarte y quedas unido automáticamente. Si te dan el código, ingrésalo en el campo que aparece en tu pantalla principal después de registrarte.',
   },
   {
+    pregunta: '¿Puedo usar la app sin pertenecer a un equipo o grupo?',
+    respuesta: 'Sí. Puedes registrarte como participante y usar la plataforma de forma completamente individual, sin unirte a ningún grupo ni depender de un facilitador. Recorres los 14 módulos a tu propio ritmo y en el orden que prefieras: escuchas el contenido, haces el quiz, escribes tu reflexión personal y registras tus compromisos personales. En este modo no hay sesión grupal ni compromisos grupales — cada módulo se marca como completado en cuanto registras tus compromisos personales. Puedes imprimir todas tus reflexiones y compromisos cuando quieras desde "Mis reflexiones y compromisos" en tu pantalla principal. Si más adelante consigues un código de grupo, puedes unirte en cualquier momento sin perder tu progreso.',
+  },
+  {
     pregunta: '¿Qué necesito para usar la plataforma digital?',
     respuesta: 'Solo necesitas un dispositivo con acceso a internet (computadora, tablet o celular), tu correo electrónico para registrarte, y el código de grupo que te comparte tu facilitador. Una vez dentro, el facilitador activa el módulo que trabajarán y tú puedes seguir los pasos desde tu cuenta.',
   },
