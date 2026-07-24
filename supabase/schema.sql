@@ -307,15 +307,30 @@ create policy "compromisos_personales_facilitador" on compromisos_personales
 -- cualquier usuario autenticado (aunque fuera participante) podía
 -- crear un grupo llamando directo a la API de Supabase, sin pasar
 -- por la UI. Ejecutar este bloque reemplaza esas 3 políticas.
+--
+-- Usa una función security definer (en vez de un subquery directo a
+-- "usuarios") porque estas políticas viven en grupos/sesiones_grupales/
+-- compromisos, y "usuarios" tiene su propia política que consulta
+-- "grupos" (usuarios_grupo_facilitador) -- un subquery directo aquí
+-- forma un ciclo de dos tablas que Postgres rechaza con "infinite
+-- recursion detected in policy for relation".
 -- -----------------------------------------------
+create or replace function public.es_facilitador_aprobado()
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from usuarios where id = auth.uid() and rol = 'facilitador' and aprobado = true
+  );
+$$;
+
 drop policy if exists "grupos_facilitador_write" on grupos;
 create policy "grupos_facilitador_write" on grupos
   for all using (
-    facilitador_id = auth.uid()
-    and exists (
-      select 1 from usuarios u
-      where u.id = auth.uid() and u.rol = 'facilitador' and u.aprobado = true
-    )
+    facilitador_id = auth.uid() and public.es_facilitador_aprobado()
   );
 
 drop policy if exists "sesiones_write" on sesiones_grupales;
@@ -323,19 +338,14 @@ create policy "sesiones_write" on sesiones_grupales
   for all using (
     exists (
       select 1 from grupos g
-      join usuarios u on u.id = auth.uid()
       where g.id = sesiones_grupales.grupo_id
         and g.facilitador_id = auth.uid()
-        and u.rol = 'facilitador' and u.aprobado = true
     )
+    and public.es_facilitador_aprobado()
   );
 
 drop policy if exists "compromisos_write" on compromisos;
 create policy "compromisos_write" on compromisos
   for insert with check (
-    facilitador_id = auth.uid()
-    and exists (
-      select 1 from usuarios u
-      where u.id = auth.uid() and u.rol = 'facilitador' and u.aprobado = true
-    )
+    facilitador_id = auth.uid() and public.es_facilitador_aprobado()
   );
