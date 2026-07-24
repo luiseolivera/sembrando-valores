@@ -65,13 +65,13 @@ export default function Bienvenida() {
               onClick={() => verDemo('participante')}
               className="inline-flex items-center justify-center gap-2 bg-white/10 text-white text-sm font-medium px-6 py-2 rounded-full hover:bg-white/20 transition-all border border-white/20"
             >
-              <Eye size={15} /> Ver como participante
+              <Eye size={15} /> Demo como participante
             </button>
             <button
               onClick={() => verDemo('facilitador')}
               className="inline-flex items-center justify-center gap-2 bg-white/10 text-white text-sm font-medium px-6 py-2 rounded-full hover:bg-white/20 transition-all border border-white/20"
             >
-              <Eye size={15} /> Ver como facilitador
+              <Eye size={15} /> Demo como facilitador
             </button>
           </div>
         </div>

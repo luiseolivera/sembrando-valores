@@ -111,13 +111,13 @@ export default function Login() {
                 onClick={() => verDemo('participante')}
                 className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold text-morado border border-purple-200 py-2.5 rounded-xl hover:bg-purple-50 transition-colors"
               >
-                <Eye size={14} /> Ver como participante
+                <Eye size={14} /> Demo como participante
               </button>
               <button
                 onClick={() => verDemo('facilitador')}
                 className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold text-dorado-dark border border-yellow-200 py-2.5 rounded-xl hover:bg-yellow-50 transition-colors"
               >
-                <Eye size={14} /> Ver como facilitador
+                <Eye size={14} /> Demo como facilitador
               </button>
             </div>
           </div>
