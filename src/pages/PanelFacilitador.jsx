@@ -15,7 +15,7 @@ function generarCodigo() {
 }
 
 // ─── Vista: lista de grupos ───────────────────────────────────────────────────
-function ListaGrupos({ grupos, onSeleccionar, onCrear, creando, nombreNuevo, setNombreNuevo, errorCrear }) {
+function ListaGrupos({ grupos, reporte, onSeleccionar, onCrear, creando, nombreNuevo, setNombreNuevo, errorCrear }) {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-3xl mx-auto px-4">
@@ -31,6 +31,23 @@ function ListaGrupos({ grupos, onSeleccionar, onCrear, creando, nombreNuevo, set
             <PlusCircle size={16} /> Nuevo grupo
           </button>
         </div>
+
+        {reporte && grupos.length > 0 && (
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm text-center">
+              <div className="text-2xl font-extrabold text-morado">{reporte.participantes}</div>
+              <p className="text-xs text-gray-500 mt-0.5 font-medium">Participantes totales</p>
+            </div>
+            <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm text-center">
+              <div className="text-2xl font-extrabold text-morado">{reporte.quizAprobados}</div>
+              <p className="text-xs text-gray-500 mt-0.5 font-medium">Quizzes aprobados</p>
+            </div>
+            <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm text-center">
+              <div className="text-2xl font-extrabold text-morado">{reporte.compromisosCumplidos}</div>
+              <p className="text-xs text-gray-500 mt-0.5 font-medium">Compromisos cumplidos</p>
+            </div>
+          </div>
+        )}
 
         {/* Form crear grupo */}
         {creando && (
@@ -128,6 +145,8 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
   const [reflexionesExpandidas, setReflexionesExpandidas] = useState({})
   const [copiado, setCopiado] = useState(false)
   const [copiadoLink, setCopiadoLink] = useState(false)
+  const [logoUrl, setLogoUrl] = useState(grupo.logo_empresa_url || '')
+  const [guardandoLogo, setGuardandoLogo] = useState(false)
 
   useEffect(() => { cargarParticipantes() }, [])
   useEffect(() => { if (participantes.length >= 0) cargarDatosModulo() }, [moduloSeleccionado, participantes])
@@ -214,6 +233,16 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
     }, { onConflict: 'grupo_id,modulo_id' })
     setGuardandoRetro(false)
     setExito('¡Gracias por tu retroalimentación!')
+    setTimeout(() => setExito(''), 4000)
+  }
+
+  async function guardarLogo() {
+    if (bloqueadoPorExploracion()) return
+    setGuardandoLogo(true)
+    await supabase.from('grupos').update({ logo_empresa_url: logoUrl.trim() || null }).eq('id', grupo.id)
+    onActualizarGrupo({ ...grupo, logo_empresa_url: logoUrl.trim() || null })
+    setGuardandoLogo(false)
+    setExito('Logo actualizado.')
     setTimeout(() => setExito(''), 4000)
   }
 
@@ -310,6 +339,31 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
               </button>
             </div>
             <p className="text-xs text-gray-400 mt-2">Quien abra el link se registra y queda unido automáticamente</p>
+          </div>
+        </div>
+
+        {/* Logo de la empresa (marca blanca ligera) */}
+        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5 mb-6">
+          <p className="text-xs text-gray-400 font-medium mb-2">Logo de la empresa (opcional)</p>
+          <p className="text-xs text-gray-400 mb-3">Pega el link de una imagen — se mostrará junto al saludo de los participantes de este grupo.</p>
+          <div className="flex items-center gap-3">
+            {logoUrl && (
+              <img src={logoUrl} alt="Logo" className="w-10 h-10 rounded-lg object-contain border border-gray-100 flex-shrink-0" onError={(e) => { e.target.style.display = 'none' }} />
+            )}
+            <input
+              type="url"
+              value={logoUrl}
+              onChange={(e) => setLogoUrl(e.target.value)}
+              placeholder="https://tuempresa.com/logo.png"
+              className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-morado"
+            />
+            <button
+              onClick={guardarLogo}
+              disabled={guardandoLogo}
+              className="flex-shrink-0 bg-morado text-white font-bold px-4 py-2.5 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 text-sm"
+            >
+              {guardandoLogo ? '...' : 'Guardar'}
+            </button>
           </div>
         </div>
 
@@ -584,6 +638,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
 export default function PanelFacilitador() {
   const { perfil } = useAuth()
   const [grupos, setGrupos] = useState([])
+  const [reporte, setReporte] = useState(null)
   const [grupoActivo, setGrupoActivo] = useState(null)
   const [cargando, setCargando] = useState(true)
   const [creando, setCreando] = useState(false)
@@ -602,7 +657,21 @@ export default function PanelFacilitador() {
       return { ...g, participantes_count: count || 0 }
     }))
     setGrupos(conConteo)
+    await cargarReporte(gs.map(g => g.id))
     setCargando(false)
+  }
+
+  // Reporte agregado (útil para mostrarle avance a la empresa)
+  async function cargarReporte(grupoIds) {
+    if (!grupoIds.length) { setReporte({ participantes: 0, quizAprobados: 0, compromisosCumplidos: 0 }); return }
+    const { data: usuariosGrupo } = await supabase.from('usuarios').select('id').in('grupo_id', grupoIds)
+    const ids = (usuariosGrupo || []).map(u => u.id)
+    if (!ids.length) { setReporte({ participantes: 0, quizAprobados: 0, compromisosCumplidos: 0 }); return }
+    const [{ count: quizAprobados }, { count: compromisosCumplidos }] = await Promise.all([
+      supabase.from('quiz_respuestas').select('*', { count: 'exact', head: true }).in('usuario_id', ids).eq('aprobado', true),
+      supabase.from('compromisos_personales').select('*', { count: 'exact', head: true }).in('usuario_id', ids).eq('cumplido', true),
+    ])
+    setReporte({ participantes: ids.length, quizAprobados: quizAprobados || 0, compromisosCumplidos: compromisosCumplidos || 0 })
   }
 
   async function manejarCrear() {
@@ -664,6 +733,7 @@ export default function PanelFacilitador() {
   return (
     <ListaGrupos
       grupos={grupos}
+      reporte={reporte}
       onSeleccionar={setGrupoActivo}
       onCrear={manejarCrear}
       creando={creando}

@@ -20,6 +20,7 @@ create table if not exists grupos (
 -- Migración: agregar columnas si la tabla ya existe
 alter table grupos add column if not exists codigo text unique;
 alter table grupos add column if not exists modulo_activo_id int;
+alter table grupos add column if not exists logo_empresa_url text;
 -- Generar código para grupos existentes sin código
 update grupos set codigo = upper(substring(replace(id::text, '-', ''), 1, 6)) where codigo is null;
 
@@ -207,6 +208,16 @@ create policy "modulos_read" on modulos
 -- quiz_respuestas: cada usuario ve/edita las suyas; facilitador ve las de su grupo
 create policy "quiz_self" on quiz_respuestas
   for all using (usuario_id = auth.uid());
+
+create policy "quiz_facilitador" on quiz_respuestas
+  for select using (
+    exists (
+      select 1 from usuarios u
+      join grupos g on g.id = u.grupo_id
+      where u.id = quiz_respuestas.usuario_id
+        and g.facilitador_id = auth.uid()
+    )
+  );
 
 -- reflexiones: cada usuario ve/edita las suyas; facilitadores ven las de su grupo
 create policy "reflexiones_self" on reflexiones

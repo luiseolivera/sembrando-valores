@@ -22,9 +22,15 @@ export default function Footer() {
         <p className="text-xs text-purple-400 mt-3">
           Programa Sembrando Valores — Pastoral Social © {new Date().getFullYear()}
         </p>
-        <Link to="/privacidad" className="text-xs text-purple-300 hover:text-dorado transition-colors underline mt-1 inline-block">
-          Aviso de Privacidad
-        </Link>
+        <div className="mt-1 flex items-center justify-center gap-3">
+          <Link to="/privacidad" className="text-xs text-purple-300 hover:text-dorado transition-colors underline">
+            Aviso de Privacidad
+          </Link>
+          <span className="text-xs text-purple-400">·</span>
+          <Link to="/empresas" className="text-xs text-purple-300 hover:text-dorado transition-colors underline">
+            Para empresas
+          </Link>
+        </div>
       </div>
     </footer>
   )

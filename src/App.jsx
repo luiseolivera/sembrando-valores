@@ -14,6 +14,8 @@ import UnirseGrupo from './pages/UnirseGrupo'
 import MiResumen from './pages/MiResumen'
 import Admin from './pages/Admin'
 import AvisoPrivacidad from './pages/AvisoPrivacidad'
+import Constancia from './pages/Constancia'
+import ParaEmpresas from './pages/ParaEmpresas'
 
 function RutaProtegida({ children }) {
   const { user, loading } = useAuth()
@@ -64,6 +66,11 @@ export default function App() {
           <Route path="/registro" element={<Layout><Registro /></Layout>} />
           <Route path="/instructivo" element={<Layout><InstructivoPage /></Layout>} />
           <Route path="/privacidad" element={<Layout><AvisoPrivacidad /></Layout>} />
+          <Route path="/empresas" element={<Layout><ParaEmpresas /></Layout>} />
+          <Route
+            path="/constancia"
+            element={<RutaProtegida><Layout><Constancia /></Layout></RutaProtegida>}
+          />
           <Route
             path="/dashboard"
             element={<RutaProtegida><Layout><Dashboard /></Layout></RutaProtegida>}

@@ -10,6 +10,7 @@ export default function Dashboard() {
   const [progresos, setProgresos] = useState({})
   const [compromisos, setCompromisos] = useState([])
   const [compromisosPersonalesCount, setCompromisosPersonalesCount] = useState(0)
+  const [logoEmpresa, setLogoEmpresa] = useState(null)
   const [banneroculto, setBanneroculto] = useState(() => localStorage.getItem('svd_oculto_banner_grupo') === '1')
   const [moduloActivoId, setModuloActivoId] = useState(null)
   const [sesionActiva, setSesionActiva] = useState(null)
@@ -37,7 +38,7 @@ export default function Dashboard() {
       queries.push(
         supabase.from('sesiones_grupales').select('modulo_id, fecha, link_reunion').eq('grupo_id', perfil.grupo_id),
         supabase.from('compromisos').select('*').eq('grupo_id', perfil.grupo_id).order('created_at', { ascending: false }).limit(6),
-        supabase.from('grupos').select('modulo_activo_id').eq('id', perfil.grupo_id).maybeSingle(),
+        supabase.from('grupos').select('modulo_activo_id, logo_empresa_url').eq('id', perfil.grupo_id).maybeSingle(),
       )
     }
 
@@ -60,6 +61,7 @@ export default function Dashboard() {
     setProgresos(mapa)
     setCompromisos(compRes?.data || [])
     setCompromisosPersonalesCount(compPersRes.data?.length || 0)
+    if (grupoRes?.data?.logo_empresa_url) setLogoEmpresa(grupoRes.data.logo_empresa_url)
     if (grupoRes?.data?.modulo_activo_id) {
       const activoId = grupoRes.data.modulo_activo_id
       setModuloActivoId(activoId)
@@ -149,13 +151,18 @@ export default function Dashboard() {
       <div className="max-w-5xl mx-auto px-4">
         {/* Saludo */}
         <div className="flex items-start justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-morado">
-              Hola, {perfil?.nombre?.split(' ')[0]} 👋
-            </h1>
-            <p className="text-gray-500 text-sm mt-1">
-              {perfil?.rol === 'facilitador' ? 'Panel de facilitador' : 'Continúa tu formación en valores'}
-            </p>
+          <div className="flex items-center gap-3">
+            {logoEmpresa && (
+              <img src={logoEmpresa} alt="Logo de tu empresa" className="w-11 h-11 rounded-xl object-contain border border-gray-200 bg-white flex-shrink-0" onError={(e) => { e.target.style.display = 'none' }} />
+            )}
+            <div>
+              <h1 className="text-2xl font-bold text-morado">
+                Hola, {perfil?.nombre?.split(' ')[0]} 👋
+              </h1>
+              <p className="text-gray-500 text-sm mt-1">
+                {perfil?.rol === 'facilitador' ? 'Panel de facilitador' : 'Continúa tu formación en valores'}
+              </p>
+            </div>
           </div>
           {perfil?.rol === 'participante' && (
             <Link
@@ -166,6 +173,25 @@ export default function Dashboard() {
             </Link>
           )}
         </div>
+
+        {/* Banner: completó los 14 módulos */}
+        {perfil?.rol === 'participante' && totalCompletados === MODULOS.length && (
+          <div className="bg-morado rounded-2xl p-4 mb-6 flex items-center gap-4">
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+              <Trophy size={20} className="text-dorado" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-purple-200 text-xs font-medium">¡Felicidades!</p>
+              <p className="text-white font-bold text-sm">Completaste los 14 valores del programa</p>
+            </div>
+            <Link
+              to="/constancia"
+              className="flex-shrink-0 bg-dorado text-morado font-bold text-xs px-4 py-2 rounded-xl hover:bg-yellow-400 transition-colors"
+            >
+              Ver constancia
+            </Link>
+          </div>
+        )}
 
         {/* Banner: facilitador pendiente de aprobación */}
         {perfil?.rol === 'facilitador' && !perfil?.aprobado && (

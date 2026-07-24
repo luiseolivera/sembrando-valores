@@ -74,6 +74,11 @@ export default function Bienvenida() {
               <Eye size={15} /> Demo como facilitador
             </button>
           </div>
+          <div className="mt-4">
+            <Link to="/empresas" className="text-purple-300 text-sm hover:text-white hover:underline transition-colors">
+              ¿Eres una empresa? Conoce nuestra propuesta →
+            </Link>
+          </div>
         </div>
       </section>
 
