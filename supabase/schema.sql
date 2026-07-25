@@ -21,8 +21,14 @@ create table if not exists grupos (
 alter table grupos add column if not exists codigo text unique;
 alter table grupos add column if not exists modulo_activo_id int;
 alter table grupos add column if not exists logo_empresa_url text;
+alter table grupos add column if not exists es_empresa boolean not null default false;
 -- Generar código para grupos existentes sin código
 update grupos set codigo = upper(substring(replace(id::text, '-', ''), 1, 6)) where codigo is null;
+
+-- Candado: solo un grupo marcado como empresa (por el admin) puede tener logo
+alter table grupos drop constraint if exists grupos_logo_solo_empresa;
+alter table grupos add constraint grupos_logo_solo_empresa
+  check (logo_empresa_url is null or es_empresa = true);
 
 -- -----------------------------------------------
 -- Tabla: usuarios (perfil extendido de auth.users)
@@ -200,6 +206,10 @@ create policy "grupos_read" on grupos
 
 create policy "grupos_facilitador_write" on grupos
   for all using (facilitador_id = auth.uid());
+
+-- solo el admin puede marcar/desmarcar un grupo como empresa
+create policy "grupos_admin_write" on grupos
+  for all using (public.es_admin());
 
 -- modulos: lectura pública
 create policy "modulos_read" on modulos
@@ -389,3 +399,30 @@ create policy "retroalimentacion_admin_read" on retroalimentacion_sesiones
 
 create policy "retroalimentacion_admin_delete" on retroalimentacion_sesiones
   for delete using (public.es_admin());
+
+-- -----------------------------------------------
+-- Tabla: constancias
+-- Se genera un registro automáticamente cuando alguien completa los
+-- 14 módulos, pero queda "sin liberar" hasta que el admin la libera
+-- manualmente (una vez arreglado el pago). El propio usuario puede ver
+-- su estado, pero NO puede liberarla — no hay política de update para
+-- "self", solo para el admin.
+-- -----------------------------------------------
+create table if not exists constancias (
+  id           uuid primary key default uuid_generate_v4(),
+  usuario_id   uuid references usuarios(id) on delete cascade unique,
+  liberada     boolean not null default false,
+  created_at   timestamptz default now(),
+  liberada_at  timestamptz
+);
+
+alter table constancias enable row level security;
+
+create policy "constancias_self_select" on constancias
+  for select using (usuario_id = auth.uid());
+
+create policy "constancias_self_insert" on constancias
+  for insert with check (usuario_id = auth.uid());
+
+create policy "constancias_admin_all" on constancias
+  for all using (public.es_admin());

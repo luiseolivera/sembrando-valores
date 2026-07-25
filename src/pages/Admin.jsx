@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase, esAdmin } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
-import { ShieldCheck, CheckCircle, Clock, Mail, ShieldAlert, MessageSquare, Users, XCircle, Trash2 } from 'lucide-react'
+import { ShieldCheck, CheckCircle, Clock, Mail, ShieldAlert, MessageSquare, Users, XCircle, Trash2, Award, Building2, Search } from 'lucide-react'
 
 export default function Admin() {
   const { perfil } = useAuth()
@@ -11,13 +11,20 @@ export default function Admin() {
   const idDestacado = searchParams.get('id')
   const [pendientes, setPendientes] = useState([])
   const [retros, setRetros] = useState([])
+  const [constancias, setConstancias] = useState([])
   const [cargando, setCargando] = useState(true)
   const [aprobando, setAprobando] = useState(null)
   const [rechazando, setRechazando] = useState(null)
   const [eliminando, setEliminando] = useState(null)
+  const [liberando, setLiberando] = useState(null)
+  const [codigoGrupo, setCodigoGrupo] = useState('')
+  const [grupoBuscado, setGrupoBuscado] = useState(null)
+  const [buscandoGrupo, setBuscandoGrupo] = useState(false)
+  const [errorBusqueda, setErrorBusqueda] = useState('')
+  const [marcandoEmpresa, setMarcandoEmpresa] = useState(false)
 
   useEffect(() => {
-    if (esAdmin(perfil)) { cargarPendientes(); cargarRetros() }
+    if (esAdmin(perfil)) { cargarPendientes(); cargarRetros(); cargarConstancias() }
     else setCargando(false)
   }, [perfil])
 
@@ -64,6 +71,50 @@ export default function Admin() {
     setEliminando(null)
   }
 
+  async function cargarConstancias() {
+    const { data } = await supabase
+      .from('constancias')
+      .select('*, usuarios(nombre, correo, grupo_id, grupos(nombre))')
+      .eq('liberada', false)
+      .order('created_at')
+    setConstancias(data || [])
+  }
+
+  async function liberar(id) {
+    setLiberando(id)
+    await supabase.from('constancias').update({ liberada: true, liberada_at: new Date().toISOString() }).eq('id', id)
+    setConstancias((prev) => prev.filter((c) => c.id !== id))
+    setLiberando(null)
+  }
+
+  async function liberarGrupo(ids) {
+    if (!confirm(`¿Liberar ${ids.length} constancia(s) de este grupo?`)) return
+    setLiberando('grupo')
+    await supabase.from('constancias').update({ liberada: true, liberada_at: new Date().toISOString() }).in('id', ids)
+    setConstancias((prev) => prev.filter((c) => !ids.includes(c.id)))
+    setLiberando(null)
+  }
+
+  async function buscarGrupo() {
+    setErrorBusqueda('')
+    setGrupoBuscado(null)
+    if (!codigoGrupo.trim()) return
+    setBuscandoGrupo(true)
+    const { data } = await supabase.from('grupos').select('*').eq('codigo', codigoGrupo.trim().toUpperCase()).maybeSingle()
+    if (!data) setErrorBusqueda('No se encontró ningún grupo con ese código.')
+    else setGrupoBuscado(data)
+    setBuscandoGrupo(false)
+  }
+
+  async function alternarEmpresa() {
+    if (!grupoBuscado) return
+    setMarcandoEmpresa(true)
+    const nuevoValor = !grupoBuscado.es_empresa
+    await supabase.from('grupos').update({ es_empresa: nuevoValor }).eq('id', grupoBuscado.id)
+    setGrupoBuscado({ ...grupoBuscado, es_empresa: nuevoValor })
+    setMarcandoEmpresa(false)
+  }
+
   if (!esAdmin(perfil)) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
@@ -77,6 +128,19 @@ export default function Admin() {
       </div>
     )
   }
+
+  const gruposConPendientes = {}
+  const sinGrupo = []
+  constancias.forEach((c) => {
+    const g = c.usuarios?.grupos
+    const grupoId = c.usuarios?.grupo_id
+    if (g && grupoId) {
+      if (!gruposConPendientes[grupoId]) gruposConPendientes[grupoId] = { nombre: g.nombre, items: [] }
+      gruposConPendientes[grupoId].items.push(c)
+    } else {
+      sinGrupo.push(c)
+    }
+  })
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -184,6 +248,127 @@ export default function Admin() {
                 <p className="text-sm text-gray-700 whitespace-pre-wrap">{r.comentario}</p>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Marcar grupo como empresa */}
+        <div className="flex items-center gap-3 mt-10 mb-6">
+          <div className="w-10 h-10 bg-morado rounded-full flex items-center justify-center">
+            <Building2 size={20} className="text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-morado">Marcar grupo como empresa</h2>
+            <p className="text-gray-500 text-sm">Habilita el logo de empresa para un grupo específico.</p>
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5 mb-10">
+          <div className="flex gap-2 mb-3">
+            <input
+              type="text"
+              value={codigoGrupo}
+              onChange={(e) => setCodigoGrupo(e.target.value.toUpperCase())}
+              onKeyDown={(e) => e.key === 'Enter' && buscarGrupo()}
+              placeholder="Código del grupo (ej. AB12CD)"
+              className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-morado uppercase"
+            />
+            <button
+              onClick={buscarGrupo}
+              disabled={buscandoGrupo || !codigoGrupo.trim()}
+              className="flex items-center gap-2 bg-morado text-white font-bold px-4 py-2.5 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 text-sm"
+            >
+              <Search size={15} /> Buscar
+            </button>
+          </div>
+          {errorBusqueda && <p className="text-red-500 text-xs">{errorBusqueda}</p>}
+          {grupoBuscado && (
+            <div className="flex items-center justify-between bg-gray-50 rounded-xl p-3 mt-2">
+              <div>
+                <p className="font-semibold text-gray-800 text-sm">{grupoBuscado.nombre}</p>
+                <p className="text-xs text-gray-400">
+                  {grupoBuscado.es_empresa ? 'Marcado como empresa ✓' : 'No es empresa todavía'}
+                </p>
+              </div>
+              <button
+                onClick={alternarEmpresa}
+                disabled={marcandoEmpresa}
+                className={`text-xs font-bold px-3.5 py-2 rounded-xl transition-colors disabled:opacity-50 ${
+                  grupoBuscado.es_empresa ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-morado text-white hover:bg-morado-dark'
+                }`}
+              >
+                {marcandoEmpresa ? '...' : grupoBuscado.es_empresa ? 'Quitar empresa' : 'Marcar como empresa'}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Constancias pendientes de liberar */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-dorado rounded-full flex items-center justify-center">
+            <Award size={20} className="text-morado" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-morado">Constancias pendientes de liberar</h2>
+            <p className="text-gray-500 text-sm">Se liberan una vez completado el pago acordado.</p>
+          </div>
+        </div>
+
+        {constancias.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-10 text-center text-gray-400">
+            <Award size={32} className="mx-auto mb-3 opacity-30" />
+            <p className="text-sm">No hay constancias pendientes por ahora.</p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {Object.entries(gruposConPendientes).map(([grupoId, g]) => (
+              <div key={grupoId} className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="font-bold text-morado text-sm flex items-center gap-1">
+                    <Users size={13} /> {g.nombre} — {g.items.length} pendiente{g.items.length !== 1 ? 's' : ''}
+                  </p>
+                  <button
+                    onClick={() => liberarGrupo(g.items.map((c) => c.id))}
+                    disabled={liberando === 'grupo'}
+                    className="text-xs font-bold bg-morado text-white px-3.5 py-2 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-50"
+                  >
+                    Liberar todas de este grupo
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {g.items.map((c) => (
+                    <div key={c.id} className="flex items-center justify-between bg-gray-50 rounded-xl p-3">
+                      <p className="text-sm text-gray-700">{c.usuarios?.nombre} <span className="text-gray-400 text-xs">({c.usuarios?.correo})</span></p>
+                      <button
+                        onClick={() => liberar(c.id)}
+                        disabled={liberando === c.id}
+                        className="text-xs font-bold text-morado hover:underline disabled:opacity-50"
+                      >
+                        {liberando === c.id ? 'Liberando...' : 'Liberar'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {sinGrupo.length > 0 && (
+              <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+                <p className="font-bold text-morado text-sm mb-3">Sin grupo (uso individual)</p>
+                <div className="space-y-2">
+                  {sinGrupo.map((c) => (
+                    <div key={c.id} className="flex items-center justify-between bg-gray-50 rounded-xl p-3">
+                      <p className="text-sm text-gray-700">{c.usuarios?.nombre} <span className="text-gray-400 text-xs">({c.usuarios?.correo})</span></p>
+                      <button
+                        onClick={() => liberar(c.id)}
+                        disabled={liberando === c.id}
+                        className="text-xs font-bold text-morado hover:underline disabled:opacity-50"
+                      >
+                        {liberando === c.id ? 'Liberando...' : 'Liberar'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

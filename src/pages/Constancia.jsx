@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
-import { ChevronLeft, Printer, Award, Sprout } from 'lucide-react'
+import { ChevronLeft, Printer, Award, Sprout, Clock, Send } from 'lucide-react'
 
 export default function Constancia() {
   const { perfil } = useAuth()
   const [completo, setCompleto] = useState(false)
+  const [liberada, setLiberada] = useState(false)
   const [logoEmpresa, setLogoEmpresa] = useState(null)
   const [cargando, setCargando] = useState(true)
 
@@ -39,6 +40,15 @@ export default function Constancia() {
     })
     setCompleto(todosCompletos)
     if (grupoRes?.data?.logo_empresa_url) setLogoEmpresa(grupoRes.data.logo_empresa_url)
+
+    if (todosCompletos) {
+      let { data: registro } = await supabase.from('constancias').select('liberada').eq('usuario_id', perfil.id).maybeSingle()
+      if (!registro) {
+        const { data: nuevo } = await supabase.from('constancias').insert({ usuario_id: perfil.id }).select('liberada').maybeSingle()
+        registro = nuevo
+      }
+      setLiberada(registro?.liberada || false)
+    }
     setCargando(false)
   }
 
@@ -60,6 +70,30 @@ export default function Constancia() {
           <h2 className="text-xl font-bold text-gray-800 mb-2">Todavía no está lista</h2>
           <p className="text-gray-500 text-sm mb-6">Tu constancia se genera automáticamente cuando completes los 14 módulos del programa.</p>
           <Link to="/dashboard" className="text-morado font-semibold text-sm hover:underline">← Volver a mi panel</Link>
+        </div>
+      </div>
+    )
+  }
+
+  if (!liberada) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="text-center max-w-sm">
+          <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Clock size={32} className="text-dorado-dark" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Tu constancia está lista</h2>
+          <p className="text-gray-500 text-sm mb-6">
+            Completaste los 14 módulos. La constancia tiene un costo y se libera una vez completado el pago.
+            Contáctanos para completarlo y recibirla.
+          </p>
+          <a
+            href={`mailto:info@misionerosmt.org?subject=${encodeURIComponent('Solicito mi constancia — Sembrando Valores Digital')}&body=${encodeURIComponent(`Hola,\n\nTerminé los 14 módulos del programa y quiero solicitar mi constancia.\n\nNombre: ${perfil?.nombre}\nCorreo: ${perfil?.correo}\n\nGracias.`)}`}
+            className="inline-flex items-center gap-2 bg-morado text-white font-bold px-6 py-3 rounded-xl hover:bg-morado-dark transition-colors text-sm mb-3"
+          >
+            <Send size={15} /> Solicitar mi constancia
+          </a>
+          <p><Link to="/dashboard" className="text-morado font-semibold text-sm hover:underline">← Volver a mi panel</Link></p>
         </div>
       </div>
     )

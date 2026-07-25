@@ -342,29 +342,38 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
           </div>
         </div>
 
-        {/* Logo de la empresa (marca blanca ligera) */}
+        {/* Logo de la empresa (marca blanca ligera) — solo grupos marcados como empresa */}
         <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5 mb-6">
-          <p className="text-xs text-gray-400 font-medium mb-2">Logo de la empresa (opcional)</p>
-          <p className="text-xs text-gray-400 mb-3">Pega el link de una imagen — se mostrará junto al saludo de los participantes de este grupo.</p>
-          <div className="flex items-center gap-3">
-            {logoUrl && (
-              <img src={logoUrl} alt="Logo" className="w-10 h-10 rounded-lg object-contain border border-gray-100 flex-shrink-0" onError={(e) => { e.target.style.display = 'none' }} />
-            )}
-            <input
-              type="url"
-              value={logoUrl}
-              onChange={(e) => setLogoUrl(e.target.value)}
-              placeholder="https://tuempresa.com/logo.png"
-              className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-morado"
-            />
-            <button
-              onClick={guardarLogo}
-              disabled={guardandoLogo}
-              className="flex-shrink-0 bg-morado text-white font-bold px-4 py-2.5 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 text-sm"
-            >
-              {guardandoLogo ? '...' : 'Guardar'}
-            </button>
-          </div>
+          <p className="text-xs text-gray-400 font-medium mb-2">Logo de la empresa</p>
+          {grupo.es_empresa ? (
+            <>
+              <p className="text-xs text-gray-400 mb-3">Pega el link de una imagen — se mostrará junto al saludo de los participantes de este grupo.</p>
+              <div className="flex items-center gap-3">
+                {logoUrl && (
+                  <img src={logoUrl} alt="Logo" className="w-10 h-10 rounded-lg object-contain border border-gray-100 flex-shrink-0" onError={(e) => { e.target.style.display = 'none' }} />
+                )}
+                <input
+                  type="url"
+                  value={logoUrl}
+                  onChange={(e) => setLogoUrl(e.target.value)}
+                  placeholder="https://tuempresa.com/logo.png"
+                  className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-morado"
+                />
+                <button
+                  onClick={guardarLogo}
+                  disabled={guardandoLogo}
+                  className="flex-shrink-0 bg-morado text-white font-bold px-4 py-2.5 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 text-sm"
+                >
+                  {guardandoLogo ? '...' : 'Guardar'}
+                </button>
+              </div>
+            </>
+          ) : (
+            <p className="text-xs text-gray-400">
+              Esta función es exclusiva para grupos de empresa. Escríbenos desde{' '}
+              <a href="/empresas" className="text-morado underline">nuestra propuesta empresarial</a> para activarla.
+            </p>
+          )}
         </div>
 
         {/* Selector módulo + activar */}
