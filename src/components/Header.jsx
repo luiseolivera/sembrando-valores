@@ -23,7 +23,7 @@ export default function Header() {
     <header className="bg-white border-b border-gray-200 shadow-sm print:hidden">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3 min-w-0">
-          <img src="/logommt.png" alt="MMT" className="h-10 w-auto object-contain flex-shrink-0" />
+          <img src="/logommt.png" alt="MMT" className="h-[52px] w-auto object-contain flex-shrink-0" />
           <div className="hidden sm:block">
             <p className="text-morado font-bold text-sm leading-tight">Sembrando Valores Digital</p>
             <p className="text-dorado-dark text-xs font-medium">Misioneros en el Mundo del Trabajo</p>
@@ -51,7 +51,7 @@ export default function Header() {
               )}
               {esAdmin(perfil) && (
                 <Link to="/admin" className="flex items-center gap-1 text-gray-600 hover:text-morado transition-colors text-sm font-medium">
-                  <ShieldCheck size={15} /> Aprobaciones/Retroalimentación
+                  <ShieldCheck size={15} /> Gestión del sistema
                 </Link>
               )}
               <div className="flex items-center gap-3 border-l border-gray-200 pl-6">
@@ -121,7 +121,7 @@ export default function Header() {
             <Link to="/facilitador" className="block text-gray-700 text-sm py-1" onClick={() => setMenuAbierto(false)}>Panel Facilitador</Link>
           )}
           {esAdmin(perfil) && (
-            <Link to="/admin" className="block text-gray-700 text-sm py-1" onClick={() => setMenuAbierto(false)}>Aprobaciones/Retroalimentación</Link>
+            <Link to="/admin" className="block text-gray-700 text-sm py-1" onClick={() => setMenuAbierto(false)}>Gestión del sistema</Link>
           )}
           <button onClick={handleLogout} className="flex items-center gap-2 text-morado text-sm py-1">
             <LogOut size={16} /> Cerrar sesión
