@@ -147,6 +147,9 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
   const [copiadoLink, setCopiadoLink] = useState(false)
   const [logoUrl, setLogoUrl] = useState(grupo.logo_empresa_url || '')
   const [guardandoLogo, setGuardandoLogo] = useState(false)
+  const [comentariosReflexion, setComentariosReflexion] = useState({})
+  const [comentariosDraft, setComentariosDraft] = useState({})
+  const [guardandoComentario, setGuardandoComentario] = useState(null)
 
   useEffect(() => { cargarParticipantes() }, [])
   useEffect(() => { if (participantes.length >= 0) cargarDatosModulo() }, [moduloSeleccionado, participantes])
@@ -167,15 +170,51 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
     setRetroalimentacion(retroData?.comentario || '')
 
     const ids = participantes.map(p => p.id)
-    if (ids.length === 0) { setReflexiones([]); setCompromisosPersonales([]); setQuizResultados([]); return }
-    const [refRes, compRes, quizRes] = await Promise.all([
+    if (ids.length === 0) {
+      setReflexiones([]); setCompromisosPersonales([]); setQuizResultados([])
+      setComentariosReflexion({}); setComentariosDraft({})
+      return
+    }
+    const [refRes, compRes, quizRes, comentRes] = await Promise.all([
       supabase.from('reflexiones').select('*, usuarios(nombre)').eq('modulo_id', moduloSeleccionado.id).in('usuario_id', ids),
       supabase.from('compromisos_personales').select('*').eq('modulo_id', moduloSeleccionado.id).in('usuario_id', ids),
       supabase.from('quiz_respuestas').select('*').eq('modulo_id', moduloSeleccionado.id).in('usuario_id', ids),
+      supabase.from('comentarios_reflexion').select('*').eq('modulo_id', moduloSeleccionado.id).in('usuario_id', ids),
     ])
     setReflexiones(refRes.data || [])
     setCompromisosPersonales(compRes.data || [])
     setQuizResultados(quizRes.data || [])
+
+    const porUsuario = {}
+    const draft = {}
+    ;(comentRes.data || []).forEach((c) => {
+      porUsuario[c.usuario_id] = c
+      draft[c.usuario_id] = { comentario: c.comentario || '', reaccion: c.reaccion || '' }
+    })
+    setComentariosReflexion(porUsuario)
+    setComentariosDraft(draft)
+  }
+
+  const REACCIONES = ['👍', '💪', '❤️', '🤔', '🎉']
+
+  function actualizarDraft(usuarioId, campo, valor) {
+    setComentariosDraft(prev => ({
+      ...prev,
+      [usuarioId]: { ...(prev[usuarioId] || { comentario: '', reaccion: '' }), [campo]: valor },
+    }))
+  }
+
+  async function guardarComentarioReflexion(usuarioId) {
+    if (bloqueadoPorExploracion()) return
+    const draft = comentariosDraft[usuarioId] || { comentario: '', reaccion: '' }
+    if (!draft.comentario.trim() && !draft.reaccion) return
+    setGuardandoComentario(usuarioId)
+    await supabase.from('comentarios_reflexion').upsert({
+      usuario_id: usuarioId, modulo_id: moduloSeleccionado.id, facilitador_id: facilitadorId,
+      comentario: draft.comentario.trim() || null, reaccion: draft.reaccion || null,
+    }, { onConflict: 'usuario_id,modulo_id' })
+    setComentariosReflexion(prev => ({ ...prev, [usuarioId]: { ...draft } }))
+    setGuardandoComentario(null)
   }
 
   function bloqueadoPorExploracion() {
@@ -551,6 +590,40 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                         </div>
                       </div>
                     )}
+
+                    <div className="pt-3 border-t border-gray-100">
+                      <p className="text-xs font-bold text-morado uppercase tracking-wide mb-2">Tu reacción / comentario</p>
+                      <div className="flex gap-2 mb-2">
+                        {REACCIONES.map((emoji) => (
+                          <button
+                            key={emoji}
+                            onClick={() => actualizarDraft(uid, 'reaccion', comentariosDraft[uid]?.reaccion === emoji ? '' : emoji)}
+                            className={`text-lg w-9 h-9 rounded-full border-2 transition-all ${
+                              comentariosDraft[uid]?.reaccion === emoji ? 'border-morado bg-purple-50' : 'border-gray-200 hover:border-purple-200'
+                            }`}
+                          >
+                            {emoji}
+                          </button>
+                        ))}
+                      </div>
+                      <textarea
+                        value={comentariosDraft[uid]?.comentario || ''}
+                        onChange={(e) => actualizarDraft(uid, 'comentario', e.target.value)}
+                        rows={2}
+                        placeholder="Escribe un comentario para este participante (opcional)..."
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-morado resize-none mb-2"
+                      />
+                      <button
+                        onClick={() => guardarComentarioReflexion(uid)}
+                        disabled={guardandoComentario === uid || (!comentariosDraft[uid]?.comentario?.trim() && !comentariosDraft[uid]?.reaccion)}
+                        className="flex items-center gap-2 bg-morado text-white font-bold text-xs px-3.5 py-2 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40"
+                      >
+                        <Save size={13} /> {guardandoComentario === uid ? 'Guardando...' : 'Guardar'}
+                      </button>
+                      {comentariosReflexion[uid] && (
+                        <p className="text-xs text-green-600 mt-2">✓ Ya le dejaste retroalimentación a este participante.</p>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

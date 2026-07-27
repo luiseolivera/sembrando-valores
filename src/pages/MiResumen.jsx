@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
-import { ChevronLeft, Printer, PenLine, Target, CheckCircle } from 'lucide-react'
+import { ChevronLeft, Printer, PenLine, Target, CheckCircle, MessageCircle } from 'lucide-react'
 
 export default function MiResumen() {
   const { perfil } = useAuth()
   const [reflexionesPorModulo, setReflexionesPorModulo] = useState({})
   const [compromisosPorModulo, setCompromisosPorModulo] = useState({})
+  const [comentariosPorModulo, setComentariosPorModulo] = useState({})
   const [cargando, setCargando] = useState(true)
 
   useEffect(() => {
@@ -16,9 +17,10 @@ export default function MiResumen() {
   }, [perfil])
 
   async function cargarDatos() {
-    const [reflexRes, compRes] = await Promise.all([
+    const [reflexRes, compRes, comentRes] = await Promise.all([
       supabase.from('reflexiones').select('modulo_id, pregunta_numero, respuesta_texto').eq('usuario_id', perfil.id),
       supabase.from('compromisos_personales').select('modulo_id, compromiso_texto, cumplido').eq('usuario_id', perfil.id),
+      supabase.from('comentarios_reflexion').select('modulo_id, comentario, reaccion').eq('usuario_id', perfil.id),
     ])
 
     const reflex = {}
@@ -34,8 +36,12 @@ export default function MiResumen() {
       comp[c.modulo_id].push(c)
     })
 
+    const coment = {}
+    ;(comentRes.data || []).forEach((c) => { coment[c.modulo_id] = c })
+
     setReflexionesPorModulo(reflex)
     setCompromisosPorModulo(comp)
+    setComentariosPorModulo(coment)
     setCargando(false)
   }
 
@@ -102,6 +108,20 @@ export default function MiResumen() {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {comentariosPorModulo[modulo.id] && (comentariosPorModulo[modulo.id].comentario || comentariosPorModulo[modulo.id].reaccion) && (
+                <div className="mb-5 bg-purple-50 border border-purple-100 rounded-xl p-3">
+                  <p className="text-xs font-semibold text-morado uppercase tracking-wide mb-1 flex items-center gap-1">
+                    <MessageCircle size={13} /> Retroalimentación de tu facilitador
+                  </p>
+                  {comentariosPorModulo[modulo.id].reaccion && (
+                    <span className="text-lg mr-2">{comentariosPorModulo[modulo.id].reaccion}</span>
+                  )}
+                  {comentariosPorModulo[modulo.id].comentario && (
+                    <p className="text-sm text-gray-700 whitespace-pre-wrap inline">{comentariosPorModulo[modulo.id].comentario}</p>
+                  )}
                 </div>
               )}
 

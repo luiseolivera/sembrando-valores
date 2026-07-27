@@ -426,3 +426,36 @@ create policy "constancias_self_insert" on constancias
 
 create policy "constancias_admin_all" on constancias
   for all using (public.es_admin());
+
+-- -----------------------------------------------
+-- Tabla: comentarios_reflexion
+-- El facilitador deja una reacción rápida y/o un comentario sobre la
+-- reflexión que un participante de su grupo registró para un módulo.
+-- El participante puede leer lo que le dejaron, pero no editarlo.
+-- -----------------------------------------------
+create table if not exists comentarios_reflexion (
+  id             uuid primary key default uuid_generate_v4(),
+  usuario_id     uuid references usuarios(id) on delete cascade,
+  modulo_id      int references modulos(id) on delete cascade,
+  facilitador_id uuid references usuarios(id) on delete set null,
+  comentario     text,
+  reaccion       text,
+  created_at     timestamptz default now(),
+  unique (usuario_id, modulo_id)
+);
+
+alter table comentarios_reflexion enable row level security;
+
+create policy "comentarios_reflexion_facilitador" on comentarios_reflexion
+  for all using (
+    facilitador_id = auth.uid()
+    and exists (
+      select 1 from usuarios u
+      join grupos g on g.id = u.grupo_id
+      where u.id = comentarios_reflexion.usuario_id
+        and g.facilitador_id = auth.uid()
+    )
+  );
+
+create policy "comentarios_reflexion_participante" on comentarios_reflexion
+  for select using (usuario_id = auth.uid());
