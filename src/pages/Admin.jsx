@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase, esAdmin } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
-import { ShieldCheck, CheckCircle, Clock, Mail, ShieldAlert, MessageSquare, Users, XCircle, Trash2, Award, Building2, Search } from 'lucide-react'
+import { ShieldCheck, CheckCircle, Clock, Mail, ShieldAlert, MessageSquare, Users, XCircle, Trash2, Award, Building2, Search, BarChart3 } from 'lucide-react'
 
 export default function Admin() {
   const { perfil } = useAuth()
@@ -12,6 +12,7 @@ export default function Admin() {
   const [pendientes, setPendientes] = useState([])
   const [retros, setRetros] = useState([])
   const [constancias, setConstancias] = useState([])
+  const [resumen, setResumen] = useState(null)
   const [cargando, setCargando] = useState(true)
   const [aprobando, setAprobando] = useState(null)
   const [rechazando, setRechazando] = useState(null)
@@ -24,9 +25,32 @@ export default function Admin() {
   const [marcandoEmpresa, setMarcandoEmpresa] = useState(false)
 
   useEffect(() => {
-    if (esAdmin(perfil)) { cargarPendientes(); cargarRetros(); cargarConstancias() }
+    if (esAdmin(perfil)) { cargarPendientes(); cargarRetros(); cargarConstancias(); cargarResumen() }
     else setCargando(false)
   }, [perfil])
+
+  async function cargarResumen() {
+    const [
+      { count: participantes },
+      { count: facilitadoresAprobados },
+      { count: gruposTotal },
+      { count: gruposEmpresa },
+      { count: constanciasLiberadas },
+    ] = await Promise.all([
+      supabase.from('usuarios').select('*', { count: 'exact', head: true }).eq('rol', 'participante'),
+      supabase.from('usuarios').select('*', { count: 'exact', head: true }).eq('rol', 'facilitador').eq('aprobado', true),
+      supabase.from('grupos').select('*', { count: 'exact', head: true }),
+      supabase.from('grupos').select('*', { count: 'exact', head: true }).eq('es_empresa', true),
+      supabase.from('constancias').select('*', { count: 'exact', head: true }).eq('liberada', true),
+    ])
+    setResumen({
+      participantes: participantes || 0,
+      facilitadoresAprobados: facilitadoresAprobados || 0,
+      gruposTotal: gruposTotal || 0,
+      gruposEmpresa: gruposEmpresa || 0,
+      constanciasLiberadas: constanciasLiberadas || 0,
+    })
+  }
 
   async function cargarPendientes() {
     setCargando(true)
@@ -145,6 +169,41 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-3xl mx-auto px-4">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-morado rounded-full flex items-center justify-center">
+            <BarChart3 size={20} className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-morado">Resumen general</h1>
+            <p className="text-gray-500 text-sm">Estado general de la plataforma.</p>
+          </div>
+        </div>
+
+        {resumen && (
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-10">
+            <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm text-center">
+              <div className="text-2xl font-extrabold text-morado">{resumen.participantes}</div>
+              <p className="text-xs text-gray-500 mt-0.5 font-medium">Participantes</p>
+            </div>
+            <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm text-center">
+              <div className="text-2xl font-extrabold text-morado">{resumen.facilitadoresAprobados}</div>
+              <p className="text-xs text-gray-500 mt-0.5 font-medium">Facilitadores</p>
+            </div>
+            <div className="bg-white rounded-2xl p-4 border border-yellow-100 shadow-sm text-center">
+              <div className="text-2xl font-extrabold text-dorado-dark">{pendientes.length}</div>
+              <p className="text-xs text-gray-500 mt-0.5 font-medium">Facilitadores pendientes</p>
+            </div>
+            <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm text-center">
+              <div className="text-2xl font-extrabold text-morado">{resumen.gruposTotal}</div>
+              <p className="text-xs text-gray-500 mt-0.5 font-medium">Grupos ({resumen.gruposEmpresa} empresa)</p>
+            </div>
+            <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm text-center">
+              <div className="text-2xl font-extrabold text-morado">{resumen.constanciasLiberadas}</div>
+              <p className="text-xs text-gray-500 mt-0.5 font-medium">Constancias liberadas ({constancias.length} pendientes)</p>
+            </div>
+          </div>
+        )}
+
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 bg-morado rounded-full flex items-center justify-center">
             <ShieldCheck size={20} className="text-white" />
