@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { Mail, Lock, Sprout, AlertCircle, Eye } from 'lucide-react'
 
 export default function Login() {
-  const { login, entrarComoDemo } = useAuth()
+  const { login, entrarComoDemo, recuperarContrasena } = useAuth()
   const navigate = useNavigate()
 
   function verDemo(rol) {
@@ -15,6 +15,11 @@ export default function Login() {
   const [contrasena, setContrasena] = useState('')
   const [error, setError] = useState('')
   const [cargando, setCargando] = useState(false)
+  const [modoRecuperar, setModoRecuperar] = useState(false)
+  const [correoRecuperar, setCorreoRecuperar] = useState('')
+  const [errorRecuperar, setErrorRecuperar] = useState('')
+  const [exitoRecuperar, setExitoRecuperar] = useState(false)
+  const [enviandoRecuperar, setEnviandoRecuperar] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -34,6 +39,24 @@ export default function Login() {
     }
   }
 
+  async function handleRecuperar(e) {
+    e.preventDefault()
+    setErrorRecuperar('')
+    setEnviandoRecuperar(true)
+    const { error: err } = await recuperarContrasena(correoRecuperar)
+    setEnviandoRecuperar(false)
+    if (err) {
+      const esModoDemo = err.message?.includes('demo') || err.message?.includes('Modo demo')
+      setErrorRecuperar(
+        esModoDemo
+          ? 'Esta es una vista previa — esta función se activa cuando se conecte la base de datos.'
+          : 'Ocurrió un error al enviar el correo. Verifica que sea correcto.'
+      )
+    } else {
+      setExitoRecuperar(true)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
@@ -46,6 +69,66 @@ export default function Login() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-purple-100">
+          {modoRecuperar ? (
+            exitoRecuperar ? (
+              <div className="text-center py-4">
+                <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Mail size={26} className="text-green-600" />
+                </div>
+                <h2 className="font-bold text-morado text-lg mb-2">Revisa tu correo</h2>
+                <p className="text-gray-500 text-sm mb-6">
+                  Si <strong>{correoRecuperar}</strong> tiene una cuenta, te enviamos un link para restablecer tu contraseña.
+                </p>
+                <button
+                  onClick={() => { setModoRecuperar(false); setExitoRecuperar(false); setCorreoRecuperar('') }}
+                  className="text-morado font-semibold text-sm hover:underline"
+                >
+                  ← Volver a iniciar sesión
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleRecuperar} className="space-y-5">
+                <div>
+                  <h2 className="font-bold text-morado text-lg mb-1">Recuperar contraseña</h2>
+                  <p className="text-gray-500 text-sm">Te enviaremos un link a tu correo para crear una nueva.</p>
+                </div>
+                {errorRecuperar && (
+                  <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
+                    <AlertCircle size={16} />
+                    {errorRecuperar}
+                  </div>
+                )}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">Correo electrónico</label>
+                  <div className="relative">
+                    <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="email"
+                      value={correoRecuperar}
+                      onChange={(e) => setCorreoRecuperar(e.target.value)}
+                      required
+                      placeholder="tu@correo.com"
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-morado focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  disabled={enviandoRecuperar}
+                  className="w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {enviandoRecuperar ? 'Enviando...' : 'Enviar link de recuperación'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModoRecuperar(false)}
+                  className="w-full text-center text-morado font-semibold text-sm hover:underline"
+                >
+                  ← Volver a iniciar sesión
+                </button>
+              </form>
+            )
+          ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
               <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
@@ -86,6 +169,13 @@ export default function Login() {
                   className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-morado focus:border-transparent"
                 />
               </div>
+              <button
+                type="button"
+                onClick={() => setModoRecuperar(true)}
+                className="text-xs text-morado hover:underline mt-1.5"
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
             </div>
 
             <button
@@ -96,6 +186,7 @@ export default function Login() {
               {cargando ? 'Ingresando...' : 'Iniciar sesión'}
             </button>
           </form>
+          )}
 
           <p className="text-center text-sm text-gray-500 mt-6">
             ¿Aún no tienes cuenta?{' '}

@@ -64,6 +64,20 @@ export function AuthProvider({ children }) {
     return { data, error }
   }
 
+  async function recuperarContrasena(correo) {
+    if (DEMO_MODE) return { error: { message: 'Modo demo — configura Supabase para usar esta función.' } }
+    const { error } = await supabase.auth.resetPasswordForEmail(correo, {
+      redirectTo: `${window.location.origin}/restablecer-contrasena`,
+    })
+    return { error }
+  }
+
+  async function actualizarContrasena(nuevaContrasena) {
+    if (DEMO_MODE) return { error: { message: 'Modo demo — configura Supabase para usar esta función.' } }
+    const { error } = await supabase.auth.updateUser({ password: nuevaContrasena })
+    return { error }
+  }
+
   function entrarComoDemo(rol) {
     const perfilDemo = {
       id: 'demo-user',
@@ -84,7 +98,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, perfil, loading, login, registro, cerrarSesion, entrarComoDemo, DEMO_MODE }}>
+    <AuthContext.Provider value={{ user, perfil, loading, login, registro, cerrarSesion, entrarComoDemo, recuperarContrasena, actualizarContrasena, DEMO_MODE }}>
       {children}
     </AuthContext.Provider>
   )

@@ -16,6 +16,7 @@ import Admin from './pages/Admin'
 import AvisoPrivacidad from './pages/AvisoPrivacidad'
 import Constancia from './pages/Constancia'
 import ParaEmpresas from './pages/ParaEmpresas'
+import Restablecer from './pages/Restablecer'
 
 function RutaProtegida({ children }) {
   const { user, loading } = useAuth()
@@ -63,6 +64,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Layout><Bienvenida /></Layout>} />
           <Route path="/login" element={<Layout><Login /></Layout>} />
+          <Route path="/restablecer-contrasena" element={<Layout><Restablecer /></Layout>} />
           <Route path="/registro" element={<Layout><Registro /></Layout>} />
           <Route path="/instructivo" element={<Layout><InstructivoPage /></Layout>} />
           <Route path="/privacidad" element={<Layout><AvisoPrivacidad /></Layout>} />
