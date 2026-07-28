@@ -7,7 +7,7 @@ import PasoContenido from './pasos/PasoContenido'
 import PasoQuiz from './pasos/PasoQuiz'
 import PasoReflexion from './pasos/PasoReflexion'
 import PasoCompromisos from './pasos/PasoCompromisos'
-import { BookOpen, CheckSquare, PenLine, Target, ChevronLeft, CheckCircle } from 'lucide-react'
+import { BookOpen, CheckSquare, PenLine, Target, ChevronLeft, CheckCircle, Lock } from 'lucide-react'
 
 const PASOS_CONFIG = [
   { key: 'contenido', label: 'Contenido', icono: BookOpen },
@@ -24,6 +24,7 @@ export default function Modulo() {
   const [pasoActual, setPasoActual] = useState('contenido')
   const [progreso, setProgreso] = useState({ contenido: false, quiz: false, reflexion: false, compromisos: false })
   const [cargando, setCargando] = useState(true)
+  const [moduloActivoGrupo, setModuloActivoGrupo] = useState(null)
 
   useEffect(() => {
     if (modulo) cargarProgreso()
@@ -31,11 +32,19 @@ export default function Modulo() {
 
   async function cargarProgreso() {
     if (DEMO_MODE) { setCargando(false); return }
-    const [quizRes, reflexRes, compRes] = await Promise.all([
+
+    const queries = [
       supabase.from('quiz_respuestas').select('aprobado').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
       supabase.from('reflexiones').select('id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).limit(1),
       supabase.from('compromisos_personales').select('id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).limit(1),
-    ])
+    ]
+    if (perfil.rol === 'participante' && perfil.grupo_id) {
+      queries.push(supabase.from('grupos').select('modulo_activo_id').eq('id', perfil.grupo_id).maybeSingle())
+    }
+    const [quizRes, reflexRes, compRes, grupoRes] = await Promise.all(queries)
+
+    if (grupoRes) setModuloActivoGrupo(grupoRes.data?.modulo_activo_id ?? null)
+
     const quizOk = quizRes.data?.aprobado || false
     const reflexOk = (reflexRes.data?.length || 0) > 0
     const compOk = (compRes.data?.length || 0) > 0
@@ -49,6 +58,8 @@ export default function Modulo() {
     else setPasoActual('compromisos')
     setCargando(false)
   }
+
+  const bloqueadoPorGrupo = perfil?.rol === 'participante' && perfil?.grupo_id && modulo && moduloActivoGrupo !== modulo.id
 
   function avanzar() {
     const orden = ['contenido', 'quiz', 'reflexion', 'compromisos']
@@ -80,6 +91,23 @@ export default function Modulo() {
   if (cargando) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-10 h-10 border-4 border-morado border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
+
+  if (bloqueadoPorGrupo) return (
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="text-center max-w-sm">
+        <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Lock size={32} className="text-dorado-dark" />
+        </div>
+        <h2 className="text-xl font-bold text-gray-800 mb-2">Módulo no disponible todavía</h2>
+        <p className="text-gray-500 text-sm mb-6">
+          {moduloActivoGrupo
+            ? 'Tu grupo está trabajando otro módulo. Este se habilitará cuando tu facilitador lo active.'
+            : 'Tu facilitador todavía no activó ningún módulo para tu grupo.'}
+        </p>
+        <button onClick={() => navigate('/dashboard')} className="text-morado font-semibold text-sm hover:underline">← Volver al inicio</button>
+      </div>
     </div>
   )
 
