@@ -21,7 +21,14 @@ export function esAdmin(perfil) {
 
 export const supabase = DEMO_MODE
   ? createMockClient()
-  : createClient(supabaseUrl, supabaseAnonKey)
+  : createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: window.localStorage,
+      },
+    })
 
 function createMockClient() {
   const noop = async () => ({ data: null, error: null })

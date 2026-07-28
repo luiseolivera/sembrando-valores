@@ -5,12 +5,12 @@ import {
 
 const pasos = [
   { icono: UserPlus, titulo: 'Registro', color: 'bg-purple-700', num: 1 },
-  { icono: Share2, titulo: 'Únete al Grupo (opcional)', color: 'bg-purple-600', num: 2 },
+  { icono: Share2, titulo: 'Únete al Grupo', color: 'bg-purple-600', num: 2 },
   { icono: Headphones, titulo: 'Escucha el Audio', color: 'bg-purple-500', num: 3 },
   { icono: CheckSquare, titulo: 'Quiz', color: 'bg-yellow-500', num: 4 },
   { icono: PenLine, titulo: 'Reflexión Personal', color: 'bg-yellow-600', num: 5 },
   { icono: Target, titulo: 'Compromisos', color: 'bg-purple-800', num: 6 },
-  { icono: Users, titulo: 'Sesión Grupal (si tienes grupo)', color: 'bg-purple-700', num: 7 },
+  { icono: Users, titulo: 'Sesión Grupal', color: 'bg-purple-700', num: 7 },
   { icono: ArrowRight, titulo: 'Siguiente Módulo', color: 'bg-morado', num: 8 },
 ]
 
@@ -66,7 +66,8 @@ export default function DiagramaFlujo() {
           Cada paso se desbloquea al completar el anterior. ¡Avanza a tu ritmo!
         </p>
         <p className="text-xs text-gray-500 mt-1">
-          Unirte a un grupo y la sesión grupal son opcionales — también puedes usar la app de forma individual.
+          Si te unes a un grupo, tu facilitador activa el módulo que trabajan juntos y no podrás avanzar a otro hasta que lo haga.
+          Si prefieres ir por tu cuenta, puedes usar la app sin unirte a ningún grupo y avanzar libremente entre los 14 módulos.
         </p>
       </div>
     </div>
