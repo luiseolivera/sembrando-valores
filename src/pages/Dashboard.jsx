@@ -400,7 +400,7 @@ export default function Dashboard() {
                     <span className="text-xs text-morado font-medium">
                       {paso === 'quiz' && '📝 Hacer quiz'}
                       {paso === 'reflexion' && '✍️ Reflexionar'}
-                      {paso === 'sesion' && '👥 Sesión grupal'}
+                      {paso === 'sesion' && '👥 Sesión grupal pendiente'}
                       {paso === 'compromisos' && '🎯 Registrar compromisos'}
                     </span>
                   )}
