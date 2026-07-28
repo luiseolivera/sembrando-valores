@@ -5,7 +5,7 @@ import { MODULOS } from '../data/modulos'
 import {
   Users, CheckCircle, FileText, Calendar, Plus, Link as LinkIcon,
   Target, Star, ChevronDown, ChevronUp, Save, Clipboard, Zap,
-  CheckSquare, XCircle, ArrowLeft, PlusCircle, MessageCircle, AlertTriangle
+  CheckSquare, XCircle, ArrowLeft, PlusCircle, MessageCircle, AlertTriangle, Trash2
 } from 'lucide-react'
 
 const PREGUNTA_RETROALIMENTACION = '¿Hay observaciones o sugerencias para mejorar la próxima sesión y/o para mejorar esta aplicación?'
@@ -131,7 +131,10 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
   const [compromisosPersonales, setCompromisosPersonales] = useState([])
   const [quizResultados, setQuizResultados] = useState([])
   const [compromisoTexto, setCompromisoTexto] = useState(['', '', ''])
+  const [sesiones, setSesiones] = useState([])
+  const [eleccionesPorSesion, setEleccionesPorSesion] = useState({})
   const [sesionForm, setSesionForm] = useState({ fecha: '', link: '' })
+  const [eliminandoSesion, setEliminandoSesion] = useState(null)
   const [retroalimentacion, setRetroalimentacion] = useState('')
   const [guardandoRetro, setGuardandoRetro] = useState(false)
   const [tabActiva, setTabActiva] = useState('progreso')
@@ -168,6 +171,24 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
       .eq('modulo_id', moduloSeleccionado.id)
       .maybeSingle()
     setRetroalimentacion(retroData?.comentario || '')
+
+    const { data: sesionesData } = await supabase
+      .from('sesiones_grupales')
+      .select('*')
+      .eq('grupo_id', grupo.id)
+      .eq('modulo_id', moduloSeleccionado.id)
+      .order('fecha')
+    setSesiones(sesionesData || [])
+
+    const sesionIds = (sesionesData || []).map(s => s.id)
+    if (sesionIds.length > 0) {
+      const { data: eleccionesData } = await supabase.from('sesion_elecciones').select('sesion_id').in('sesion_id', sesionIds)
+      const conteo = {}
+      ;(eleccionesData || []).forEach(e => { conteo[e.sesion_id] = (conteo[e.sesion_id] || 0) + 1 })
+      setEleccionesPorSesion(conteo)
+    } else {
+      setEleccionesPorSesion({})
+    }
 
     const ids = participantes.map(p => p.id)
     if (ids.length === 0) {
@@ -249,17 +270,29 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
     setTimeout(() => setExito(''), 4000)
   }
 
-  async function guardarSesion() {
+  async function agregarSesion() {
     if (!sesionForm.link) return
     if (bloqueadoPorExploracion()) return
     setGuardandoSesion(true)
-    await supabase.from('sesiones_grupales').upsert({
+    const { data } = await supabase.from('sesiones_grupales').insert({
       grupo_id: grupo.id, modulo_id: moduloSeleccionado.id,
       fecha: sesionForm.fecha || null, link_reunion: sesionForm.link,
-    }, { onConflict: 'grupo_id,modulo_id' })
+    }).select().maybeSingle()
+    if (data) {
+      setSesiones(prev => [...prev, data].sort((a, b) => (a.fecha || '').localeCompare(b.fecha || '')))
+    }
+    setSesionForm({ fecha: '', link: '' })
     setGuardandoSesion(false)
-    setExito('Sesión guardada.')
+    setExito('Sesión agregada.')
     setTimeout(() => setExito(''), 4000)
+  }
+
+  async function eliminarSesion(id) {
+    if (!confirm('¿Eliminar esta opción de sesión? Los participantes que ya la eligieron perderán su elección.')) return
+    setEliminandoSesion(id)
+    await supabase.from('sesiones_grupales').delete().eq('id', id)
+    setSesiones(prev => prev.filter(s => s.id !== id))
+    setEliminandoSesion(null)
   }
 
   async function guardarRetroalimentacion() {
@@ -633,31 +666,68 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
 
         {/* Tab: Sesión */}
         {tabActiva === 'sesion' && (
-          <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-6">
-            <h3 className="font-bold text-morado text-lg mb-4 flex items-center gap-2">
-              <Calendar size={18} /> Agendar sesión grupal
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Fecha y hora</label>
-                <input type="datetime-local" value={sesionForm.fecha}
-                  onChange={e => setSesionForm({ ...sesionForm, fecha: e.target.value })}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-morado" />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Enlace (Zoom, Google Meet o Teams)</label>
-                <div className="relative">
-                  <LinkIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input type="url" value={sesionForm.link}
-                    onChange={e => setSesionForm({ ...sesionForm, link: e.target.value })}
-                    placeholder="https://meet.google.com/..."
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-morado" />
+          <div className="space-y-4">
+            <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-6">
+              <h3 className="font-bold text-morado text-lg mb-1 flex items-center gap-2">
+                <Calendar size={18} /> Opciones de sesión grupal
+              </h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Ofrece varios horarios para este módulo — cada participante elige el que le convenga.
+              </p>
+
+              {sesiones.length === 0 ? (
+                <p className="text-sm text-gray-400 mb-4">Todavía no hay ninguna sesión agendada para este módulo.</p>
+              ) : (
+                <div className="space-y-2 mb-4">
+                  {sesiones.map((s) => (
+                    <div key={s.id} className="flex items-center justify-between gap-3 bg-gray-50 rounded-xl p-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-800">
+                          {s.fecha
+                            ? new Date(s.fecha).toLocaleString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
+                            : 'Sin fecha definida'}
+                        </p>
+                        <p className="text-xs text-gray-400 truncate">{s.link_reunion}</p>
+                        <p className="text-xs text-morado font-medium mt-0.5">
+                          {eleccionesPorSesion[s.id] || 0} participante{eleccionesPorSesion[s.id] === 1 ? '' : 's'} eligió esta opción
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => eliminarSesion(s.id)}
+                        disabled={eliminandoSesion === s.id}
+                        className="flex-shrink-0 text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50"
+                        title="Eliminar"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
+              )}
+
+              <div className="pt-4 border-t border-gray-100 space-y-4">
+                <p className="text-sm font-semibold text-gray-700">Agregar otra opción de horario</p>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Fecha y hora</label>
+                  <input type="datetime-local" value={sesionForm.fecha}
+                    onChange={e => setSesionForm({ ...sesionForm, fecha: e.target.value })}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-morado" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Enlace (Zoom, Google Meet o Teams)</label>
+                  <div className="relative">
+                    <LinkIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input type="url" value={sesionForm.link}
+                      onChange={e => setSesionForm({ ...sesionForm, link: e.target.value })}
+                      placeholder="https://meet.google.com/..."
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-morado" />
+                  </div>
+                </div>
+                <button onClick={agregarSesion} disabled={!sesionForm.link || guardandoSesion}
+                  className="w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 flex items-center justify-center gap-2">
+                  <Plus size={16} /> {guardandoSesion ? 'Guardando...' : 'Agregar opción de sesión'}
+                </button>
               </div>
-              <button onClick={guardarSesion} disabled={!sesionForm.link || guardandoSesion}
-                className="w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 flex items-center justify-center gap-2">
-                <Save size={16} /> {guardandoSesion ? 'Guardando...' : 'Guardar sesión'}
-              </button>
             </div>
           </div>
         )}

@@ -13,7 +13,9 @@ export default function Dashboard() {
   const [logoEmpresa, setLogoEmpresa] = useState(null)
   const [banneroculto, setBanneroculto] = useState(() => localStorage.getItem('svd_oculto_banner_grupo') === '1')
   const [moduloActivoId, setModuloActivoId] = useState(null)
-  const [sesionActiva, setSesionActiva] = useState(null)
+  const [sesionesDisponibles, setSesionesDisponibles] = useState([])
+  const [sesionElegida, setSesionElegida] = useState(null)
+  const [eligiendoSesion, setEligiendoSesion] = useState(false)
   const [cargando, setCargando] = useState(true)
   const [codigoInput, setCodigoInput] = useState('')
   const [uniendose, setUniendose] = useState(false)
@@ -36,13 +38,14 @@ export default function Dashboard() {
 
     if (perfil.grupo_id) {
       queries.push(
-        supabase.from('sesiones_grupales').select('modulo_id, fecha, link_reunion').eq('grupo_id', perfil.grupo_id),
+        supabase.from('sesiones_grupales').select('id, modulo_id, fecha, link_reunion').eq('grupo_id', perfil.grupo_id),
         supabase.from('compromisos').select('*').eq('grupo_id', perfil.grupo_id).order('created_at', { ascending: false }).limit(6),
         supabase.from('grupos').select('modulo_activo_id, logo_empresa_url').eq('id', perfil.grupo_id).maybeSingle(),
+        supabase.from('sesion_elecciones').select('sesion_id, modulo_id').eq('usuario_id', perfil.id),
       )
     }
 
-    const [quizRes, reflexRes, compPersRes, sesionRes, compRes, grupoRes] = await Promise.all(queries)
+    const [quizRes, reflexRes, compPersRes, sesionRes, compRes, grupoRes, eleccionRes] = await Promise.all(queries)
 
     const mapa = {}
     MODULOS.forEach((m) => {
@@ -65,9 +68,20 @@ export default function Dashboard() {
     if (grupoRes?.data?.modulo_activo_id) {
       const activoId = grupoRes.data.modulo_activo_id
       setModuloActivoId(activoId)
-      const sesion = sesionRes?.data?.find(s => s.modulo_id === activoId)
-      if (sesion?.link_reunion) setSesionActiva(sesion)
+      const opciones = (sesionRes?.data || []).filter(s => s.modulo_id === activoId && s.link_reunion)
+      setSesionesDisponibles(opciones)
+      const eleccion = eleccionRes?.data?.find(e => e.modulo_id === activoId)
+      if (eleccion) setSesionElegida(opciones.find(s => s.id === eleccion.sesion_id) || null)
     }
+  }
+
+  async function elegirSesion(sesionId) {
+    setEligiendoSesion(true)
+    await supabase.from('sesion_elecciones').upsert({
+      usuario_id: perfil.id, modulo_id: moduloActivoId, sesion_id: sesionId,
+    }, { onConflict: 'usuario_id,modulo_id' })
+    setSesionElegida(sesionesDisponibles.find(s => s.id === sesionId) || null)
+    setEligiendoSesion(false)
   }
 
   async function unirseAlGrupo() {
@@ -277,33 +291,70 @@ export default function Dashboard() {
         )}
 
         {/* Tarjeta de sesión grupal */}
-        {sesionActiva && (
+        {sesionesDisponibles.length > 0 && !sesionElegida && (
+          <div className="bg-white rounded-2xl border border-blue-200 shadow-sm p-4 mb-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Calendar size={20} className="text-blue-600" />
+              </div>
+              <div>
+                <p className="font-bold text-gray-800 text-sm">Elige tu sesión grupal</p>
+                <p className="text-xs text-gray-500">Tu facilitador ofrece estos horarios para este módulo</p>
+              </div>
+            </div>
+            <div className="space-y-2">
+              {sesionesDisponibles.map((s) => (
+                <div key={s.id} className="flex items-center justify-between gap-3 bg-gray-50 rounded-xl p-3">
+                  <p className="text-sm text-gray-700">
+                    {s.fecha
+                      ? new Date(s.fecha).toLocaleString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
+                      : 'Sin fecha definida'}
+                  </p>
+                  <button
+                    onClick={() => elegirSesion(s.id)}
+                    disabled={eligiendoSesion}
+                    className="flex-shrink-0 bg-blue-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  >
+                    Elegir
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {sesionElegida && (
           <div className="bg-white rounded-2xl border border-blue-200 shadow-sm p-4 mb-6">
             <div className="flex items-start gap-4">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <Calendar size={20} className="text-blue-600" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-gray-800 text-sm">Sesión grupal agendada</p>
-                {sesionActiva.fecha && (
+                <p className="font-bold text-gray-800 text-sm">Tu sesión grupal</p>
+                {sesionElegida.fecha && (
                   <p className="text-xs text-gray-500 mt-0.5">
-                    {new Date(sesionActiva.fecha).toLocaleString('es-MX', {
+                    {new Date(sesionElegida.fecha).toLocaleString('es-MX', {
                       weekday: 'long', day: 'numeric', month: 'long',
                       hour: '2-digit', minute: '2-digit'
                     })}
                   </p>
                 )}
                 {moduloActivoListo ? (
-                  <p className="text-xs text-gray-400 mt-0.5 truncate">{sesionActiva.link_reunion}</p>
+                  <p className="text-xs text-gray-400 mt-0.5 truncate">{sesionElegida.link_reunion}</p>
                 ) : (
                   <p className="text-xs text-yellow-600 mt-0.5">
                     Termina el quiz y tu reflexión de este módulo para desbloquear el link.
                   </p>
                 )}
+                {sesionesDisponibles.length > 1 && (
+                  <button onClick={() => setSesionElegida(null)} className="text-xs text-morado hover:underline mt-1">
+                    Cambiar sesión elegida
+                  </button>
+                )}
               </div>
               {moduloActivoListo ? (
                 <a
-                  href={sesionActiva.link_reunion}
+                  href={sesionElegida.link_reunion}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-shrink-0 flex items-center gap-1.5 bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors"

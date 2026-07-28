@@ -139,9 +139,12 @@ create table if not exists sesiones_grupales (
   modulo_id    int references modulos(id) on delete cascade,
   fecha        timestamptz,
   link_reunion text,
-  created_at   timestamptz default now(),
-  unique (grupo_id, modulo_id)
+  created_at   timestamptz default now()
 );
+
+-- Migración: antes solo se permitía una sesión por grupo+módulo.
+-- Ahora el facilitador puede ofrecer varios horarios para el mismo módulo.
+alter table sesiones_grupales drop constraint if exists sesiones_grupales_grupo_id_modulo_id_key;
 
 -- -----------------------------------------------
 -- Tabla: compromisos
@@ -459,3 +462,34 @@ create policy "comentarios_reflexion_facilitador" on comentarios_reflexion
 
 create policy "comentarios_reflexion_participante" on comentarios_reflexion
   for select using (usuario_id = auth.uid());
+
+-- -----------------------------------------------
+-- Tabla: sesion_elecciones
+-- Cuando el facilitador ofrece varias sesiones (horarios) para el
+-- mismo módulo, cada participante elige una. Solo puede tener una
+-- elección activa por módulo (unique usuario_id+modulo_id) — volver a
+-- elegir reemplaza la anterior.
+-- -----------------------------------------------
+create table if not exists sesion_elecciones (
+  id         uuid primary key default uuid_generate_v4(),
+  usuario_id uuid references usuarios(id) on delete cascade,
+  sesion_id  uuid references sesiones_grupales(id) on delete cascade,
+  modulo_id  int references modulos(id) on delete cascade,
+  created_at timestamptz default now(),
+  unique (usuario_id, modulo_id)
+);
+
+alter table sesion_elecciones enable row level security;
+
+create policy "sesion_elecciones_self" on sesion_elecciones
+  for all using (usuario_id = auth.uid());
+
+create policy "sesion_elecciones_facilitador" on sesion_elecciones
+  for select using (
+    exists (
+      select 1 from usuarios u
+      join grupos g on g.id = u.grupo_id
+      where u.id = sesion_elecciones.usuario_id
+        and g.facilitador_id = auth.uid()
+    )
+  );
