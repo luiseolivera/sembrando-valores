@@ -603,6 +603,20 @@ create policy "solicitudes_sesion_facilitador_update" on solicitudes_sesion
 create policy "solicitudes_sesion_admin_select" on solicitudes_sesion
   for select using (public.es_admin());
 
+-- Permite a un facilitador aprobado ver nombre/correo de un participante
+-- que le tiene (o le dejó en la bolsa común) una solicitud de sesión
+-- pendiente — sin esto, el panel de solicitudes no puede mostrar quién es.
+create policy "usuarios_facilitador_ve_solicitante" on usuarios
+  for select using (
+    public.es_facilitador_aprobado()
+    and exists (
+      select 1 from solicitudes_sesion s
+      where s.usuario_id = usuarios.id
+        and s.estado = 'pendiente'
+        and (s.facilitador_id = auth.uid() or s.facilitador_id is null)
+    )
+  );
+
 -- Al atender una solicitud pendiente (propia o de la bolsa común), el
 -- facilitador todavía no es "responsable" del participante según
 -- es_responsable_de() — hace falta permitir, puntualmente, la sesión que
