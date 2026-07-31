@@ -26,7 +26,7 @@ const FAQS = [
   },
   {
     pregunta: '¿Cuál es el papel del facilitador?',
-    respuesta: 'El facilitador es un guía, no un expositor. Su cuenta debe ser aprobada por el equipo de MMT antes de poder operar. Una vez aprobado, desde la plataforma puede crear uno o varios grupos —cada uno con su propio código e invitación—, compartir el link con los participantes (por la app o WhatsApp), activar el módulo que trabajará el grupo, revisar el progreso y las reflexiones y compromisos de cada participante, agendar el enlace de reunión (Zoom, Google Meet o Teams), registrar los compromisos grupales al finalizar, y dejar retroalimentación sobre la sesión.',
+    respuesta: 'El facilitador es un guía, no un expositor. Su cuenta debe ser aprobada por el equipo de MMT antes de poder operar. Una vez aprobado, desde la plataforma puede crear uno o varios grupos —cada uno con su propio código e invitación—, compartir el link con los participantes (por la app o WhatsApp), activar el módulo que trabajará el grupo, revisar el progreso y las reflexiones y compromisos de cada participante, ofrecer uno o varios horarios de sesión (Zoom, Google Meet o Teams), atender las solicitudes de los participantes individuales, habilitar los compromisos de cada quien tras la sesión, registrar los compromisos grupales al finalizar, y dejar retroalimentación sobre la sesión.',
   },
   {
     pregunta: '¿Cómo se aprueba a un nuevo facilitador?',
@@ -34,7 +34,7 @@ const FAQS = [
   },
   {
     pregunta: '¿Cómo me entero de cuándo y dónde es la sesión grupal?',
-    respuesta: 'El facilitador agenda la sesión desde su panel: elige la fecha, hora y pega el enlace de Zoom, Google Meet o Teams. En cuanto lo guarda, aparece automáticamente en tu pantalla principal (Inicio) una tarjeta con la fecha y hora. El botón para entrar se habilita solo cuando terminas el quiz y tu reflexión de ese módulo — mientras tanto lo verás bloqueado.',
+    respuesta: 'Dentro de cada módulo, después de tu reflexión, hay un paso de "Sesión grupal": ahí ves todos los horarios que tu facilitador ofreció y eliges el que te convenga. Si no tienes grupo, en ese mismo paso puedes solicitar una sesión a un facilitador específico o a cualquiera disponible. Después de la sesión, tu facilitador habilita tus compromisos y puedes continuar.',
   },
   {
     pregunta: '¿Qué son los compromisos grupales?',
@@ -46,7 +46,7 @@ const FAQS = [
   },
   {
     pregunta: '¿Puedo usar la app sin pertenecer a un equipo o grupo?',
-    respuesta: 'Sí. Puedes registrarte como participante y usar la plataforma de forma completamente individual, sin unirte a ningún grupo ni depender de un facilitador. Recorres los 14 módulos a tu propio ritmo y en el orden que prefieras: escuchas el contenido, haces el quiz, escribes tu reflexión personal y registras tus compromisos personales. En este modo no hay sesión grupal ni compromisos grupales — cada módulo se marca como completado en cuanto registras tus compromisos personales. Puedes imprimir todas tus reflexiones y compromisos cuando quieras desde "Mis reflexiones y compromisos" en tu pantalla principal. Si más adelante consigues un código de grupo, puedes unirte en cualquier momento sin perder tu progreso.',
+    respuesta: 'Sí. Puedes registrarte como participante y usar la plataforma sin unirte a ningún grupo fijo. Recorres los 14 módulos a tu propio ritmo: escuchas el contenido, haces el quiz y escribes tu reflexión personal. Para la sesión grupal, la solicitas con un facilitador específico o con cualquiera disponible, y él la agenda contigo — esa relación se mantiene para los módulos siguientes. Después de la sesión, el facilitador habilita tus compromisos personales y el módulo se marca como completado al registrarlos. Puedes imprimir todas tus reflexiones y compromisos cuando quieras desde "Mis reflexiones y compromisos" en tu pantalla principal. Si más adelante consigues un código de grupo, puedes unirte en cualquier momento sin perder tu progreso.',
   },
   {
     pregunta: '¿Qué necesito para usar la plataforma digital?',
@@ -125,7 +125,7 @@ export default function InstructivoPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
             {[
               { num: '14', desc: 'valores y principios' },
-              { num: '4', desc: 'pasos por módulo' },
+              { num: '5', desc: 'pasos por módulo' },
               { num: '60–90', desc: 'minutos por sesión' },
             ].map((s) => (
               <div key={s.num} className="bg-purple-50 rounded-xl p-3 text-center">

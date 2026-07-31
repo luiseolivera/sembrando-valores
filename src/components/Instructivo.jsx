@@ -11,8 +11,8 @@ const pasosParticipante = [
   { icono: Headphones, texto: 'Escucha el audio completo y marca que lo escuchaste' },
   { icono: CheckSquare, texto: 'Responde el quiz de comprensión (mínimo 70% para avanzar)' },
   { icono: PenLine, texto: 'Escribe tu reflexión personal y envíala' },
-  { icono: Target, texto: 'Registra tus compromisos personales para el módulo' },
-  { icono: Users, texto: 'Conéctate a la sesión grupal — el link se desbloquea al completar el quiz y tu reflexión, y aparece con la fecha en tu pantalla principal' },
+  { icono: Users, texto: 'Elige una sesión grupal disponible o, si no tienes grupo, solicita una con un facilitador específico o con cualquiera disponible' },
+  { icono: Target, texto: 'Registra tus compromisos personales — se habilitan cuando tu facilitador confirma que ya tuviste tu sesión' },
   { icono: Printer, texto: 'Imprime tus reflexiones y compromisos desde "Mis reflexiones y compromisos"' },
 ]
 
@@ -20,10 +20,11 @@ const pasosFacilitador = [
   { icono: UserPlus, texto: 'Regístrate como facilitador — tu cuenta necesita ser aprobada por el equipo antes de poder crear grupos' },
   { icono: Share2, texto: 'Crea uno o varios grupos (uno por cada equipo que acompañes) y comparte el código o link por la app o por WhatsApp' },
   { icono: Zap, texto: 'Activa el módulo que trabajarán' },
-  { icono: FileText, texto: 'Revisa el progreso y las reflexiones y compromisos de cada participante' },
-  { icono: Calendar, texto: 'Agenda la sesión grupal (Zoom, Meet o Teams) — el link se habilita solo para quienes completaron el quiz y su reflexión' },
+  { icono: FileText, texto: 'Revisa el progreso, las reflexiones y compromisos de cada participante' },
+  { icono: Calendar, texto: 'Ofrece uno o varios horarios de sesión grupal (Zoom, Meet o Teams) y atiende las solicitudes de participantes individuales' },
   { icono: MessageSquare, texto: 'Usa las preguntas del manual como guía durante la sesión' },
-  { icono: Award, texto: 'Registra hasta 3 compromisos grupales al terminar' },
+  { icono: Award, texto: 'Tras la sesión, habilita los compromisos de cada participante (individual o en bloque)' },
+  { icono: Target, texto: 'Registra hasta 3 compromisos grupales al terminar' },
   { icono: Star, texto: 'Deja tu retroalimentación sobre la sesión o sugerencias para mejorar la app' },
 ]
 
@@ -90,8 +91,9 @@ export default function Instructivo() {
         <div>
           <p className="font-bold text-morado text-sm mb-1">¿No tienes un equipo?</p>
           <p className="text-xs text-gray-600 leading-relaxed">
-            Puedes usar la app de forma individual, sin unirte a ningún grupo ni depender de un facilitador.
-            Recorres los 14 módulos a tu propio ritmo y tu progreso se completa al registrar tus compromisos personales.
+            Puedes usar la app de forma individual, sin unirte a ningún grupo. Recorres los 14 módulos a tu propio
+            ritmo — cuando te toque la sesión grupal, la solicitas con un facilitador específico o con cualquiera
+            disponible, y él la agenda contigo.
           </p>
         </div>
       </div>

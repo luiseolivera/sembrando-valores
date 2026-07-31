@@ -1,114 +1,171 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../../lib/supabase'
-import { Users, Calendar, Headphones, Target, Trophy, ExternalLink, CheckCircle } from 'lucide-react'
+import { supabase, DEMO_MODE, esPerfilExploracion } from '../../lib/supabase'
+import { Users, Send, Clock, CheckCircle, ArrowRight } from 'lucide-react'
 
 export default function PasoSesion({ modulo, perfil, onAvanzar }) {
-  const [sesion, setSesion] = useState(null)
-  const [compromisos, setCompromisos] = useState([])
+  const [sesiones, setSesiones] = useState([])
+  const [sesionElegidaId, setSesionElegidaId] = useState(null)
+  const [solicitud, setSolicitud] = useState(null)
+  const [habilitado, setHabilitado] = useState(false)
+  const [facilitadores, setFacilitadores] = useState([])
+  const [facilitadorElegido, setFacilitadorElegido] = useState('')
   const [cargando, setCargando] = useState(true)
+  const [enviando, setEnviando] = useState(false)
+  const [error, setError] = useState('')
+
+  const esIndividual = !perfil?.grupo_id
 
   useEffect(() => {
-    cargarDatos()
+    if (DEMO_MODE) { setCargando(false); return }
+    cargar()
   }, [])
 
-  async function cargarDatos() {
-    const [sesRes, compRes] = await Promise.all([
-      supabase.from('sesiones_grupales')
-        .select('*')
-        .eq('grupo_id', perfil.grupo_id || '')
-        .eq('modulo_id', modulo.id)
-        .maybeSingle(),
-      supabase.from('compromisos')
-        .select('*')
-        .eq('grupo_id', perfil.grupo_id || '')
-        .eq('modulo_id', modulo.id),
-    ])
-    setSesion(sesRes.data)
-    setCompromisos(compRes.data || [])
+  async function cargar() {
+    const queries = [
+      supabase.from('sesiones_grupales').select('*').eq('modulo_id', modulo.id).eq('usuario_id', perfil.id),
+      supabase.from('sesion_elecciones').select('sesion_id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
+      supabase.from('solicitudes_sesion').select('*').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
+      supabase.from('habilitaciones_compromisos').select('id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
+    ]
+    if (perfil.grupo_id) {
+      queries.push(supabase.from('sesiones_grupales').select('*').eq('modulo_id', modulo.id).eq('grupo_id', perfil.grupo_id))
+    }
+    if (esIndividual && !perfil.facilitador_asignado_id) {
+      queries.push(supabase.from('usuarios').select('id, nombre').eq('rol', 'facilitador').eq('aprobado', true).order('nombre'))
+    }
+    const results = await Promise.all(queries)
+    const [individualesRes, eleccionRes, solicitudRes, habilitacionRes, grupoRes, facilitadoresRes] = results
+
+    const todas = [...(individualesRes.data || []), ...(perfil.grupo_id ? grupoRes.data || [] : [])]
+    setSesiones(todas)
+    setSesionElegidaId(eleccionRes.data?.sesion_id || null)
+    setSolicitud(solicitudRes.data || null)
+    setHabilitado(!!habilitacionRes.data)
+    if (facilitadoresRes) setFacilitadores(facilitadoresRes.data || [])
     setCargando(false)
   }
 
-  if (cargando) return (
-    <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 text-center">
-      <div className="w-8 h-8 border-4 border-morado border-t-transparent rounded-full animate-spin mx-auto" />
-    </div>
-  )
+  async function elegirSesion(sesionId) {
+    if (esPerfilExploracion(perfil)) { setError('Estás en modo de exploración — regístrate o inicia sesión para elegir una sesión real.'); return }
+    setEnviando(true)
+    await supabase.from('sesion_elecciones').upsert({
+      usuario_id: perfil.id, modulo_id: modulo.id, sesion_id: sesionId,
+    }, { onConflict: 'usuario_id,modulo_id' })
+    setSesionElegidaId(sesionId)
+    setEnviando(false)
+  }
+
+  async function solicitarSesion() {
+    if (esPerfilExploracion(perfil)) { setError('Estás en modo de exploración — regístrate o inicia sesión para solicitar una sesión real.'); return }
+    setError('')
+    setEnviando(true)
+    const facilitadorId = perfil.facilitador_asignado_id || facilitadorElegido || null
+    await supabase.from('solicitudes_sesion').insert({
+      usuario_id: perfil.id, modulo_id: modulo.id, facilitador_id: facilitadorId,
+    })
+    setSolicitud({ estado: 'pendiente', facilitador_id: facilitadorId })
+    setEnviando(false)
+  }
+
+  if (cargando) {
+    return (
+      <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 text-center">
+        <div className="w-8 h-8 border-4 border-morado border-t-transparent rounded-full animate-spin mx-auto" />
+      </div>
+    )
+  }
+
+  const sesionElegida = sesiones.find(s => s.id === sesionElegidaId)
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 space-y-6">
-      <div>
-        <h2 className="font-bold text-morado text-lg mb-1 flex items-center gap-2">
-          <Users size={20} className="text-dorado" /> Paso 4 — Sesión grupal
-        </h2>
-        <p className="text-sm text-gray-500">
-          La sesión grupal es el espacio para compartir tus reflexiones con el equipo.
-        </p>
-      </div>
+    <div className="bg-yellow-50 rounded-2xl shadow-sm border border-yellow-200 p-6">
+      <h2 className="font-bold text-morado text-lg mb-1 flex items-center gap-2">
+        <Users size={20} className="text-dorado-dark" /> Paso — Sesión grupal
+      </h2>
+      <p className="text-sm text-gray-600 mb-5">
+        Antes de registrar tus compromisos, necesitas tener tu sesión grupal de este módulo.
+      </p>
 
-      {/* Sesión agendada */}
-      {sesion ? (
-        <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
-          <h3 className="font-bold text-morado text-sm mb-3 flex items-center gap-2">
-            <Calendar size={16} /> Sesión programada
-          </h3>
-          {sesion.fecha && (
-            <p className="text-sm text-gray-700 mb-2">
-              <span className="font-medium">Fecha:</span>{' '}
-              {new Date(sesion.fecha).toLocaleDateString('es-MX', {
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
-              })}
-            </p>
-          )}
-          {sesion.link_reunion && (
-            <a
-              href={sesion.link_reunion}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-morado text-white text-sm font-bold px-4 py-2 rounded-xl hover:bg-morado-dark transition-colors"
-            >
-              <ExternalLink size={16} /> Unirse a la sesión
-            </a>
-          )}
-        </div>
-      ) : (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-center">
-          <Calendar size={32} className="text-yellow-400 mx-auto mb-2" />
-          <p className="text-sm font-semibold text-yellow-800">Sesión aún no programada</p>
-          <p className="text-xs text-yellow-700 mt-1">
-            Tu facilitador agendará la sesión grupal y te enviará el enlace.
-          </p>
-        </div>
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-4">{error}</div>
       )}
 
-      {/* Compromisos */}
-      {compromisos.length > 0 && (
-        <div className="border border-gray-100 rounded-xl p-4">
-          <h3 className="font-bold text-morado text-sm mb-3 flex items-center gap-2">
-            <Target size={16} className="text-dorado" /> Compromisos del grupo
-          </h3>
-          <div className="space-y-2">
-            {compromisos.map((c) => (
-              <div key={c.id} className="flex items-start gap-2 p-2.5 bg-yellow-50 rounded-lg">
-                <Trophy size={14} className="text-dorado flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-gray-700">{c.compromiso_texto}</p>
-              </div>
-            ))}
+      {habilitado ? (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl">
+            <CheckCircle size={16} /> Tu facilitador ya habilitó tus compromisos de este módulo.
+          </div>
+          <button
+            onClick={onAvanzar}
+            className="w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors flex items-center justify-center gap-2"
+          >
+            Continuar a compromisos <ArrowRight size={16} />
+          </button>
+        </div>
+      ) : sesionElegida ? (
+        <div className="space-y-3">
+          <div className="bg-white rounded-xl border border-yellow-200 p-4">
+            <p className="text-sm font-semibold text-gray-800">
+              {sesionElegida.fecha
+                ? new Date(sesionElegida.fecha).toLocaleString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
+                : 'Sin fecha definida'}
+            </p>
+            <p className="text-xs text-gray-400 truncate">{sesionElegida.link_reunion}</p>
+          </div>
+          <div className="flex items-center gap-2 bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm px-4 py-3 rounded-xl">
+            <Clock size={16} /> Esperando que tu facilitador habilite tus compromisos tras la sesión.
           </div>
         </div>
+      ) : sesiones.length > 0 ? (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Elige una opción de horario</p>
+          {sesiones.map((s) => (
+            <div key={s.id} className="flex items-center justify-between gap-3 bg-white rounded-xl border border-yellow-200 p-3">
+              <p className="text-sm text-gray-700">
+                {s.fecha
+                  ? new Date(s.fecha).toLocaleString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
+                  : 'Sin fecha definida'}
+              </p>
+              <button
+                onClick={() => elegirSesion(s.id)}
+                disabled={enviando}
+                className="flex-shrink-0 bg-morado text-white text-xs font-bold px-3.5 py-2 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-50"
+              >
+                Elegir
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : solicitud ? (
+        <div className="flex items-center gap-2 bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm px-4 py-3 rounded-xl">
+          <Clock size={16} /> Tu solicitud está pendiente — un facilitador te agendará una sesión pronto.
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {esIndividual && !perfil.facilitador_asignado_id && (
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">¿Con qué facilitador?</label>
+              <select
+                value={facilitadorElegido}
+                onChange={(e) => setFacilitadorElegido(e.target.value)}
+                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-morado bg-white"
+              >
+                <option value="">Cualquier facilitador disponible</option>
+                {facilitadores.map((f) => (
+                  <option key={f.id} value={f.id}>{f.nombre}</option>
+                ))}
+              </select>
+            </div>
+          )}
+          <button
+            onClick={solicitarSesion}
+            disabled={enviando}
+            className="w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+          >
+            <Send size={16} /> {enviando ? 'Enviando...' : 'Solicitar sesión grupal'}
+          </button>
+        </div>
       )}
-
-      {/* Marcar completado */}
-      <div className="border-t border-gray-100 pt-4">
-        <p className="text-xs text-gray-500 mb-3">
-          Cuando hayas participado en la sesión grupal, marca el módulo como completado.
-        </p>
-        <button
-          onClick={onAvanzar}
-          className="w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors flex items-center justify-center gap-2"
-        >
-          <CheckCircle size={18} /> Marcar módulo como completado
-        </button>
-      </div>
     </div>
   )
 }

@@ -493,3 +493,163 @@ create policy "sesion_elecciones_facilitador" on sesion_elecciones
         and g.facilitador_id = auth.uid()
     )
   );
+
+-- =====================================================================
+-- Migración: sesión grupal obligatoria antes de compromisos, y
+-- solicitud/asignación de facilitador para participantes individuales.
+-- =====================================================================
+
+-- Sesión puede ser para un grupo entero (grupo_id) o para un individuo
+-- puntual (usuario_id) — nunca ambos a la vez.
+alter table sesiones_grupales add column if not exists usuario_id uuid references usuarios(id) on delete cascade;
+
+-- Facilitador persistente de un participante individual (una vez que
+-- alguno atiende su primera solicitud de sesión, se mantiene para los
+-- módulos siguientes).
+alter table usuarios add column if not exists facilitador_asignado_id uuid references usuarios(id) on delete set null;
+
+-- Directorio: cualquier autenticado puede ver nombre/correo de los
+-- facilitadores aprobados, para poder elegir uno al solicitar sesión.
+create policy "usuarios_directorio_facilitadores" on usuarios
+  for select using (rol = 'facilitador' and aprobado = true);
+
+-- Centraliza "¿soy responsable de este participante?" (su grupo o su
+-- facilitador asignado individual) — se usa en varias políticas nuevas
+-- para evitar repetir/arriesgar recursión.
+create or replace function public.es_responsable_de(target_usuario_id uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from usuarios u
+    left join grupos g on g.id = u.grupo_id
+    where u.id = target_usuario_id
+      and (u.facilitador_asignado_id = auth.uid() or g.facilitador_id = auth.uid())
+  );
+$$;
+
+-- sesiones_grupales: ampliar lectura/escritura para cubrir también
+-- sesiones dirigidas a un individuo (usuario_id), sin tocar el caso de
+-- grupo que ya funcionaba.
+drop policy if exists "sesiones_read" on sesiones_grupales;
+create policy "sesiones_read" on sesiones_grupales
+  for select using (
+    (grupo_id is not null and exists (
+      select 1 from usuarios u where u.id = auth.uid() and u.grupo_id = sesiones_grupales.grupo_id
+    ))
+    or (grupo_id is not null and exists (
+      select 1 from grupos g where g.id = sesiones_grupales.grupo_id and g.facilitador_id = auth.uid()
+    ))
+    or usuario_id = auth.uid()
+    or (usuario_id is not null and public.es_responsable_de(usuario_id))
+  );
+
+drop policy if exists "sesiones_write" on sesiones_grupales;
+create policy "sesiones_write" on sesiones_grupales
+  for all using (
+    public.es_facilitador_aprobado()
+    and (
+      (grupo_id is not null and exists (
+        select 1 from grupos g where g.id = sesiones_grupales.grupo_id and g.facilitador_id = auth.uid()
+      ))
+      or (usuario_id is not null and public.es_responsable_de(usuario_id))
+    )
+  );
+
+-- -----------------------------------------------
+-- Tabla: solicitudes_sesion
+-- El participante pide sesión cuando todavía no hay ninguna para su
+-- módulo. Si elige un facilitador específico (o ya tiene uno asignado),
+-- va directo a su bandeja; si elige "cualquiera", queda en una bolsa
+-- común visible a todos los facilitadores aprobados hasta que alguno
+-- la atienda.
+-- -----------------------------------------------
+create table if not exists solicitudes_sesion (
+  id             uuid primary key default uuid_generate_v4(),
+  usuario_id     uuid references usuarios(id) on delete cascade,
+  modulo_id      int references modulos(id) on delete cascade,
+  facilitador_id uuid references usuarios(id) on delete set null,
+  estado         text not null default 'pendiente' check (estado in ('pendiente', 'atendida')),
+  atendida_por   uuid references usuarios(id) on delete set null,
+  created_at     timestamptz default now(),
+  unique (usuario_id, modulo_id)
+);
+
+alter table solicitudes_sesion enable row level security;
+
+create policy "solicitudes_sesion_self_select" on solicitudes_sesion
+  for select using (usuario_id = auth.uid());
+
+create policy "solicitudes_sesion_self_insert" on solicitudes_sesion
+  for insert with check (usuario_id = auth.uid());
+
+create policy "solicitudes_sesion_facilitador_select" on solicitudes_sesion
+  for select using (
+    facilitador_id = auth.uid()
+    or (facilitador_id is null and estado = 'pendiente')
+  );
+
+create policy "solicitudes_sesion_facilitador_update" on solicitudes_sesion
+  for update using (
+    public.es_facilitador_aprobado()
+    and (facilitador_id = auth.uid() or facilitador_id is null)
+  );
+
+-- Al atender una solicitud pendiente (propia o de la bolsa común), el
+-- facilitador todavía no es "responsable" del participante según
+-- es_responsable_de() — hace falta permitir, puntualmente, la sesión que
+-- resuelve esa solicitud y la asignación que la formaliza.
+create policy "sesiones_insert_por_solicitud" on sesiones_grupales
+  for insert with check (
+    public.es_facilitador_aprobado()
+    and usuario_id is not null
+    and exists (
+      select 1 from solicitudes_sesion s
+      where s.usuario_id = sesiones_grupales.usuario_id
+        and s.modulo_id = sesiones_grupales.modulo_id
+        and s.estado = 'pendiente'
+        and (s.facilitador_id = auth.uid() or s.facilitador_id is null)
+    )
+  );
+
+create policy "usuarios_facilitador_asigna" on usuarios
+  for update using (
+    public.es_facilitador_aprobado()
+    and facilitador_asignado_id is null
+    and exists (
+      select 1 from solicitudes_sesion s
+      where s.usuario_id = usuarios.id
+        and s.estado = 'pendiente'
+        and (s.facilitador_id = auth.uid() or s.facilitador_id is null)
+    )
+  )
+  with check (facilitador_asignado_id = auth.uid());
+
+-- -----------------------------------------------
+-- Tabla: habilitaciones_compromisos
+-- La existencia de una fila = el facilitador confirmó (tras la sesión)
+-- que este participante puede registrar sus compromisos de ese módulo.
+-- El participante nunca puede insertarla — solo el facilitador
+-- responsable de esa persona (su grupo o su asignación individual).
+-- -----------------------------------------------
+create table if not exists habilitaciones_compromisos (
+  id             uuid primary key default uuid_generate_v4(),
+  usuario_id     uuid references usuarios(id) on delete cascade,
+  modulo_id      int references modulos(id) on delete cascade,
+  facilitador_id uuid references usuarios(id) on delete set null,
+  created_at     timestamptz default now(),
+  unique (usuario_id, modulo_id)
+);
+
+alter table habilitaciones_compromisos enable row level security;
+
+create policy "habilitaciones_compromisos_self_select" on habilitaciones_compromisos
+  for select using (usuario_id = auth.uid());
+
+create policy "habilitaciones_compromisos_facilitador" on habilitaciones_compromisos
+  for all using (
+    public.es_facilitador_aprobado() and public.es_responsable_de(usuario_id)
+  );

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase, esPerfilExploracion } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
-import { CheckCircle, ChevronRight, Target, BookOpen, Trophy, Users, Zap, Calendar, ExternalLink, Printer, Lock, Clock, Send } from 'lucide-react'
+import { CheckCircle, ChevronRight, Target, BookOpen, Trophy, Users, Zap, Printer, Lock, Clock, Send } from 'lucide-react'
 
 export default function Dashboard() {
   const { perfil } = useAuth()
@@ -13,9 +13,6 @@ export default function Dashboard() {
   const [logoEmpresa, setLogoEmpresa] = useState(null)
   const [banneroculto, setBanneroculto] = useState(() => localStorage.getItem('svd_oculto_banner_grupo') === '1')
   const [moduloActivoId, setModuloActivoId] = useState(null)
-  const [sesionesDisponibles, setSesionesDisponibles] = useState([])
-  const [sesionElegida, setSesionElegida] = useState(null)
-  const [eligiendoSesion, setEligiendoSesion] = useState(false)
   const [cargando, setCargando] = useState(true)
   const [codigoInput, setCodigoInput] = useState('')
   const [uniendose, setUniendose] = useState(false)
@@ -38,26 +35,22 @@ export default function Dashboard() {
 
     if (perfil.grupo_id) {
       queries.push(
-        supabase.from('sesiones_grupales').select('id, modulo_id, fecha, link_reunion').eq('grupo_id', perfil.grupo_id),
         supabase.from('compromisos').select('*').eq('grupo_id', perfil.grupo_id).order('created_at', { ascending: false }).limit(6),
         supabase.from('grupos').select('modulo_activo_id, logo_empresa_url').eq('id', perfil.grupo_id).maybeSingle(),
-        supabase.from('sesion_elecciones').select('sesion_id, modulo_id').eq('usuario_id', perfil.id),
       )
     }
 
-    const [quizRes, reflexRes, compPersRes, sesionRes, compRes, grupoRes, eleccionRes] = await Promise.all(queries)
+    const [quizRes, reflexRes, compPersRes, compRes, grupoRes] = await Promise.all(queries)
 
     const mapa = {}
     MODULOS.forEach((m) => {
       const quiz = quizRes.data?.find((r) => r.modulo_id === m.id)
       const reflex = reflexRes.data?.some((r) => r.modulo_id === m.id)
-      const sesion = sesionRes?.data?.some((r) => r.modulo_id === m.id)
       const compPersonal = compPersRes.data?.some((r) => r.modulo_id === m.id)
       mapa[m.id] = {
-        video: quiz?.aprobado || reflex || sesion || compPersonal,
+        video: quiz?.aprobado || reflex || compPersonal,
         quiz: quiz?.aprobado,
         reflexion: reflex,
-        sesion: sesion,
         compromisos: compPersonal,
       }
     })
@@ -65,23 +58,7 @@ export default function Dashboard() {
     setCompromisos(compRes?.data || [])
     setCompromisosPersonalesCount(compPersRes.data?.length || 0)
     if (grupoRes?.data?.logo_empresa_url) setLogoEmpresa(grupoRes.data.logo_empresa_url)
-    if (grupoRes?.data?.modulo_activo_id) {
-      const activoId = grupoRes.data.modulo_activo_id
-      setModuloActivoId(activoId)
-      const opciones = (sesionRes?.data || []).filter(s => s.modulo_id === activoId && s.link_reunion)
-      setSesionesDisponibles(opciones)
-      const eleccion = eleccionRes?.data?.find(e => e.modulo_id === activoId)
-      if (eleccion) setSesionElegida(opciones.find(s => s.id === eleccion.sesion_id) || null)
-    }
-  }
-
-  async function elegirSesion(sesionId) {
-    setEligiendoSesion(true)
-    await supabase.from('sesion_elecciones').upsert({
-      usuario_id: perfil.id, modulo_id: moduloActivoId, sesion_id: sesionId,
-    }, { onConflict: 'usuario_id,modulo_id' })
-    setSesionElegida(sesionesDisponibles.find(s => s.id === sesionId) || null)
-    setEligiendoSesion(false)
+    if (grupoRes?.data?.modulo_activo_id) setModuloActivoId(grupoRes.data.modulo_activo_id)
   }
 
   async function unirseAlGrupo() {
@@ -126,21 +103,18 @@ export default function Dashboard() {
     if (!p.video) return 'video'
     if (!p.quiz) return 'quiz'
     if (!p.reflexion) return 'reflexion'
-    // Sin grupo (modo individual) no hay sesión grupal: el módulo se
-    // completa al registrar los compromisos personales.
-    if (perfil?.grupo_id) {
-      if (!p.sesion) return 'sesion'
-    } else {
-      if (!p.compromisos) return 'compromisos'
-    }
+    if (!p.compromisos) return 'pendiente'
     return 'completado'
   }
 
   function porciento(moduloId) {
     const p = progresos[moduloId] || {}
-    const cuartoPaso = perfil?.grupo_id ? p.sesion : p.compromisos
-    const completados = [p.video, p.quiz, p.reflexion, cuartoPaso].filter(Boolean).length
+    const completados = [p.video, p.quiz, p.reflexion, p.compromisos].filter(Boolean).length
     return Math.round((completados / 4) * 100)
+  }
+
+  if (perfil?.rol === 'facilitador') {
+    return <Navigate to="/facilitador" replace />
   }
 
   if (cargando) {
@@ -156,9 +130,6 @@ export default function Dashboard() {
 
   const totalCompletados = MODULOS.filter((m) => pasoActual(m.id) === 'completado').length
   const moduloActivo = moduloActivoId ? MODULOS.find((m) => m.id === moduloActivoId) : null
-  const moduloActivoListo = moduloActivoId
-    ? Boolean(progresos[moduloActivoId]?.quiz && progresos[moduloActivoId]?.reflexion)
-    : false
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -290,83 +261,12 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Tarjeta de sesión grupal */}
-        {sesionesDisponibles.length > 0 && !sesionElegida && (
-          <div className="bg-white rounded-2xl border border-blue-200 shadow-sm p-4 mb-6">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <Calendar size={20} className="text-blue-600" />
-              </div>
-              <div>
-                <p className="font-bold text-gray-800 text-sm">Elige tu sesión grupal</p>
-                <p className="text-xs text-gray-500">Tu facilitador ofrece estos horarios para este módulo</p>
-              </div>
-            </div>
-            <div className="space-y-2">
-              {sesionesDisponibles.map((s) => (
-                <div key={s.id} className="flex items-center justify-between gap-3 bg-gray-50 rounded-xl p-3">
-                  <p className="text-sm text-gray-700">
-                    {s.fecha
-                      ? new Date(s.fecha).toLocaleString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
-                      : 'Sin fecha definida'}
-                  </p>
-                  <button
-                    onClick={() => elegirSesion(s.id)}
-                    disabled={eligiendoSesion}
-                    className="flex-shrink-0 bg-blue-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
-                  >
-                    Elegir
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {sesionElegida && (
-          <div className="bg-white rounded-2xl border border-blue-200 shadow-sm p-4 mb-6">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <Calendar size={20} className="text-blue-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-gray-800 text-sm">Tu sesión grupal</p>
-                {sesionElegida.fecha && (
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    {new Date(sesionElegida.fecha).toLocaleString('es-MX', {
-                      weekday: 'long', day: 'numeric', month: 'long',
-                      hour: '2-digit', minute: '2-digit'
-                    })}
-                  </p>
-                )}
-                {moduloActivoListo ? (
-                  <p className="text-xs text-gray-400 mt-0.5 truncate">{sesionElegida.link_reunion}</p>
-                ) : (
-                  <p className="text-xs text-yellow-600 mt-0.5">
-                    Termina el quiz y tu reflexión de este módulo para desbloquear el link.
-                  </p>
-                )}
-                {sesionesDisponibles.length > 1 && (
-                  <button onClick={() => setSesionElegida(null)} className="text-xs text-morado hover:underline mt-1">
-                    Cambiar sesión elegida
-                  </button>
-                )}
-              </div>
-              {moduloActivoListo ? (
-                <a
-                  href={sesionElegida.link_reunion}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-shrink-0 flex items-center gap-1.5 bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors"
-                >
-                  <ExternalLink size={13} /> Entrar
-                </a>
-              ) : (
-                <span className="flex-shrink-0 flex items-center gap-1.5 bg-gray-100 text-gray-400 text-xs font-bold px-4 py-2 rounded-xl">
-                  <Lock size={13} /> Bloqueado
-                </span>
-              )}
-            </div>
+        {/* Indicador compacto: sesión/compromisos pendientes del módulo activo */}
+        {moduloActivo && pasoActual(moduloActivo.id) === 'pendiente' && (
+          <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs px-4 py-2.5 rounded-xl mb-6">
+            <Users size={14} className="flex-shrink-0" />
+            Te falta tu sesión grupal o la habilitación de compromisos del módulo activo —
+            <Link to={`/modulo/${moduloActivo.id}`} className="font-semibold hover:underline">continuar</Link>
           </div>
         )}
 
@@ -451,8 +351,7 @@ export default function Dashboard() {
                     <span className="text-xs text-morado font-medium">
                       {paso === 'quiz' && '📝 Hacer quiz'}
                       {paso === 'reflexion' && '✍️ Reflexionar'}
-                      {paso === 'sesion' && '👥 Sesión grupal pendiente'}
-                      {paso === 'compromisos' && '🎯 Registrar compromisos'}
+                      {paso === 'pendiente' && '👉 Continuar módulo'}
                     </span>
                   )}
                   {completado && (

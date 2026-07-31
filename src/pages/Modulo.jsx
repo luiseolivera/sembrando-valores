@@ -6,15 +6,19 @@ import { MODULOS } from '../data/modulos'
 import PasoContenido from './pasos/PasoContenido'
 import PasoQuiz from './pasos/PasoQuiz'
 import PasoReflexion from './pasos/PasoReflexion'
+import PasoSesion from './pasos/PasoSesion'
 import PasoCompromisos from './pasos/PasoCompromisos'
-import { BookOpen, CheckSquare, PenLine, Target, ChevronLeft, CheckCircle, Lock } from 'lucide-react'
+import { BookOpen, CheckSquare, PenLine, Users, Target, ChevronLeft, CheckCircle, Lock } from 'lucide-react'
 
 const PASOS_CONFIG = [
   { key: 'contenido', label: 'Contenido', icono: BookOpen },
   { key: 'quiz', label: 'Quiz', icono: CheckSquare },
   { key: 'reflexion', label: 'Reflexión', icono: PenLine },
+  { key: 'sesion', label: 'Sesión', icono: Users },
   { key: 'compromisos', label: 'Compromisos', icono: Target },
 ]
+
+const ORDEN_PASOS = ['contenido', 'quiz', 'reflexion', 'sesion', 'compromisos']
 
 export default function Modulo() {
   const { id } = useParams()
@@ -22,7 +26,7 @@ export default function Modulo() {
   const navigate = useNavigate()
   const modulo = MODULOS.find(m => m.id === parseInt(id))
   const [pasoActual, setPasoActual] = useState('contenido')
-  const [progreso, setProgreso] = useState({ contenido: false, quiz: false, reflexion: false, compromisos: false })
+  const [progreso, setProgreso] = useState({ contenido: false, quiz: false, reflexion: false, sesion: false, compromisos: false })
   const [cargando, setCargando] = useState(true)
   const [moduloActivoGrupo, setModuloActivoGrupo] = useState(null)
 
@@ -36,25 +40,28 @@ export default function Modulo() {
     const queries = [
       supabase.from('quiz_respuestas').select('aprobado').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
       supabase.from('reflexiones').select('id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).limit(1),
+      supabase.from('habilitaciones_compromisos').select('id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
       supabase.from('compromisos_personales').select('id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).limit(1),
     ]
     if (perfil.rol === 'participante' && perfil.grupo_id) {
       queries.push(supabase.from('grupos').select('modulo_activo_id').eq('id', perfil.grupo_id).maybeSingle())
     }
-    const [quizRes, reflexRes, compRes, grupoRes] = await Promise.all(queries)
+    const [quizRes, reflexRes, habilitacionRes, compRes, grupoRes] = await Promise.all(queries)
 
     if (grupoRes) setModuloActivoGrupo(grupoRes.data?.modulo_activo_id ?? null)
 
     const quizOk = quizRes.data?.aprobado || false
     const reflexOk = (reflexRes.data?.length || 0) > 0
+    const sesionOk = !!habilitacionRes.data
     const compOk = (compRes.data?.length || 0) > 0
 
-    const nuevo = { contenido: quizOk || reflexOk, quiz: quizOk, reflexion: reflexOk, compromisos: compOk }
+    const nuevo = { contenido: quizOk || reflexOk, quiz: quizOk, reflexion: reflexOk, sesion: sesionOk, compromisos: compOk }
     setProgreso(nuevo)
 
     if (!nuevo.contenido) setPasoActual('contenido')
     else if (!nuevo.quiz) setPasoActual('quiz')
     else if (!nuevo.reflexion) setPasoActual('reflexion')
+    else if (!nuevo.compromisos) setPasoActual(nuevo.sesion ? 'compromisos' : 'sesion')
     else setPasoActual('compromisos')
     setCargando(false)
   }
@@ -62,11 +69,10 @@ export default function Modulo() {
   const bloqueadoPorGrupo = perfil?.rol === 'participante' && perfil?.grupo_id && modulo && moduloActivoGrupo !== modulo.id
 
   function avanzar() {
-    const orden = ['contenido', 'quiz', 'reflexion', 'compromisos']
-    const i = orden.indexOf(pasoActual)
+    const i = ORDEN_PASOS.indexOf(pasoActual)
     setProgreso(p => ({ ...p, [pasoActual]: true }))
-    if (i < orden.length - 1) {
-      setPasoActual(orden[i + 1])
+    if (i < ORDEN_PASOS.length - 1) {
+      setPasoActual(ORDEN_PASOS[i + 1])
     } else {
       setProgreso(p => ({ ...p, compromisos: true }))
       navigate('/dashboard')
@@ -74,10 +80,9 @@ export default function Modulo() {
   }
 
   function irAPaso(key) {
-    const orden = ['contenido', 'quiz', 'reflexion', 'compromisos']
-    const idxDestino = orden.indexOf(key)
-    const idxActual = orden.indexOf(pasoActual)
-    if (idxDestino <= idxActual || progreso[orden[idxDestino - 1]]) {
+    const idxDestino = ORDEN_PASOS.indexOf(key)
+    const idxActual = ORDEN_PASOS.indexOf(pasoActual)
+    if (idxDestino <= idxActual || progreso[ORDEN_PASOS[idxDestino - 1]]) {
       setPasoActual(key)
     }
   }
@@ -111,7 +116,7 @@ export default function Modulo() {
     </div>
   )
 
-  const porciento = Math.round((Object.values(progreso).filter(Boolean).length / 4) * 100)
+  const porciento = Math.round((Object.values(progreso).filter(Boolean).length / ORDEN_PASOS.length) * 100)
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -177,6 +182,7 @@ export default function Modulo() {
         {pasoActual === 'contenido' && <PasoContenido modulo={modulo} onAvanzar={avanzar} />}
         {pasoActual === 'quiz' && <PasoQuiz modulo={modulo} perfil={perfil} onAvanzar={avanzar} />}
         {pasoActual === 'reflexion' && <PasoReflexion modulo={modulo} perfil={perfil} onAvanzar={avanzar} />}
+        {pasoActual === 'sesion' && <PasoSesion modulo={modulo} perfil={perfil} onAvanzar={avanzar} />}
         {pasoActual === 'compromisos' && <PasoCompromisos modulo={modulo} perfil={perfil} onAvanzar={avanzar} />}
       </div>
     </div>

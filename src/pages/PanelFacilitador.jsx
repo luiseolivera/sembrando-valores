@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { supabase, esPerfilExploracion } from '../lib/supabase'
+import { supabase, DEMO_MODE, esPerfilExploracion } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
 import {
   Users, CheckCircle, FileText, Calendar, Plus, Link as LinkIcon,
   Target, Star, ChevronDown, ChevronUp, Save, Clipboard, Zap,
-  CheckSquare, XCircle, ArrowLeft, PlusCircle, MessageCircle, AlertTriangle, Trash2
+  CheckSquare, XCircle, ArrowLeft, PlusCircle, MessageCircle, AlertTriangle, Trash2,
+  Unlock, Send, Inbox
 } from 'lucide-react'
 
 const PREGUNTA_RETROALIMENTACION = '¿Hay observaciones o sugerencias para mejorar la próxima sesión y/o para mejorar esta aplicación?'
@@ -17,9 +18,8 @@ function generarCodigo() {
 // ─── Vista: lista de grupos ───────────────────────────────────────────────────
 function ListaGrupos({ grupos, reporte, onSeleccionar, onCrear, creando, nombreNuevo, setNombreNuevo, errorCrear }) {
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-3xl mx-auto px-4">
-        <div className="flex items-center justify-between mb-8">
+    <div>
+      <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold text-morado">Mis grupos</h1>
             <p className="text-gray-500 text-sm mt-1">Selecciona un grupo para gestionarlo</p>
@@ -116,7 +116,6 @@ function ListaGrupos({ grupos, reporte, onSeleccionar, onCrear, creando, nombreN
             ))}
           </div>
         )}
-      </div>
     </div>
   )
 }
@@ -133,8 +132,11 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
   const [compromisoTexto, setCompromisoTexto] = useState(['', '', ''])
   const [sesiones, setSesiones] = useState([])
   const [eleccionesPorSesion, setEleccionesPorSesion] = useState({})
+  const [eleccionesPorUsuario, setEleccionesPorUsuario] = useState({})
   const [sesionForm, setSesionForm] = useState({ fecha: '', link: '' })
   const [eliminandoSesion, setEliminandoSesion] = useState(null)
+  const [habilitaciones, setHabilitaciones] = useState({})
+  const [habilitandoId, setHabilitandoId] = useState(null)
   const [retroalimentacion, setRetroalimentacion] = useState('')
   const [guardandoRetro, setGuardandoRetro] = useState(false)
   const [tabActiva, setTabActiva] = useState('progreso')
@@ -182,29 +184,37 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
 
     const sesionIds = (sesionesData || []).map(s => s.id)
     if (sesionIds.length > 0) {
-      const { data: eleccionesData } = await supabase.from('sesion_elecciones').select('sesion_id').in('sesion_id', sesionIds)
+      const { data: eleccionesData } = await supabase.from('sesion_elecciones').select('sesion_id, usuario_id').in('sesion_id', sesionIds)
       const conteo = {}
-      ;(eleccionesData || []).forEach(e => { conteo[e.sesion_id] = (conteo[e.sesion_id] || 0) + 1 })
+      const porUsuario = {}
+      ;(eleccionesData || []).forEach(e => {
+        conteo[e.sesion_id] = (conteo[e.sesion_id] || 0) + 1
+        porUsuario[e.usuario_id] = e.sesion_id
+      })
       setEleccionesPorSesion(conteo)
+      setEleccionesPorUsuario(porUsuario)
     } else {
       setEleccionesPorSesion({})
+      setEleccionesPorUsuario({})
     }
 
     const ids = participantes.map(p => p.id)
     if (ids.length === 0) {
       setReflexiones([]); setCompromisosPersonales([]); setQuizResultados([])
-      setComentariosReflexion({}); setComentariosDraft({})
+      setComentariosReflexion({}); setComentariosDraft({}); setHabilitaciones({})
       return
     }
-    const [refRes, compRes, quizRes, comentRes] = await Promise.all([
+    const [refRes, compRes, quizRes, comentRes, habilRes] = await Promise.all([
       supabase.from('reflexiones').select('*, usuarios(nombre)').eq('modulo_id', moduloSeleccionado.id).in('usuario_id', ids),
       supabase.from('compromisos_personales').select('*').eq('modulo_id', moduloSeleccionado.id).in('usuario_id', ids),
       supabase.from('quiz_respuestas').select('*').eq('modulo_id', moduloSeleccionado.id).in('usuario_id', ids),
       supabase.from('comentarios_reflexion').select('*').eq('modulo_id', moduloSeleccionado.id).in('usuario_id', ids),
+      supabase.from('habilitaciones_compromisos').select('usuario_id').eq('modulo_id', moduloSeleccionado.id).in('usuario_id', ids),
     ])
     setReflexiones(refRes.data || [])
     setCompromisosPersonales(compRes.data || [])
     setQuizResultados(quizRes.data || [])
+    setHabilitaciones(Object.fromEntries((habilRes.data || []).map(h => [h.usuario_id, true])))
 
     const porUsuario = {}
     const draft = {}
@@ -293,6 +303,35 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
     await supabase.from('sesiones_grupales').delete().eq('id', id)
     setSesiones(prev => prev.filter(s => s.id !== id))
     setEliminandoSesion(null)
+  }
+
+  async function habilitarCompromisos(usuarioId) {
+    if (bloqueadoPorExploracion()) return
+    setHabilitandoId(usuarioId)
+    await supabase.from('habilitaciones_compromisos').upsert({
+      usuario_id: usuarioId, modulo_id: moduloSeleccionado.id, facilitador_id: facilitadorId,
+    }, { onConflict: 'usuario_id,modulo_id' })
+    setHabilitaciones(prev => ({ ...prev, [usuarioId]: true }))
+    setHabilitandoId(null)
+  }
+
+  async function habilitarTodosDeSesion(sesionId) {
+    if (bloqueadoPorExploracion()) return
+    const usuarioIds = Object.entries(eleccionesPorUsuario).filter(([, sid]) => sid === sesionId).map(([uid]) => uid)
+    if (!usuarioIds.length) return
+    setHabilitandoId(sesionId)
+    await supabase.from('habilitaciones_compromisos').upsert(
+      usuarioIds.map(uid => ({ usuario_id: uid, modulo_id: moduloSeleccionado.id, facilitador_id: facilitadorId })),
+      { onConflict: 'usuario_id,modulo_id' }
+    )
+    setHabilitaciones(prev => {
+      const nuevo = { ...prev }
+      usuarioIds.forEach(uid => { nuevo[uid] = true })
+      return nuevo
+    })
+    setHabilitandoId(null)
+    setExito(`Compromisos habilitados para ${usuarioIds.length} participante${usuarioIds.length === 1 ? '' : 's'}.`)
+    setTimeout(() => setExito(''), 4000)
   }
 
   async function guardarRetroalimentacion() {
@@ -520,11 +559,12 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-4 gap-2 px-5 py-2 bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                <div className="grid grid-cols-5 gap-2 px-5 py-2 bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-400 uppercase tracking-wide">
                   <div>Participante</div>
                   <div className="text-center">Quiz</div>
                   <div className="text-center">Reflexión</div>
                   <div className="text-center">Estado</div>
+                  <div className="text-center">Compromisos</div>
                 </div>
                 <div className="divide-y divide-gray-50">
                   {participantes.map(p => {
@@ -539,7 +579,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                       : quiz ? 'bg-red-100 text-red-600'
                       : 'bg-gray-100 text-gray-400'
                     return (
-                      <div key={p.id} className="grid grid-cols-4 gap-2 items-center px-5 py-3.5">
+                      <div key={p.id} className="grid grid-cols-5 gap-2 items-center px-5 py-3.5">
                         <div>
                           <p className="font-medium text-gray-800 text-sm">{p.nombre}</p>
                           <p className="text-xs text-gray-400">{p.correo}</p>
@@ -558,6 +598,21 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                         </div>
                         <div className="text-center">
                           <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${colorEstado}`}>{estado}</span>
+                        </div>
+                        <div className="text-center">
+                          {habilitaciones[p.id] ? (
+                            <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700">
+                              <Unlock size={12} /> Habilitado
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() => habilitarCompromisos(p.id)}
+                              disabled={habilitandoId === p.id}
+                              className="text-xs font-semibold text-morado bg-purple-50 hover:bg-purple-100 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50"
+                            >
+                              {habilitandoId === p.id ? '...' : 'Habilitar'}
+                            </button>
+                          )}
                         </div>
                       </div>
                     )
@@ -692,14 +747,25 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                           {eleccionesPorSesion[s.id] || 0} participante{eleccionesPorSesion[s.id] === 1 ? '' : 's'} eligió esta opción
                         </p>
                       </div>
-                      <button
-                        onClick={() => eliminarSesion(s.id)}
-                        disabled={eliminandoSesion === s.id}
-                        className="flex-shrink-0 text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50"
-                        title="Eliminar"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {(eleccionesPorSesion[s.id] || 0) > 0 && (
+                          <button
+                            onClick={() => habilitarTodosDeSesion(s.id)}
+                            disabled={habilitandoId === s.id}
+                            className="flex items-center gap-1.5 text-xs font-semibold text-morado bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                          >
+                            <Unlock size={13} /> {habilitandoId === s.id ? 'Habilitando...' : 'Habilitar a todos'}
+                          </button>
+                        )}
+                        <button
+                          onClick={() => eliminarSesion(s.id)}
+                          disabled={eliminandoSesion === s.id}
+                          className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50"
+                          title="Eliminar"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -786,6 +852,137 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
   )
 }
 
+// ─── Vista: solicitudes de sesión (participantes individuales) ───────────────
+function SolicitudesSesion({ facilitadorId }) {
+  const [solicitudes, setSolicitudes] = useState([])
+  const [cargando, setCargando] = useState(true)
+  const [formAbierto, setFormAbierto] = useState(null)
+  const [form, setForm] = useState({ fecha: '', link: '' })
+  const [enviando, setEnviando] = useState(null)
+  const [avisoExploracion, setAvisoExploracion] = useState(false)
+
+  useEffect(() => {
+    if (DEMO_MODE) { setCargando(false); return }
+    cargar()
+  }, [])
+
+  async function cargar() {
+    const { data } = await supabase
+      .from('solicitudes_sesion')
+      .select('*, usuarios!solicitudes_sesion_usuario_id_fkey(nombre, correo)')
+      .eq('estado', 'pendiente')
+      .or(`facilitador_id.eq.${facilitadorId},facilitador_id.is.null`)
+      .order('created_at')
+    setSolicitudes(data || [])
+    setCargando(false)
+  }
+
+  function bloqueadoPorExploracion() {
+    if (!esPerfilExploracion({ id: facilitadorId })) return false
+    setAvisoExploracion(true)
+    setTimeout(() => setAvisoExploracion(false), 4000)
+    return true
+  }
+
+  async function atender(solicitud) {
+    if (bloqueadoPorExploracion()) return
+    if (!form.link) return
+    setEnviando(solicitud.id)
+
+    await supabase.from('sesiones_grupales').insert({
+      usuario_id: solicitud.usuario_id, modulo_id: solicitud.modulo_id,
+      fecha: form.fecha || null, link_reunion: form.link,
+    })
+    await supabase.from('usuarios').update({ facilitador_asignado_id: facilitadorId })
+      .eq('id', solicitud.usuario_id).is('facilitador_asignado_id', null)
+    await supabase.from('solicitudes_sesion').update({
+      estado: 'atendida', atendida_por: facilitadorId, facilitador_id: facilitadorId,
+    }).eq('id', solicitud.id)
+
+    setSolicitudes(prev => prev.filter(s => s.id !== solicitud.id))
+    setFormAbierto(null)
+    setForm({ fecha: '', link: '' })
+    setEnviando(null)
+  }
+
+  if (cargando) return (
+    <div className="flex items-center justify-center py-16">
+      <div className="w-10 h-10 border-4 border-morado border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
+
+  return (
+    <div className="space-y-4">
+      {avisoExploracion && (
+        <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm px-4 py-3 rounded-xl">
+          <AlertTriangle size={16} /> Estás en modo de exploración — regístrate o inicia sesión para agendar sesiones reales.
+        </div>
+      )}
+
+      {solicitudes.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-12 text-center">
+          <Inbox size={40} className="mx-auto text-gray-200 mb-4" />
+          <p className="font-semibold text-gray-600 mb-1">No hay solicitudes pendientes</p>
+          <p className="text-sm text-gray-400">Aquí verás a los participantes individuales que pidan una sesión grupal.</p>
+        </div>
+      ) : solicitudes.map((s) => {
+        const modulo = MODULOS.find(m => m.id === s.modulo_id)
+        return (
+          <div key={s.id} className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+            <div className="flex items-center justify-between gap-3 mb-1">
+              <div>
+                <p className="font-bold text-gray-800 text-sm">{s.usuarios?.nombre || 'Participante'}</p>
+                <p className="text-xs text-gray-400">{s.usuarios?.correo}</p>
+              </div>
+              {!s.facilitador_id && (
+                <span className="text-xs bg-yellow-100 text-yellow-700 font-semibold px-2 py-0.5 rounded-full flex-shrink-0">Bolsa común</span>
+              )}
+            </div>
+            <p className="text-xs text-morado font-medium mb-3">
+              Módulo {modulo?.numero} — {modulo?.titulo}
+            </p>
+
+            {formAbierto === s.id ? (
+              <div className="space-y-3 pt-3 border-t border-gray-100">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Fecha y hora</label>
+                  <input type="datetime-local" value={form.fecha}
+                    onChange={e => setForm({ ...form, fecha: e.target.value })}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-morado" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Enlace (Zoom, Google Meet o Teams)</label>
+                  <input type="url" value={form.link}
+                    onChange={e => setForm({ ...form, link: e.target.value })}
+                    placeholder="https://meet.google.com/..."
+                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-morado" />
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => atender(s)} disabled={!form.link || enviando === s.id}
+                    className="flex-1 flex items-center justify-center gap-2 bg-morado text-white font-bold py-2.5 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40">
+                    <Send size={14} /> {enviando === s.id ? 'Agendando...' : 'Agendar y atender'}
+                  </button>
+                  <button onClick={() => { setFormAbierto(null); setForm({ fecha: '', link: '' }) }}
+                    className="text-xs font-semibold text-gray-400 hover:text-gray-600 px-3">
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setFormAbierto(s.id)}
+                className="flex items-center gap-1.5 text-xs font-semibold text-morado bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                <Calendar size={13} /> Agendar sesión
+              </button>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 // ─── Componente principal ─────────────────────────────────────────────────────
 export default function PanelFacilitador() {
   const { perfil } = useAuth()
@@ -796,6 +993,7 @@ export default function PanelFacilitador() {
   const [creando, setCreando] = useState(false)
   const [nombreNuevo, setNombreNuevo] = useState('')
   const [errorCrear, setErrorCrear] = useState('')
+  const [vista, setVista] = useState('grupos')
 
   useEffect(() => { if (perfil) cargarGrupos() }, [perfil])
 
@@ -883,15 +1081,38 @@ export default function PanelFacilitador() {
   )
 
   return (
-    <ListaGrupos
-      grupos={grupos}
-      reporte={reporte}
-      onSeleccionar={setGrupoActivo}
-      onCrear={manejarCrear}
-      creando={creando}
-      nombreNuevo={nombreNuevo}
-      setNombreNuevo={setNombreNuevo}
-      errorCrear={errorCrear}
-    />
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-3xl mx-auto px-4">
+        <div className="flex gap-1 bg-gray-100 p-1 rounded-xl mb-6 w-fit">
+          <button
+            onClick={() => setVista('grupos')}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${vista === 'grupos' ? 'bg-white text-morado shadow-sm' : 'text-gray-500 hover:text-morado'}`}
+          >
+            <Users size={15} /> Mis grupos
+          </button>
+          <button
+            onClick={() => setVista('solicitudes')}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${vista === 'solicitudes' ? 'bg-white text-morado shadow-sm' : 'text-gray-500 hover:text-morado'}`}
+          >
+            <Inbox size={15} /> Solicitudes de sesión
+          </button>
+        </div>
+
+        {vista === 'grupos' ? (
+          <ListaGrupos
+            grupos={grupos}
+            reporte={reporte}
+            onSeleccionar={setGrupoActivo}
+            onCrear={manejarCrear}
+            creando={creando}
+            nombreNuevo={nombreNuevo}
+            setNombreNuevo={setNombreNuevo}
+            errorCrear={errorCrear}
+          />
+        ) : (
+          <SolicitudesSesion facilitadorId={perfil.id} />
+        )}
+      </div>
+    </div>
   )
 }
