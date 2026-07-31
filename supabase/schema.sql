@@ -672,3 +672,82 @@ create policy "habilitaciones_compromisos_facilitador" on habilitaciones_comprom
   for all using (
     public.es_facilitador_aprobado() and public.es_responsable_de(usuario_id)
   );
+
+-- =====================================================================
+-- Migración: eliminar el concepto de "sesión individual". Todas las
+-- sesiones son grupales — un participante sin grupo se integra a uno,
+-- ya sea porque el facilitador lo asigna al atender su solicitud, o
+-- porque se une con un código de grupo. No debe existir otra modalidad.
+-- =====================================================================
+
+-- Limpia cualquier sesión huérfana que hubiera quedado dirigida a un
+-- individuo (usuario_id sin grupo_id) — ya no es una modalidad válida.
+delete from sesiones_grupales where grupo_id is null;
+
+drop policy if exists "sesiones_insert_por_solicitud" on sesiones_grupales;
+drop policy if exists "usuarios_facilitador_asigna" on usuarios;
+drop policy if exists "sesiones_read" on sesiones_grupales;
+drop policy if exists "sesiones_write" on sesiones_grupales;
+
+-- "Responsable de" un participante ahora solo puede significar "es el
+-- facilitador de su grupo" — ya no existe la asignación individual.
+-- Se redefine antes de soltar la columna para no dejar, ni un instante,
+-- una función activa que referencie una columna que va a desaparecer.
+create or replace function public.es_responsable_de(target_usuario_id uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from usuarios u
+    join grupos g on g.id = u.grupo_id
+    where u.id = target_usuario_id
+      and g.facilitador_id = auth.uid()
+  );
+$$;
+
+alter table sesiones_grupales drop column if exists usuario_id;
+alter table usuarios drop column if exists facilitador_asignado_id;
+
+-- Vuelve a las políticas originales de sesiones_grupales (solo por grupo).
+create policy "sesiones_read" on sesiones_grupales
+  for select using (
+    exists (
+      select 1 from usuarios u
+      where u.id = auth.uid() and u.grupo_id = sesiones_grupales.grupo_id
+    )
+    or exists (
+      select 1 from grupos g where g.id = sesiones_grupales.grupo_id and g.facilitador_id = auth.uid()
+    )
+  );
+
+create policy "sesiones_write" on sesiones_grupales
+  for all using (
+    exists (
+      select 1 from grupos g
+      where g.id = sesiones_grupales.grupo_id
+        and g.facilitador_id = auth.uid()
+    )
+    and public.es_facilitador_aprobado()
+  );
+
+-- Permite al facilitador asignar a un grupo propio al participante que
+-- le dejó una solicitud pendiente (a él directamente o a la bolsa
+-- común) — así es como se "va formando el grupo" con quienes solicitan.
+create policy "usuarios_facilitador_asigna_grupo" on usuarios
+  for update using (
+    public.es_facilitador_aprobado()
+    and exists (
+      select 1 from solicitudes_sesion s
+      where s.usuario_id = usuarios.id
+        and s.estado = 'pendiente'
+        and (s.facilitador_id = auth.uid() or s.facilitador_id is null)
+    )
+  )
+  with check (
+    exists (
+      select 1 from grupos g where g.id = usuarios.grupo_id and g.facilitador_id = auth.uid()
+    )
+  );

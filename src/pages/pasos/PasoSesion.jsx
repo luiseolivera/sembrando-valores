@@ -22,25 +22,22 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
 
   async function cargar() {
     const promesas = {
-      individuales: supabase.from('sesiones_grupales').select('*').eq('modulo_id', modulo.id).eq('usuario_id', perfil.id),
       eleccion: supabase.from('sesion_elecciones').select('sesion_id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
-      solicitud: supabase.from('solicitudes_sesion').select('*').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
       habilitacion: supabase.from('habilitaciones_compromisos').select('id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
     }
     if (perfil.grupo_id) {
       promesas.grupo = supabase.from('sesiones_grupales').select('*').eq('modulo_id', modulo.id).eq('grupo_id', perfil.grupo_id)
-    }
-    if (esIndividual && !perfil.facilitador_asignado_id) {
+    } else {
+      promesas.solicitud = supabase.from('solicitudes_sesion').select('*').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle()
       promesas.facilitadores = supabase.from('usuarios').select('id, nombre').eq('rol', 'facilitador').eq('aprobado', true).order('nombre')
     }
     const claves = Object.keys(promesas)
     const results = await Promise.all(claves.map((k) => promesas[k]))
     const res = Object.fromEntries(claves.map((k, i) => [k, results[i]]))
 
-    const todas = [...(res.individuales.data || []), ...(perfil.grupo_id ? res.grupo?.data || [] : [])]
-    setSesiones(todas)
+    setSesiones(res.grupo?.data || [])
     setSesionElegidaId(res.eleccion.data?.sesion_id || null)
-    setSolicitud(res.solicitud.data || null)
+    setSolicitud(res.solicitud?.data || null)
     setHabilitado(!!res.habilitacion.data)
     if (res.facilitadores) setFacilitadores(res.facilitadores.data || [])
     setCargando(false)
@@ -56,11 +53,11 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
     setEnviando(false)
   }
 
-  async function solicitarSesion() {
+  async function solicitarUnirseAGrupo() {
     if (esPerfilExploracion(perfil)) { setError('Estás en modo de exploración — regístrate o inicia sesión para solicitar una sesión real.'); return }
     setError('')
     setEnviando(true)
-    const facilitadorId = perfil.facilitador_asignado_id || facilitadorElegido || null
+    const facilitadorId = facilitadorElegido || null
     await supabase.from('solicitudes_sesion').insert({
       usuario_id: perfil.id, modulo_id: modulo.id, facilitador_id: facilitadorId,
     })
@@ -137,13 +134,13 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
             </div>
           ))}
         </div>
-      ) : solicitud ? (
-        <div className="flex items-center gap-2 bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm px-4 py-3 rounded-xl">
-          <Clock size={16} /> Tu solicitud está pendiente — un facilitador te agendará una sesión pronto.
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {esIndividual && !perfil.facilitador_asignado_id && (
+      ) : esIndividual ? (
+        solicitud ? (
+          <div className="flex items-center gap-2 bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm px-4 py-3 rounded-xl">
+            <Clock size={16} /> Tu solicitud está pendiente — un facilitador te integrará a un grupo pronto.
+          </div>
+        ) : (
+          <div className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">¿Con qué facilitador?</label>
               <select
@@ -157,14 +154,18 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
                 ))}
               </select>
             </div>
-          )}
-          <button
-            onClick={solicitarSesion}
-            disabled={enviando}
-            className="w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
-          >
-            <Send size={16} /> {enviando ? 'Enviando...' : 'Solicitar sesión grupal'}
-          </button>
+            <button
+              onClick={solicitarUnirseAGrupo}
+              disabled={enviando}
+              className="w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+            >
+              <Send size={16} /> {enviando ? 'Enviando...' : 'Solicitar unirme a un grupo'}
+            </button>
+          </div>
+        )
+      ) : (
+        <div className="flex items-center gap-2 bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm px-4 py-3 rounded-xl">
+          <Clock size={16} /> Tu facilitador todavía no agenda una sesión para este módulo.
         </div>
       )}
     </div>

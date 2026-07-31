@@ -11,7 +11,7 @@ const pasosParticipante = [
   { icono: Headphones, texto: 'Escucha el audio completo y marca que lo escuchaste' },
   { icono: CheckSquare, texto: 'Responde el quiz de comprensión (mínimo 70% para avanzar)' },
   { icono: PenLine, texto: 'Escribe tu reflexión personal y envíala' },
-  { icono: Users, texto: 'Elige una sesión grupal disponible o, si no tienes grupo, solicita una con un facilitador específico o con cualquiera disponible' },
+  { icono: Users, texto: 'Elige una sesión grupal disponible o, si no tienes grupo, solicita integrarte a uno con un facilitador específico o con cualquiera disponible' },
   { icono: Target, texto: 'Registra tus compromisos personales — se habilitan cuando tu facilitador confirma que ya tuviste tu sesión' },
   { icono: Printer, texto: 'Imprime tus reflexiones y compromisos desde "Mis reflexiones y compromisos"' },
 ]
@@ -21,7 +21,7 @@ const pasosFacilitador = [
   { icono: Share2, texto: 'Crea uno o varios grupos (uno por cada equipo que acompañes) y comparte el código o link por la app o por WhatsApp' },
   { icono: Zap, texto: 'Activa el módulo que trabajarán' },
   { icono: FileText, texto: 'Revisa el progreso, las reflexiones y compromisos de cada participante' },
-  { icono: Calendar, texto: 'Ofrece uno o varios horarios de sesión grupal (Zoom, Meet o Teams) y atiende las solicitudes de participantes individuales' },
+  { icono: Calendar, texto: 'Ofrece uno o varios horarios de sesión grupal (Zoom, Meet o Teams) y ve formando grupos con quienes solicitan integrarse, hasta completarlos' },
   { icono: MessageSquare, texto: 'Usa las preguntas del manual como guía durante la sesión' },
   { icono: Award, texto: 'Tras la sesión, habilita los compromisos de cada participante (individual o en bloque)' },
   { icono: Target, texto: 'Registra hasta 3 compromisos grupales al terminar' },
@@ -91,9 +91,10 @@ export default function Instructivo() {
         <div>
           <p className="font-bold text-morado text-sm mb-1">¿No tienes un equipo?</p>
           <p className="text-xs text-gray-600 leading-relaxed">
-            Puedes usar la app de forma individual, sin unirte a ningún grupo. Recorres los 14 módulos a tu propio
-            ritmo — cuando te toque la sesión grupal, la solicitas con un facilitador específico o con cualquiera
-            disponible, y él la agenda contigo.
+            Puedes registrarte sin un código de grupo y avanzar por tu cuenta hasta que te toque la sesión grupal.
+            En ese momento solicitas integrarte a un grupo (con un facilitador específico o con cualquiera
+            disponible) y él te asigna a uno de los suyos — desde ahí sigues como cualquier otro participante
+            de ese grupo.
           </p>
         </div>
       </div>

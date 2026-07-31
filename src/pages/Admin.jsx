@@ -282,7 +282,7 @@ export default function Admin() {
           </div>
           <div>
             <h2 className="text-xl font-bold text-morado">Solicitudes de sesión pendientes</h2>
-            <p className="text-gray-500 text-sm">Participantes individuales esperando que un facilitador les agende sesión.</p>
+            <p className="text-gray-500 text-sm">Participantes sin grupo esperando que un facilitador los integre a uno.</p>
           </div>
         </div>
 

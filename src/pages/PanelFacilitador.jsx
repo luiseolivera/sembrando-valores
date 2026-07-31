@@ -6,7 +6,7 @@ import {
   Users, CheckCircle, FileText, Calendar, Plus, Link as LinkIcon,
   Target, Star, ChevronDown, ChevronUp, Save, Clipboard, Zap,
   CheckSquare, XCircle, ArrowLeft, PlusCircle, MessageCircle, AlertTriangle, Trash2,
-  Unlock, Send, Inbox, Mail
+  Unlock, Inbox
 } from 'lucide-react'
 
 const PREGUNTA_RETROALIMENTACION = '¿Hay observaciones o sugerencias para mejorar la próxima sesión y/o para mejorar esta aplicación?'
@@ -852,15 +852,17 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
   )
 }
 
-// ─── Vista: solicitudes de sesión (participantes individuales) ───────────────
-function SolicitudesSesion({ facilitadorId }) {
+// ─── Vista: solicitudes de sesión (participantes sin grupo) ──────────────────
+function SolicitudesSesion({ facilitadorId, grupos, onGrupoCreado }) {
   const [solicitudes, setSolicitudes] = useState([])
   const [cargando, setCargando] = useState(true)
   const [formAbierto, setFormAbierto] = useState(null)
-  const [form, setForm] = useState({ fecha: '', link: '' })
+  const [grupoElegido, setGrupoElegido] = useState('')
+  const [nombreNuevoGrupo, setNombreNuevoGrupo] = useState('')
   const [enviando, setEnviando] = useState(null)
   const [avisoExploracion, setAvisoExploracion] = useState(false)
   const [errorCarga, setErrorCarga] = useState('')
+  const [errorAsignar, setErrorAsignar] = useState('')
 
   useEffect(() => {
     if (DEMO_MODE) { setCargando(false); return }
@@ -887,24 +889,42 @@ function SolicitudesSesion({ facilitadorId }) {
     return true
   }
 
-  async function atender(solicitud) {
+  function abrirForm(id) {
+    setFormAbierto(id)
+    setGrupoElegido('')
+    setNombreNuevoGrupo('')
+    setErrorAsignar('')
+  }
+
+  async function asignar(solicitud) {
     if (bloqueadoPorExploracion()) return
-    if (!form.link) return
+    setErrorAsignar('')
+    let grupoId = grupoElegido
+
     setEnviando(solicitud.id)
 
-    await supabase.from('sesiones_grupales').insert({
-      usuario_id: solicitud.usuario_id, modulo_id: solicitud.modulo_id,
-      fecha: form.fecha || null, link_reunion: form.link,
-    })
-    await supabase.from('usuarios').update({ facilitador_asignado_id: facilitadorId })
-      .eq('id', solicitud.usuario_id).is('facilitador_asignado_id', null)
+    if (!grupoId) {
+      if (!nombreNuevoGrupo.trim()) { setEnviando(null); return }
+      const { data: nuevoGrupo, error } = await supabase.from('grupos').insert({
+        nombre: nombreNuevoGrupo.trim(), facilitador_id: facilitadorId,
+        codigo: generarCodigo(), modulo_activo_id: solicitud.modulo_id,
+      }).select().single()
+      if (error || !nuevoGrupo) {
+        setErrorAsignar('No se pudo crear el grupo. Intenta de nuevo.')
+        setEnviando(null)
+        return
+      }
+      grupoId = nuevoGrupo.id
+      onGrupoCreado?.({ ...nuevoGrupo, participantes_count: 0 })
+    }
+
+    await supabase.from('usuarios').update({ grupo_id: grupoId }).eq('id', solicitud.usuario_id)
     await supabase.from('solicitudes_sesion').update({
       estado: 'atendida', atendida_por: facilitadorId, facilitador_id: facilitadorId,
     }).eq('id', solicitud.id)
 
     setSolicitudes(prev => prev.filter(s => s.id !== solicitud.id))
     setFormAbierto(null)
-    setForm({ fecha: '', link: '' })
     setEnviando(null)
   }
 
@@ -918,7 +938,7 @@ function SolicitudesSesion({ facilitadorId }) {
     <div className="space-y-4">
       {avisoExploracion && (
         <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm px-4 py-3 rounded-xl">
-          <AlertTriangle size={16} /> Estás en modo de exploración — regístrate o inicia sesión para agendar sesiones reales.
+          <AlertTriangle size={16} /> Estás en modo de exploración — regístrate o inicia sesión para asignar grupos reales.
         </div>
       )}
 
@@ -932,7 +952,7 @@ function SolicitudesSesion({ facilitadorId }) {
         <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-12 text-center">
           <Inbox size={40} className="mx-auto text-gray-200 mb-4" />
           <p className="font-semibold text-gray-600 mb-1">No hay solicitudes pendientes</p>
-          <p className="text-sm text-gray-400">Aquí verás a los participantes individuales que pidan una sesión grupal.</p>
+          <p className="text-sm text-gray-400">Aquí verás a los participantes sin grupo que pidan integrarse a una sesión grupal.</p>
         </div>
       ) : solicitudes.map((s) => {
         const modulo = MODULOS.find(m => m.id === s.modulo_id)
@@ -953,25 +973,33 @@ function SolicitudesSesion({ facilitadorId }) {
 
             {formAbierto === s.id ? (
               <div className="space-y-3 pt-3 border-t border-gray-100">
+                {errorAsignar && <p className="text-red-500 text-xs">{errorAsignar}</p>}
+                {grupos.length > 0 && (
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">Asignar a un grupo existente</label>
+                    <select value={grupoElegido} onChange={e => { setGrupoElegido(e.target.value); setNombreNuevoGrupo('') }}
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-morado bg-white">
+                      <option value="">Elige un grupo…</option>
+                      {grupos.map(g => (
+                        <option key={g.id} value={g.id}>{g.nombre} ({g.codigo})</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                {grupos.length > 0 && <p className="text-center text-xs text-gray-400">o crea uno nuevo</p>}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Fecha y hora</label>
-                  <input type="datetime-local" value={form.fecha}
-                    onChange={e => setForm({ ...form, fecha: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-morado" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Enlace (Zoom, Google Meet o Teams)</label>
-                  <input type="url" value={form.link}
-                    onChange={e => setForm({ ...form, link: e.target.value })}
-                    placeholder="https://meet.google.com/..."
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Nombre del grupo nuevo</label>
+                  <input type="text" value={nombreNuevoGrupo}
+                    onChange={e => { setNombreNuevoGrupo(e.target.value); setGrupoElegido('') }}
+                    placeholder="Ej. Equipo Norte — Turno Mañana"
                     className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-morado" />
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => atender(s)} disabled={!form.link || enviando === s.id}
+                  <button onClick={() => asignar(s)} disabled={(!grupoElegido && !nombreNuevoGrupo.trim()) || enviando === s.id}
                     className="flex-1 flex items-center justify-center gap-2 bg-morado text-white font-bold py-2.5 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40">
-                    <Send size={14} /> {enviando === s.id ? 'Agendando...' : 'Agendar y atender'}
+                    <Users size={14} /> {enviando === s.id ? 'Asignando...' : 'Asignar al grupo'}
                   </button>
-                  <button onClick={() => { setFormAbierto(null); setForm({ fecha: '', link: '' }) }}
+                  <button onClick={() => setFormAbierto(null)}
                     className="text-xs font-semibold text-gray-400 hover:text-gray-600 px-3">
                     Cancelar
                   </button>
@@ -979,90 +1007,12 @@ function SolicitudesSesion({ facilitadorId }) {
               </div>
             ) : (
               <button
-                onClick={() => setFormAbierto(s.id)}
+                onClick={() => abrirForm(s.id)}
                 className="flex items-center gap-1.5 text-xs font-semibold text-morado bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg transition-colors"
               >
-                <Calendar size={13} /> Agendar sesión
+                <Users size={13} /> Asignar a un grupo
               </button>
             )}
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-// ─── Vista: sesiones individuales agendadas ───────────────────────────────────
-function SesionesIndividuales({ facilitadorId }) {
-  const [sesiones, setSesiones] = useState([])
-  const [cargando, setCargando] = useState(true)
-  const [errorCarga, setErrorCarga] = useState('')
-
-  useEffect(() => {
-    if (DEMO_MODE) { setCargando(false); return }
-    cargar()
-  }, [])
-
-  async function cargar() {
-    setErrorCarga('')
-    const { data, error } = await supabase
-      .from('sesiones_grupales')
-      .select('*, usuarios!sesiones_grupales_usuario_id_fkey(nombre, correo)')
-      .not('usuario_id', 'is', null)
-      .order('fecha')
-    if (error) setErrorCarga(error.message)
-    setSesiones(data || [])
-    setCargando(false)
-  }
-
-  if (cargando) return (
-    <div className="flex items-center justify-center py-16">
-      <div className="w-10 h-10 border-4 border-morado border-t-transparent rounded-full animate-spin" />
-    </div>
-  )
-
-  return (
-    <div className="space-y-4">
-      {errorCarga && (
-        <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
-          <AlertTriangle size={16} /> No se pudieron cargar las sesiones: {errorCarga}
-        </div>
-      )}
-
-      {sesiones.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-12 text-center">
-          <Calendar size={40} className="mx-auto text-gray-200 mb-4" />
-          <p className="font-semibold text-gray-600 mb-1">No tienes sesiones individuales agendadas</p>
-          <p className="text-sm text-gray-400">Aquí verás las sesiones que agendes al atender solicitudes de participantes individuales.</p>
-        </div>
-      ) : sesiones.map((s) => {
-        const modulo = MODULOS.find((m) => m.id === s.modulo_id)
-        const pasada = s.fecha && new Date(s.fecha) < new Date()
-        return (
-          <div key={s.id} className={`bg-white rounded-2xl border shadow-sm p-5 ${pasada ? 'border-gray-100 opacity-60' : 'border-purple-100'}`}>
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="font-bold text-gray-800 text-sm truncate">{s.usuarios?.nombre || 'Participante'}</p>
-                <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
-                  <Mail size={11} /> {s.usuarios?.correo}
-                </p>
-                <p className="text-xs text-morado font-medium mt-1">
-                  Módulo {modulo?.numero} — {modulo?.titulo}
-                </p>
-              </div>
-              <div className="flex-shrink-0 text-right">
-                <p className="text-sm font-semibold text-gray-800">
-                  {s.fecha
-                    ? new Date(s.fecha).toLocaleString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
-                    : 'Sin fecha definida'}
-                </p>
-                {s.link_reunion && (
-                  <a href={s.link_reunion} target="_blank" rel="noopener noreferrer" className="text-xs text-morado hover:underline truncate block max-w-[220px]">
-                    {s.link_reunion}
-                  </a>
-                )}
-              </div>
-            </div>
           </div>
         )
       })}
@@ -1183,12 +1133,6 @@ export default function PanelFacilitador() {
           >
             <Inbox size={15} /> Solicitudes de sesión
           </button>
-          <button
-            onClick={() => setVista('sesiones')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${vista === 'sesiones' ? 'bg-white text-morado shadow-sm' : 'text-gray-500 hover:text-morado'}`}
-          >
-            <Calendar size={15} /> Mis sesiones individuales
-          </button>
         </div>
 
         {vista === 'grupos' ? (
@@ -1202,10 +1146,12 @@ export default function PanelFacilitador() {
             setNombreNuevo={setNombreNuevo}
             errorCrear={errorCrear}
           />
-        ) : vista === 'solicitudes' ? (
-          <SolicitudesSesion facilitadorId={perfil.id} />
         ) : (
-          <SesionesIndividuales facilitadorId={perfil.id} />
+          <SolicitudesSesion
+            facilitadorId={perfil.id}
+            grupos={grupos}
+            onGrupoCreado={(g) => setGrupos(prev => [...prev, g])}
+          />
         )}
       </div>
     </div>
