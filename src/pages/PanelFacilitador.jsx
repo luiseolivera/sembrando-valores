@@ -6,7 +6,7 @@ import {
   Users, CheckCircle, FileText, Calendar, Plus, Link as LinkIcon,
   Target, Star, ChevronDown, ChevronUp, Save, Clipboard, Zap,
   CheckSquare, XCircle, ArrowLeft, PlusCircle, MessageCircle, AlertTriangle, Trash2,
-  Unlock, Send, Inbox
+  Unlock, Send, Inbox, Mail
 } from 'lucide-react'
 
 const PREGUNTA_RETROALIMENTACION = '¿Hay observaciones o sugerencias para mejorar la próxima sesión y/o para mejorar esta aplicación?'
@@ -992,6 +992,84 @@ function SolicitudesSesion({ facilitadorId }) {
   )
 }
 
+// ─── Vista: sesiones individuales agendadas ───────────────────────────────────
+function SesionesIndividuales({ facilitadorId }) {
+  const [sesiones, setSesiones] = useState([])
+  const [cargando, setCargando] = useState(true)
+  const [errorCarga, setErrorCarga] = useState('')
+
+  useEffect(() => {
+    if (DEMO_MODE) { setCargando(false); return }
+    cargar()
+  }, [])
+
+  async function cargar() {
+    setErrorCarga('')
+    const { data, error } = await supabase
+      .from('sesiones_grupales')
+      .select('*, usuarios!sesiones_grupales_usuario_id_fkey(nombre, correo)')
+      .not('usuario_id', 'is', null)
+      .order('fecha')
+    if (error) setErrorCarga(error.message)
+    setSesiones(data || [])
+    setCargando(false)
+  }
+
+  if (cargando) return (
+    <div className="flex items-center justify-center py-16">
+      <div className="w-10 h-10 border-4 border-morado border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
+
+  return (
+    <div className="space-y-4">
+      {errorCarga && (
+        <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
+          <AlertTriangle size={16} /> No se pudieron cargar las sesiones: {errorCarga}
+        </div>
+      )}
+
+      {sesiones.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-12 text-center">
+          <Calendar size={40} className="mx-auto text-gray-200 mb-4" />
+          <p className="font-semibold text-gray-600 mb-1">No tienes sesiones individuales agendadas</p>
+          <p className="text-sm text-gray-400">Aquí verás las sesiones que agendes al atender solicitudes de participantes individuales.</p>
+        </div>
+      ) : sesiones.map((s) => {
+        const modulo = MODULOS.find((m) => m.id === s.modulo_id)
+        const pasada = s.fecha && new Date(s.fecha) < new Date()
+        return (
+          <div key={s.id} className={`bg-white rounded-2xl border shadow-sm p-5 ${pasada ? 'border-gray-100 opacity-60' : 'border-purple-100'}`}>
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-bold text-gray-800 text-sm truncate">{s.usuarios?.nombre || 'Participante'}</p>
+                <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                  <Mail size={11} /> {s.usuarios?.correo}
+                </p>
+                <p className="text-xs text-morado font-medium mt-1">
+                  Módulo {modulo?.numero} — {modulo?.titulo}
+                </p>
+              </div>
+              <div className="flex-shrink-0 text-right">
+                <p className="text-sm font-semibold text-gray-800">
+                  {s.fecha
+                    ? new Date(s.fecha).toLocaleString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
+                    : 'Sin fecha definida'}
+                </p>
+                {s.link_reunion && (
+                  <a href={s.link_reunion} target="_blank" rel="noopener noreferrer" className="text-xs text-morado hover:underline truncate block max-w-[220px]">
+                    {s.link_reunion}
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 // ─── Componente principal ─────────────────────────────────────────────────────
 export default function PanelFacilitador() {
   const { perfil } = useAuth()
@@ -1105,6 +1183,12 @@ export default function PanelFacilitador() {
           >
             <Inbox size={15} /> Solicitudes de sesión
           </button>
+          <button
+            onClick={() => setVista('sesiones')}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${vista === 'sesiones' ? 'bg-white text-morado shadow-sm' : 'text-gray-500 hover:text-morado'}`}
+          >
+            <Calendar size={15} /> Mis sesiones individuales
+          </button>
         </div>
 
         {vista === 'grupos' ? (
@@ -1118,8 +1202,10 @@ export default function PanelFacilitador() {
             setNombreNuevo={setNombreNuevo}
             errorCrear={errorCrear}
           />
-        ) : (
+        ) : vista === 'solicitudes' ? (
           <SolicitudesSesion facilitadorId={perfil.id} />
+        ) : (
+          <SesionesIndividuales facilitadorId={perfil.id} />
         )}
       </div>
     </div>
