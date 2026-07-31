@@ -50,7 +50,7 @@ export default function Modulo() {
     if (perfil.rol === 'participante' && perfil.grupo_id) {
       promesas.grupo = supabase.from('grupos').select('modulo_activo_id').eq('id', perfil.grupo_id).maybeSingle()
     }
-    if (perfil.rol === 'participante' && !perfil.grupo_id && moduloAnterior) {
+    if (perfil.rol === 'participante' && moduloAnterior) {
       promesas.anterior = supabase.from('compromisos_personales').select('id').eq('usuario_id', perfil.id).eq('modulo_id', moduloAnterior.id).limit(1)
     }
     const claves = Object.keys(promesas)
@@ -77,7 +77,7 @@ export default function Modulo() {
   }
 
   const bloqueadoPorGrupo = perfil?.rol === 'participante' && perfil?.grupo_id && modulo && moduloActivoGrupo !== modulo.id
-  const bloqueadoPorOrden = perfil?.rol === 'participante' && !perfil?.grupo_id && !moduloAnteriorCompleto
+  const bloqueadoPorOrden = perfil?.rol === 'participante' && !bloqueadoPorGrupo && !moduloAnteriorCompleto
 
   function avanzar() {
     const i = ORDEN_PASOS.indexOf(pasoActual)

@@ -980,10 +980,20 @@ function SolicitudesSesion({ facilitadorId, grupos, onGrupoCreado }) {
                     <select value={grupoElegido} onChange={e => { setGrupoElegido(e.target.value); setNombreNuevoGrupo('') }}
                       className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-morado bg-white">
                       <option value="">Elige un grupo…</option>
-                      {grupos.map(g => (
-                        <option key={g.id} value={g.id}>{g.nombre} ({g.codigo})</option>
-                      ))}
+                      {grupos.map(g => {
+                        const moduloGrupo = MODULOS.find(m => m.id === g.modulo_activo_id)
+                        return (
+                          <option key={g.id} value={g.id}>
+                            {g.nombre} ({g.codigo}) — {moduloGrupo ? `Módulo ${moduloGrupo.numero}` : 'sin módulo activo'}
+                          </option>
+                        )
+                      })}
                     </select>
+                    {grupoElegido && grupos.find(g => g.id === grupoElegido)?.modulo_activo_id !== s.modulo_id && (
+                      <p className="flex items-center gap-1 text-xs text-yellow-600 mt-1.5">
+                        <AlertTriangle size={12} /> Este grupo va en otro módulo — si lo asignas aquí, quedará bloqueado hasta que alcance el módulo de este grupo.
+                      </p>
+                    )}
                   </div>
                 )}
                 {grupos.length > 0 && <p className="text-center text-xs text-gray-400">o crea uno nuevo</p>}

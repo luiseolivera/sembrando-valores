@@ -302,7 +302,7 @@ export default function Dashboard() {
             const esActivo = modulo.id === moduloActivoId
             const enGrupo = perfil?.rol === 'participante' && perfil?.grupo_id
             const bloqueadoPorGrupo = enGrupo && !esActivo
-            const bloqueadoPorOrden = perfil?.rol === 'participante' && !perfil?.grupo_id
+            const bloqueadoPorOrden = perfil?.rol === 'participante' && !bloqueadoPorGrupo
               && i > 0 && pasoActual(MODULOS[i - 1].id) !== 'completado'
             const bloqueado = bloqueadoPorGrupo || bloqueadoPorOrden
             const Contenedor = bloqueado ? 'div' : Link
