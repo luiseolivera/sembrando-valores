@@ -295,20 +295,24 @@ export default function Dashboard() {
           <BookOpen size={20} /> Los 14 valores
         </h2>
         <div className="grid sm:grid-cols-2 gap-4 mb-10">
-          {MODULOS.map((modulo) => {
+          {MODULOS.map((modulo, i) => {
             const paso = pasoActual(modulo.id)
             const pct = porciento(modulo.id)
             const completado = paso === 'completado'
             const esActivo = modulo.id === moduloActivoId
-            const bloqueadoPorGrupo = perfil?.rol === 'participante' && perfil?.grupo_id && !esActivo
-            const Contenedor = bloqueadoPorGrupo ? 'div' : Link
+            const enGrupo = perfil?.rol === 'participante' && perfil?.grupo_id
+            const bloqueadoPorGrupo = enGrupo && !esActivo
+            const bloqueadoPorOrden = perfil?.rol === 'participante' && !perfil?.grupo_id
+              && i > 0 && pasoActual(MODULOS[i - 1].id) !== 'completado'
+            const bloqueado = bloqueadoPorGrupo || bloqueadoPorOrden
+            const Contenedor = bloqueado ? 'div' : Link
 
             return (
               <Contenedor
                 key={modulo.id}
-                {...(!bloqueadoPorGrupo && { to: `/modulo/${modulo.id}` })}
+                {...(!bloqueado && { to: `/modulo/${modulo.id}` })}
                 className={`bg-white rounded-2xl border shadow-sm p-5 transition-all group ${
-                  bloqueadoPorGrupo ? 'opacity-60 cursor-not-allowed border-gray-100'
+                  bloqueado ? 'opacity-60 cursor-not-allowed border-gray-100'
                     : completado ? 'border-green-200 hover:shadow-md'
                     : esActivo ? 'border-morado ring-1 ring-morado hover:shadow-md'
                     : 'border-purple-100 hover:border-morado hover:shadow-md'
@@ -329,10 +333,10 @@ export default function Dashboard() {
                   {esActivo && !completado && (
                     <span className="text-xs bg-morado text-white px-2 py-0.5 rounded-full font-semibold flex-shrink-0">Activo</span>
                   )}
-                  {bloqueadoPorGrupo && (
+                  {bloqueado && (
                     <Lock size={16} className="text-gray-300 flex-shrink-0 mt-1" />
                   )}
-                  {!esActivo && !bloqueadoPorGrupo && (
+                  {!esActivo && !bloqueado && (
                     <ChevronRight size={18} className="text-gray-300 group-hover:text-morado transition-colors mt-1" />
                   )}
                 </div>
@@ -345,9 +349,11 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-400">
-                    {bloqueadoPorGrupo ? 'Se habilita cuando tu facilitador lo active' : `${pct}% completado`}
+                    {bloqueadoPorGrupo ? 'Se habilita cuando tu facilitador lo active'
+                      : bloqueadoPorOrden ? 'Termina el módulo anterior para continuar'
+                      : `${pct}% completado`}
                   </span>
-                  {!completado && !bloqueadoPorGrupo && (
+                  {!completado && !bloqueado && (
                     <span className="text-xs text-morado font-medium">
                       {paso === 'quiz' && '📝 Hacer quiz'}
                       {paso === 'reflexion' && '✍️ Reflexionar'}

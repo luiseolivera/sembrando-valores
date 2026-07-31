@@ -860,6 +860,7 @@ function SolicitudesSesion({ facilitadorId }) {
   const [form, setForm] = useState({ fecha: '', link: '' })
   const [enviando, setEnviando] = useState(null)
   const [avisoExploracion, setAvisoExploracion] = useState(false)
+  const [errorCarga, setErrorCarga] = useState('')
 
   useEffect(() => {
     if (DEMO_MODE) { setCargando(false); return }
@@ -867,12 +868,14 @@ function SolicitudesSesion({ facilitadorId }) {
   }, [])
 
   async function cargar() {
-    const { data } = await supabase
+    setErrorCarga('')
+    const { data, error } = await supabase
       .from('solicitudes_sesion')
       .select('*, usuarios!solicitudes_sesion_usuario_id_fkey(nombre, correo)')
       .eq('estado', 'pendiente')
       .or(`facilitador_id.eq.${facilitadorId},facilitador_id.is.null`)
       .order('created_at')
+    if (error) setErrorCarga(error.message)
     setSolicitudes(data || [])
     setCargando(false)
   }
@@ -916,6 +919,12 @@ function SolicitudesSesion({ facilitadorId }) {
       {avisoExploracion && (
         <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm px-4 py-3 rounded-xl">
           <AlertTriangle size={16} /> Estás en modo de exploración — regístrate o inicia sesión para agendar sesiones reales.
+        </div>
+      )}
+
+      {errorCarga && (
+        <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
+          <AlertTriangle size={16} /> No se pudieron cargar las solicitudes: {errorCarga}
         </div>
       )}
 

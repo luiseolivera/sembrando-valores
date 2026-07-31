@@ -29,6 +29,10 @@ export default function Modulo() {
   const [progreso, setProgreso] = useState({ contenido: false, quiz: false, reflexion: false, sesion: false, compromisos: false })
   const [cargando, setCargando] = useState(true)
   const [moduloActivoGrupo, setModuloActivoGrupo] = useState(null)
+  const [moduloAnteriorCompleto, setModuloAnteriorCompleto] = useState(true)
+
+  const moduloIndex = MODULOS.findIndex(m => m.id === modulo?.id)
+  const moduloAnterior = moduloIndex > 0 ? MODULOS[moduloIndex - 1] : null
 
   useEffect(() => {
     if (modulo) cargarProgreso()
@@ -37,23 +41,29 @@ export default function Modulo() {
   async function cargarProgreso() {
     if (DEMO_MODE) { setCargando(false); return }
 
-    const queries = [
-      supabase.from('quiz_respuestas').select('aprobado').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
-      supabase.from('reflexiones').select('id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).limit(1),
-      supabase.from('habilitaciones_compromisos').select('id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
-      supabase.from('compromisos_personales').select('id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).limit(1),
-    ]
-    if (perfil.rol === 'participante' && perfil.grupo_id) {
-      queries.push(supabase.from('grupos').select('modulo_activo_id').eq('id', perfil.grupo_id).maybeSingle())
+    const promesas = {
+      quiz: supabase.from('quiz_respuestas').select('aprobado').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
+      reflexion: supabase.from('reflexiones').select('id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).limit(1),
+      habilitacion: supabase.from('habilitaciones_compromisos').select('id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
+      compromisos: supabase.from('compromisos_personales').select('id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).limit(1),
     }
-    const [quizRes, reflexRes, habilitacionRes, compRes, grupoRes] = await Promise.all(queries)
+    if (perfil.rol === 'participante' && perfil.grupo_id) {
+      promesas.grupo = supabase.from('grupos').select('modulo_activo_id').eq('id', perfil.grupo_id).maybeSingle()
+    }
+    if (perfil.rol === 'participante' && !perfil.grupo_id && moduloAnterior) {
+      promesas.anterior = supabase.from('compromisos_personales').select('id').eq('usuario_id', perfil.id).eq('modulo_id', moduloAnterior.id).limit(1)
+    }
+    const claves = Object.keys(promesas)
+    const results = await Promise.all(claves.map((k) => promesas[k]))
+    const res = Object.fromEntries(claves.map((k, i) => [k, results[i]]))
 
-    if (grupoRes) setModuloActivoGrupo(grupoRes.data?.modulo_activo_id ?? null)
+    if (res.grupo) setModuloActivoGrupo(res.grupo.data?.modulo_activo_id ?? null)
+    if (res.anterior) setModuloAnteriorCompleto((res.anterior.data?.length || 0) > 0)
 
-    const quizOk = quizRes.data?.aprobado || false
-    const reflexOk = (reflexRes.data?.length || 0) > 0
-    const sesionOk = !!habilitacionRes.data
-    const compOk = (compRes.data?.length || 0) > 0
+    const quizOk = res.quiz.data?.aprobado || false
+    const reflexOk = (res.reflexion.data?.length || 0) > 0
+    const sesionOk = !!res.habilitacion.data
+    const compOk = (res.compromisos.data?.length || 0) > 0
 
     const nuevo = { contenido: quizOk || reflexOk, quiz: quizOk, reflexion: reflexOk, sesion: sesionOk, compromisos: compOk }
     setProgreso(nuevo)
@@ -67,6 +77,7 @@ export default function Modulo() {
   }
 
   const bloqueadoPorGrupo = perfil?.rol === 'participante' && perfil?.grupo_id && modulo && moduloActivoGrupo !== modulo.id
+  const bloqueadoPorOrden = perfil?.rol === 'participante' && !perfil?.grupo_id && !moduloAnteriorCompleto
 
   function avanzar() {
     const i = ORDEN_PASOS.indexOf(pasoActual)
@@ -112,6 +123,21 @@ export default function Modulo() {
             : 'Tu facilitador todavía no activó ningún módulo para tu grupo.'}
         </p>
         <button onClick={() => navigate('/dashboard')} className="text-morado font-semibold text-sm hover:underline">← Volver al inicio</button>
+      </div>
+    </div>
+  )
+
+  if (bloqueadoPorOrden) return (
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="text-center max-w-sm">
+        <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Lock size={32} className="text-dorado-dark" />
+        </div>
+        <h2 className="text-xl font-bold text-gray-800 mb-2">Módulo no disponible todavía</h2>
+        <p className="text-gray-500 text-sm mb-6">
+          Debes terminar el Módulo {moduloAnterior?.numero} — {moduloAnterior?.titulo} (incluida tu sesión grupal) antes de avanzar a este.
+        </p>
+        <button onClick={() => navigate(`/modulo/${moduloAnterior?.id}`)} className="text-morado font-semibold text-sm hover:underline">← Ir al módulo anterior</button>
       </div>
     </div>
   )
