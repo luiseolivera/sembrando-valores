@@ -21,27 +21,28 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
   }, [])
 
   async function cargar() {
-    const queries = [
-      supabase.from('sesiones_grupales').select('*').eq('modulo_id', modulo.id).eq('usuario_id', perfil.id),
-      supabase.from('sesion_elecciones').select('sesion_id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
-      supabase.from('solicitudes_sesion').select('*').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
-      supabase.from('habilitaciones_compromisos').select('id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
-    ]
+    const promesas = {
+      individuales: supabase.from('sesiones_grupales').select('*').eq('modulo_id', modulo.id).eq('usuario_id', perfil.id),
+      eleccion: supabase.from('sesion_elecciones').select('sesion_id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
+      solicitud: supabase.from('solicitudes_sesion').select('*').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
+      habilitacion: supabase.from('habilitaciones_compromisos').select('id').eq('usuario_id', perfil.id).eq('modulo_id', modulo.id).maybeSingle(),
+    }
     if (perfil.grupo_id) {
-      queries.push(supabase.from('sesiones_grupales').select('*').eq('modulo_id', modulo.id).eq('grupo_id', perfil.grupo_id))
+      promesas.grupo = supabase.from('sesiones_grupales').select('*').eq('modulo_id', modulo.id).eq('grupo_id', perfil.grupo_id)
     }
     if (esIndividual && !perfil.facilitador_asignado_id) {
-      queries.push(supabase.from('usuarios').select('id, nombre').eq('rol', 'facilitador').eq('aprobado', true).order('nombre'))
+      promesas.facilitadores = supabase.from('usuarios').select('id, nombre').eq('rol', 'facilitador').eq('aprobado', true).order('nombre')
     }
-    const results = await Promise.all(queries)
-    const [individualesRes, eleccionRes, solicitudRes, habilitacionRes, grupoRes, facilitadoresRes] = results
+    const claves = Object.keys(promesas)
+    const results = await Promise.all(claves.map((k) => promesas[k]))
+    const res = Object.fromEntries(claves.map((k, i) => [k, results[i]]))
 
-    const todas = [...(individualesRes.data || []), ...(perfil.grupo_id ? grupoRes.data || [] : [])]
+    const todas = [...(res.individuales.data || []), ...(perfil.grupo_id ? res.grupo?.data || [] : [])]
     setSesiones(todas)
-    setSesionElegidaId(eleccionRes.data?.sesion_id || null)
-    setSolicitud(solicitudRes.data || null)
-    setHabilitado(!!habilitacionRes.data)
-    if (facilitadoresRes) setFacilitadores(facilitadoresRes.data || [])
+    setSesionElegidaId(res.eleccion.data?.sesion_id || null)
+    setSolicitud(res.solicitud.data || null)
+    setHabilitado(!!res.habilitacion.data)
+    if (res.facilitadores) setFacilitadores(res.facilitadores.data || [])
     setCargando(false)
   }
 

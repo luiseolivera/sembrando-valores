@@ -3,13 +3,14 @@ import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase, esAdmin } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
-import { ShieldCheck, CheckCircle, Clock, Mail, ShieldAlert, MessageSquare, Users, XCircle, Trash2, Award, Building2, Search, BarChart3 } from 'lucide-react'
+import { ShieldCheck, CheckCircle, Clock, Mail, ShieldAlert, MessageSquare, Users, XCircle, Trash2, Award, Building2, Search, BarChart3, Inbox } from 'lucide-react'
 
 export default function Admin() {
   const { perfil } = useAuth()
   const [searchParams] = useSearchParams()
   const idDestacado = searchParams.get('id')
   const [pendientes, setPendientes] = useState([])
+  const [solicitudesSesion, setSolicitudesSesion] = useState([])
   const [retros, setRetros] = useState([])
   const [constancias, setConstancias] = useState([])
   const [resumen, setResumen] = useState(null)
@@ -25,7 +26,7 @@ export default function Admin() {
   const [marcandoEmpresa, setMarcandoEmpresa] = useState(false)
 
   useEffect(() => {
-    if (esAdmin(perfil)) { cargarPendientes(); cargarRetros(); cargarConstancias(); cargarResumen() }
+    if (esAdmin(perfil)) { cargarPendientes(); cargarSolicitudesSesion(); cargarRetros(); cargarConstancias(); cargarResumen() }
     else setCargando(false)
   }, [perfil])
 
@@ -62,6 +63,19 @@ export default function Admin() {
       .order('created_at')
     setPendientes(data || [])
     setCargando(false)
+  }
+
+  async function cargarSolicitudesSesion() {
+    const { data } = await supabase
+      .from('solicitudes_sesion')
+      .select(`
+        *,
+        usuarios!solicitudes_sesion_usuario_id_fkey(nombre, correo),
+        facilitador:usuarios!solicitudes_sesion_facilitador_id_fkey(nombre)
+      `)
+      .eq('estado', 'pendiente')
+      .order('created_at')
+    setSolicitudesSesion(data || [])
   }
 
   async function cargarRetros() {
@@ -259,6 +273,52 @@ export default function Admin() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        <div className="flex items-center gap-3 mt-10 mb-6">
+          <div className="w-10 h-10 bg-morado rounded-full flex items-center justify-center">
+            <Inbox size={20} className="text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-morado">Solicitudes de sesión pendientes</h2>
+            <p className="text-gray-500 text-sm">Participantes individuales esperando que un facilitador les agende sesión.</p>
+          </div>
+        </div>
+
+        {solicitudesSesion.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-10 text-center text-gray-400">
+            <Inbox size={32} className="mx-auto mb-3 opacity-30" />
+            <p className="text-sm">No hay solicitudes de sesión pendientes por ahora.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {solicitudesSesion.map((s) => {
+              const modulo = MODULOS.find((m) => m.id === s.modulo_id)
+              return (
+                <div key={s.id} className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5 flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="font-bold text-gray-800 text-sm truncate">{s.usuarios?.nombre}</p>
+                    <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                      <Mail size={11} /> {s.usuarios?.correo}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      Módulo {modulo?.numero} — {modulo?.titulo}
+                    </p>
+                  </div>
+                  <div className="flex-shrink-0 text-right">
+                    {s.facilitador ? (
+                      <p className="text-xs font-semibold text-morado">Para: {s.facilitador.nombre}</p>
+                    ) : (
+                      <span className="text-xs bg-yellow-100 text-yellow-700 font-semibold px-2 py-0.5 rounded-full">Bolsa común</span>
+                    )}
+                    <p className="text-xs text-gray-400 flex items-center gap-1 mt-1 justify-end">
+                      <Clock size={11} /> {new Date(s.created_at).toLocaleDateString('es-MX')}
+                    </p>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         )}
 

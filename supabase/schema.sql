@@ -598,6 +598,11 @@ create policy "solicitudes_sesion_facilitador_update" on solicitudes_sesion
     and (facilitador_id = auth.uid() or facilitador_id is null)
   );
 
+-- El superadmin ve todas las solicitudes (propias de un facilitador
+-- específico o de la bolsa común) para poder darles seguimiento desde /admin.
+create policy "solicitudes_sesion_admin_select" on solicitudes_sesion
+  for select using (public.es_admin());
+
 -- Al atender una solicitud pendiente (propia o de la bolsa común), el
 -- facilitador todavía no es "responsable" del participante según
 -- es_responsable_de() — hace falta permitir, puntualmente, la sesión que
