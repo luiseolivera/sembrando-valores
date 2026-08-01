@@ -67,6 +67,8 @@ export default function DiagramaFlujo() {
         </p>
         <p className="text-xs text-gray-500 mt-1">
           Si te unes a un grupo, tu facilitador activa el módulo que trabajan juntos y no podrás avanzar a otro hasta que lo haga.
+          Todo el grupo avanza junto — si tu facilitador activa el siguiente módulo antes de que termines el actual, te quedas
+          bloqueado y tendrías que salir del grupo para solicitar integrarte a uno nuevo.
           Si prefieres ir por tu cuenta, puedes usar la app sin unirte a ningún grupo y avanzar libremente entre los 14 módulos.
         </p>
       </div>

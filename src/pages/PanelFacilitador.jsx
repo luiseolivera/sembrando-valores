@@ -574,6 +574,10 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                     const quiz = quizResultados.find(q => q.usuario_id === p.id)
                     const tieneReflexion = reflexiones.some(r => r.usuario_id === p.id)
                     const tieneCompromisos = compromisosPersonales.some(c => c.usuario_id === p.id)
+                    const sesionElegida = sesiones.find(s => s.id === eleccionesPorUsuario[p.id])
+                    const sesionPendiente = !sesionElegida
+                    const sesionFutura = sesionElegida?.fecha && new Date(sesionElegida.fecha) > new Date()
+                    const puedeHabilitar = !sesionPendiente && !sesionFutura
                     const estado = quiz?.aprobado && tieneReflexion ? 'Listo para sesión'
                       : quiz?.aprobado ? 'Pendiente reflexión'
                       : quiz ? 'Quiz no aprobado'
@@ -608,7 +612,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                             <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700">
                               <Unlock size={12} /> Habilitada
                             </span>
-                          ) : (
+                          ) : puedeHabilitar ? (
                             <button
                               onClick={() => habilitarCompromisos(p.id)}
                               disabled={habilitandoId === p.id}
@@ -616,6 +620,15 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                             >
                               {habilitandoId === p.id ? '...' : 'Habilitar'}
                             </button>
+                          ) : (
+                            <span
+                              className="text-xs text-gray-300"
+                              title={sesionPendiente ? 'Todavía no elige sesión' : 'La sesión aún no ocurre'}
+                            >
+                              {sesionPendiente
+                                ? 'Sin sesión elegida'
+                                : `Disponible el ${new Date(sesionElegida.fecha).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })}`}
+                            </span>
                           )}
                         </div>
                         <div className="text-center">

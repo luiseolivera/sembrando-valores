@@ -45,6 +45,10 @@ const FAQS = [
     respuesta: 'Tu facilitador creará el grupo y te compartirá un link de invitación (ej. s-valores.vercel.app/unirse/AB12CD) o un código de 6 caracteres. Si abres el link, solo tienes que registrarte y quedas unido automáticamente. Si te dan el código, ingrésalo en el campo que aparece en tu pantalla principal después de registrarte.',
   },
   {
+    pregunta: '¿Qué pasa si mi grupo avanza a otro módulo y yo no terminé el anterior?',
+    respuesta: 'Todo el grupo avanza junto al ritmo que marca el facilitador. Si activa el siguiente módulo antes de que termines el actual (incluida tu sesión grupal), quedas bloqueado: ya no puedes entrar ni al módulo anterior ni al nuevo. En ese caso, la app te ofrece un botón para "Salir de mi grupo" — al usarlo, vuelves a ser un participante individual y puedes solicitar integrarte a un grupo nuevo (con un facilitador específico o cualquiera disponible) que vaya al ritmo que te corresponda. No pierdes el trabajo que ya habías guardado.',
+  },
+  {
     pregunta: '¿Puedo usar la app sin pertenecer a un equipo o grupo?',
     respuesta: 'Sí, puedes registrarte y avanzar por tu cuenta —contenido, quiz y reflexión— sin un código de grupo. Pero toda sesión es grupal: cuando llegues a ese paso, solicitas integrarte a un grupo (con un facilitador específico o con cualquiera disponible) y el facilitador te asigna a uno de los suyos, o forma uno nuevo. Desde ese momento sigues como cualquier otro participante de ese grupo, con sus horarios de sesión. Después de la sesión, el facilitador habilita tus compromisos personales y el módulo se marca como completado al registrarlos. Puedes imprimir todas tus reflexiones y compromisos cuando quieras desde "Mis reflexiones y compromisos" en tu pantalla principal.',
   },
