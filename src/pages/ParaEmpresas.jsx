@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { BarChart3, Award, Palette, Mail, ArrowRight, Sprout, CheckCircle2 } from 'lucide-react'
+import { BarChart3, Award, Palette, Mail, ArrowRight, Sprout, BookOpen, Users, ClipboardCheck, Video, ShieldCheck } from 'lucide-react'
 
 const CORREO_EMPRESAS = 'info@misionerosmt.org'
 
@@ -25,6 +25,31 @@ const BENEFICIOS = [
     titulo: 'Marca de tu empresa',
     texto: 'El logo de tu empresa aparece junto al de MMT en el panel de tus colaboradores — la plataforma se siente parte de tu programa interno.',
   },
+  {
+    icono: BookOpen,
+    titulo: '14 módulos',
+    texto: 'Contenidos sobre valores y principios éticos universales, listos para usarse.',
+  },
+  {
+    icono: Users,
+    titulo: 'Grupos ilimitados',
+    texto: 'Crea todos los grupos que necesites, uno por cada equipo de tu organización — sin límite de cantidad.',
+  },
+  {
+    icono: ClipboardCheck,
+    titulo: 'Quiz, reflexión y compromisos',
+    texto: 'Cada colaborador responde su quiz, escribe su reflexión personal y registra sus compromisos.',
+  },
+  {
+    icono: Video,
+    titulo: 'Sesiones grupales',
+    texto: 'Videollamadas por Zoom, Google Meet o Teams, con los horarios que cada equipo elija.',
+  },
+  {
+    icono: ShieldCheck,
+    titulo: 'Facilitadores aprobados',
+    texto: 'Cada nueva cuenta de facilitador la aprueba el equipo de MMT antes de poder operar.',
+  },
 ]
 
 export default function ParaEmpresas() {
@@ -41,7 +66,7 @@ export default function ParaEmpresas() {
           </h1>
           <p className="text-purple-100 text-base leading-relaxed mb-8">
             Lleva el programa de formación en valores de Misioneros en el Mundo del Trabajo a todos
-            los equipos de tu organización, con seguimiento y evidencia para RR.HH.
+            los equipos de tu organización, con seguimiento y evidencia para tu área de Personal.
           </p>
           <a
             href={mailtoEmpresas()}
@@ -54,37 +79,19 @@ export default function ParaEmpresas() {
       </section>
 
       <section className="max-w-5xl mx-auto px-4 py-16">
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           {BENEFICIOS.map((b, i) => {
             const Icono = b.icono
             return (
-              <div key={i} className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                  <Icono size={22} className="text-morado" />
+              <div key={i} className="bg-white rounded-2xl shadow-sm border border-purple-100 p-5">
+                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mb-3">
+                  <Icono size={18} className="text-morado" />
                 </div>
-                <h3 className="font-bold text-morado text-base mb-2">{b.titulo}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">{b.texto}</p>
+                <h3 className="font-bold text-morado text-sm mb-1.5">{b.titulo}</h3>
+                <p className="text-xs text-gray-600 leading-relaxed">{b.texto}</p>
               </div>
             )
           })}
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-8">
-          <h2 className="font-bold text-morado text-xl mb-4">Lo que ya incluye la plataforma</h2>
-          <ul className="space-y-2 text-sm text-gray-600">
-            {[
-              '14 módulos sobre valores y principios éticos universales',
-              'Grupos ilimitados por facilitador — uno por cada equipo',
-              'Quiz, reflexión personal y compromisos por participante',
-              'Sesiones grupales por Zoom, Meet o Teams',
-              'Aprobación controlada de nuevas cuentas de facilitador',
-            ].map((item, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <CheckCircle2 size={16} className="text-green-500 flex-shrink-0 mt-0.5" />
-                {item}
-              </li>
-            ))}
-          </ul>
         </div>
 
         <div className="text-center mt-12">
