@@ -13,7 +13,7 @@ const BENEFICIOS = [
   {
     icono: BarChart3,
     titulo: 'Reportes agregados',
-    texto: 'Un panel con el avance de todos los grupos de tu empresa: participantes activos, quizzes aprobados y compromisos cumplidos — listo para compartir con dirección o RR.HH.',
+    texto: 'Un panel con el avance de todos los grupos de tu empresa: participantes activos, quizzes aprobados y compromisos registrados — listo para compartir con dirección o RR.HH.',
   },
   {
     icono: Award,

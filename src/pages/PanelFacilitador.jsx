@@ -43,8 +43,8 @@ function ListaGrupos({ grupos, reporte, onSeleccionar, onCrear, creando, nombreN
               <p className="text-xs text-gray-500 mt-0.5 font-medium">Quizzes aprobados</p>
             </div>
             <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm text-center">
-              <div className="text-2xl font-extrabold text-morado">{reporte.compromisosCumplidos}</div>
-              <p className="text-xs text-gray-500 mt-0.5 font-medium">Compromisos cumplidos</p>
+              <div className="text-2xl font-extrabold text-morado">{reporte.compromisosRegistrados}</div>
+              <p className="text-xs text-gray-500 mt-0.5 font-medium">Compromisos registrados</p>
             </div>
           </div>
         )}
@@ -674,10 +674,8 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                         <div className="space-y-2">
                           {data.compromisos.map(c => (
                             <div key={c.id} className="flex items-start gap-2 bg-yellow-50 rounded-xl p-3">
-                              {c.cumplido
-                                ? <CheckCircle size={14} className="text-green-600 flex-shrink-0 mt-0.5" />
-                                : <span className="w-3.5 h-3.5 rounded-full border-2 border-yellow-400 flex-shrink-0 mt-0.5" />}
-                              <p className={`text-sm ${c.cumplido ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                              <Target size={14} className="text-dorado-dark flex-shrink-0 mt-0.5" />
+                              <p className="text-sm text-gray-700">
                                 {c.compromiso_texto}
                               </p>
                             </div>
@@ -1067,15 +1065,15 @@ export default function PanelFacilitador() {
 
   // Reporte agregado (útil para mostrarle avance a la empresa)
   async function cargarReporte(grupoIds) {
-    if (!grupoIds.length) { setReporte({ participantes: 0, quizAprobados: 0, compromisosCumplidos: 0 }); return }
+    if (!grupoIds.length) { setReporte({ participantes: 0, quizAprobados: 0, compromisosRegistrados: 0 }); return }
     const { data: usuariosGrupo } = await supabase.from('usuarios').select('id').in('grupo_id', grupoIds)
     const ids = (usuariosGrupo || []).map(u => u.id)
-    if (!ids.length) { setReporte({ participantes: 0, quizAprobados: 0, compromisosCumplidos: 0 }); return }
-    const [{ count: quizAprobados }, { count: compromisosCumplidos }] = await Promise.all([
+    if (!ids.length) { setReporte({ participantes: 0, quizAprobados: 0, compromisosRegistrados: 0 }); return }
+    const [{ count: quizAprobados }, { count: compromisosRegistrados }] = await Promise.all([
       supabase.from('quiz_respuestas').select('*', { count: 'exact', head: true }).in('usuario_id', ids).eq('aprobado', true),
-      supabase.from('compromisos_personales').select('*', { count: 'exact', head: true }).in('usuario_id', ids).eq('cumplido', true),
+      supabase.from('compromisos_personales').select('*', { count: 'exact', head: true }).in('usuario_id', ids),
     ])
-    setReporte({ participantes: ids.length, quizAprobados: quizAprobados || 0, compromisosCumplidos: compromisosCumplidos || 0 })
+    setReporte({ participantes: ids.length, quizAprobados: quizAprobados || 0, compromisosRegistrados: compromisosRegistrados || 0 })
   }
 
   async function manejarCrear() {

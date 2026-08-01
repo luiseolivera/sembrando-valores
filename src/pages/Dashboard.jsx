@@ -31,6 +31,7 @@ export default function Dashboard() {
       supabase.from('quiz_respuestas').select('modulo_id, aprobado').eq('usuario_id', perfil.id),
       supabase.from('reflexiones').select('modulo_id').eq('usuario_id', perfil.id),
       supabase.from('compromisos_personales').select('modulo_id').eq('usuario_id', perfil.id),
+      supabase.from('habilitaciones_compromisos').select('modulo_id').eq('usuario_id', perfil.id),
     ]
 
     if (perfil.grupo_id) {
@@ -40,17 +41,19 @@ export default function Dashboard() {
       )
     }
 
-    const [quizRes, reflexRes, compPersRes, compRes, grupoRes] = await Promise.all(queries)
+    const [quizRes, reflexRes, compPersRes, habilRes, compRes, grupoRes] = await Promise.all(queries)
 
     const mapa = {}
     MODULOS.forEach((m) => {
       const quiz = quizRes.data?.find((r) => r.modulo_id === m.id)
       const reflex = reflexRes.data?.some((r) => r.modulo_id === m.id)
       const compPersonal = compPersRes.data?.some((r) => r.modulo_id === m.id)
+      const habilitado = habilRes.data?.some((r) => r.modulo_id === m.id)
       mapa[m.id] = {
         video: quiz?.aprobado || reflex || compPersonal,
         quiz: quiz?.aprobado,
         reflexion: reflex,
+        habilitado,
         compromisos: compPersonal,
       }
     })
@@ -265,7 +268,9 @@ export default function Dashboard() {
         {moduloActivo && pasoActual(moduloActivo.id) === 'pendiente' && (
           <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs px-4 py-2.5 rounded-xl mb-6">
             <Users size={14} className="flex-shrink-0" />
-            Te falta tu sesión grupal o la habilitación de compromisos del módulo activo —
+            {progresos[moduloActivo.id]?.habilitado
+              ? 'Te falta concluir con la sección de compromisos del módulo activo —'
+              : 'Te falta tu sesión grupal del módulo activo —'}
             <Link to={`/modulo/${moduloActivo.id}`} className="font-semibold hover:underline">continuar</Link>
           </div>
         )}

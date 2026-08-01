@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
-import { ChevronLeft, Printer, PenLine, Target, CheckCircle, MessageCircle } from 'lucide-react'
+import { ChevronLeft, Printer, PenLine, Target, MessageCircle } from 'lucide-react'
 
 export default function MiResumen() {
   const { perfil } = useAuth()
@@ -19,7 +19,7 @@ export default function MiResumen() {
   async function cargarDatos() {
     const [reflexRes, compRes, comentRes] = await Promise.all([
       supabase.from('reflexiones').select('modulo_id, pregunta_numero, respuesta_texto').eq('usuario_id', perfil.id),
-      supabase.from('compromisos_personales').select('modulo_id, compromiso_texto, cumplido').eq('usuario_id', perfil.id),
+      supabase.from('compromisos_personales').select('modulo_id, compromiso_texto').eq('usuario_id', perfil.id),
       supabase.from('comentarios_reflexion').select('modulo_id, comentario, reaccion').eq('usuario_id', perfil.id),
     ])
 
@@ -133,12 +133,8 @@ export default function MiResumen() {
                   <div className="space-y-2">
                     {compromisosPorModulo[modulo.id].map((c, i) => (
                       <div key={i} className="flex items-start gap-2">
-                        {c.cumplido ? (
-                          <CheckCircle size={15} className="text-green-500 flex-shrink-0 mt-0.5" />
-                        ) : (
-                          <span className="w-[15px] h-[15px] rounded-full border-2 border-gray-300 flex-shrink-0 mt-0.5" />
-                        )}
-                        <p className={`text-sm ${c.cumplido ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                        <Target size={15} className="text-dorado flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-gray-700">
                           {c.compromiso_texto}
                         </p>
                       </div>

@@ -61,21 +61,13 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
         usuario_id: perfil.id,
         modulo_id: modulo.id,
         compromiso_texto: texto,
-        cumplido: false,
       }))
       await supabase.from('compromisos_personales').insert(registros)
     }
 
-    setGuardados(validos.map((t, i) => ({ id: i, compromiso_texto: t, cumplido: false })))
+    setGuardados(validos.map((t, i) => ({ id: i, compromiso_texto: t })))
     setGuardando(false)
     setExito(true)
-  }
-
-  async function marcarCumplido(id, cumplido) {
-    setGuardados(prev => prev.map(c => c.id === id ? { ...c, cumplido: !cumplido } : c))
-    if (!DEMO_MODE) {
-      await supabase.from('compromisos_personales').update({ cumplido: !cumplido }).eq('id', id)
-    }
   }
 
   const hayCompromisos = compromisos.some(c => c.trim())
@@ -117,20 +109,15 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
         <div className="space-y-3 mb-6">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Tus compromisos</p>
           {guardados.map((c) => (
-            <div key={c.id} className={`flex items-start gap-3 p-3 rounded-xl border transition-all ${c.cumplido ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-100'}`}>
-              <button
-                onClick={() => marcarCumplido(c.id, c.cumplido)}
-                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${c.cumplido ? 'bg-green-500 border-green-500' : 'border-yellow-400 hover:border-green-400'}`}
-              >
-                {c.cumplido && <CheckCircle size={14} className="text-white" />}
-              </button>
-              <p className={`text-sm flex-1 ${c.cumplido ? 'line-through text-gray-400' : 'text-gray-700'}`}>
+            <div key={c.id} className="flex items-start gap-3 p-3 rounded-xl border bg-yellow-50 border-yellow-100">
+              <Target size={16} className="text-dorado flex-shrink-0 mt-0.5" />
+              <p className="text-sm flex-1 text-gray-700">
                 {c.compromiso_texto}
               </p>
             </div>
           ))}
           <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-xs px-3 py-2 rounded-xl mt-2">
-            <CheckCircle size={14} /> Compromisos guardados. Puedes marcarlos cuando los cumplas.
+            <CheckCircle size={14} /> Compromisos guardados. Imprímelos desde "Mis reflexiones y compromisos" para darles seguimiento por tu cuenta.
           </div>
         </div>
       ) : (
