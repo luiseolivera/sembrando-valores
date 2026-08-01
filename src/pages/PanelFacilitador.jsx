@@ -559,17 +559,19 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-5 gap-2 px-5 py-2 bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                <div className="grid grid-cols-6 gap-2 px-5 py-2 bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-400 uppercase tracking-wide">
                   <div>Participante</div>
                   <div className="text-center">Quiz</div>
                   <div className="text-center">Reflexión</div>
                   <div className="text-center">Estado</div>
+                  <div className="text-center">Sesión grupal</div>
                   <div className="text-center">Compromisos</div>
                 </div>
                 <div className="divide-y divide-gray-50">
                   {participantes.map(p => {
                     const quiz = quizResultados.find(q => q.usuario_id === p.id)
                     const tieneReflexion = reflexiones.some(r => r.usuario_id === p.id)
+                    const tieneCompromisos = compromisosPersonales.some(c => c.usuario_id === p.id)
                     const estado = quiz?.aprobado && tieneReflexion ? 'Listo para sesión'
                       : quiz?.aprobado ? 'Pendiente reflexión'
                       : quiz ? 'Quiz no aprobado'
@@ -579,7 +581,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                       : quiz ? 'bg-red-100 text-red-600'
                       : 'bg-gray-100 text-gray-400'
                     return (
-                      <div key={p.id} className="grid grid-cols-5 gap-2 items-center px-5 py-3.5">
+                      <div key={p.id} className="grid grid-cols-6 gap-2 items-center px-5 py-3.5">
                         <div>
                           <p className="font-medium text-gray-800 text-sm">{p.nombre}</p>
                           <p className="text-xs text-gray-400">{p.correo}</p>
@@ -602,7 +604,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                         <div className="text-center">
                           {habilitaciones[p.id] ? (
                             <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700">
-                              <Unlock size={12} /> Habilitado
+                              <Unlock size={12} /> Habilitada
                             </span>
                           ) : (
                             <button
@@ -613,6 +615,11 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                               {habilitandoId === p.id ? '...' : 'Habilitar'}
                             </button>
                           )}
+                        </div>
+                        <div className="text-center">
+                          {tieneCompromisos
+                            ? <CheckCircle size={16} className="inline text-green-600" />
+                            : <span className="text-gray-300 text-xs">—</span>}
                         </div>
                       </div>
                     )
