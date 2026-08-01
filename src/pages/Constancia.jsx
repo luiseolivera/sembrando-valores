@@ -81,7 +81,7 @@ export default function Constancia() {
           </div>
           <h2 className="text-xl font-bold text-gray-800 mb-2">Tu constancia está lista</h2>
           <p className="text-gray-500 text-sm mb-6">
-            Completaste los 14 módulos. La constancia tiene un costo y se libera una vez completado el pago.
+            Completaste los 14 módulos. La constancia tiene un costo de 50 pesos y se libera una vez completado el pago.
             Contáctanos para completarlo y recibirla.
           </p>
           <a
