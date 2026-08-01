@@ -396,7 +396,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-5xl mx-auto px-4">
 
         {/* Cabecera */}
@@ -1148,7 +1148,7 @@ export default function PanelFacilitador() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-3xl mx-auto px-4">
         <div className="flex gap-1 bg-gray-100 p-1 rounded-xl mb-6 w-fit">
           <button

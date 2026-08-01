@@ -58,7 +58,7 @@ export default function MiResumen() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 print:bg-white print:py-0">
+    <div className="min-h-screen bg-gray-100 py-8 print:bg-white print:py-0">
       <div className="max-w-3xl mx-auto px-4">
         <div className="flex items-center justify-between mb-6 print:hidden">
           <Link to="/dashboard" className="flex items-center gap-1 text-morado text-sm font-medium hover:underline">

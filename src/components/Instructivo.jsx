@@ -105,7 +105,7 @@ export default function Instructivo() {
         <div>
           <p className="font-bold text-morado text-sm mb-1">¿Eres una empresa?</p>
           <p className="text-xs text-gray-600 leading-relaxed mb-2">
-            Lleva el programa a todos los equipos de tu organización, con reportes agregados, constancias y facturación disponible.
+            Lleva el programa a todos los equipos de tu organización, con la marca de tu empresa en la plataforma y facturación disponible.
           </p>
           <Link to="/empresas" className="text-xs font-semibold text-morado hover:underline inline-flex items-center gap-1">
             Conoce nuestra propuesta empresarial <ArrowRight size={12} />

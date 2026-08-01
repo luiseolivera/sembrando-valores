@@ -157,7 +157,7 @@ export default function Dashboard() {
     && moduloActivoIndex > 0 && pasoActual(MODULOS[moduloActivoIndex - 1].id) !== 'completado'
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-5xl mx-auto px-4">
         {/* Saludo */}
         <div className="flex items-start justify-between gap-4 mb-6">

@@ -182,7 +182,7 @@ export default function Modulo() {
   const porciento = Math.round((Object.values(progreso).filter(Boolean).length / ORDEN_PASOS.length) * 100)
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-3xl mx-auto px-4">
         <button onClick={() => navigate('/dashboard')} className="flex items-center gap-1 text-morado text-sm font-medium mb-5 hover:underline">
           <ChevronLeft size={16} /> Volver al inicio
