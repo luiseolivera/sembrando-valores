@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { supabase, DEMO_MODE } from '../lib/supabase'
+import { supabase, DEMO_MODE, esPerfilExploracion } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
 import PasoContenido from './pasos/PasoContenido'
 import PasoQuiz from './pasos/PasoQuiz'
 import PasoReflexion from './pasos/PasoReflexion'
 import PasoSesion from './pasos/PasoSesion'
 import PasoCompromisos from './pasos/PasoCompromisos'
-import { BookOpen, CheckSquare, PenLine, Users, Target, ChevronLeft, CheckCircle, Lock } from 'lucide-react'
+import { BookOpen, CheckSquare, PenLine, Users, Target, ChevronLeft, CheckCircle, Lock, LogOut } from 'lucide-react'
 
 const PASOS_CONFIG = [
   { key: 'contenido', label: 'Contenido', icono: BookOpen },
@@ -30,6 +30,8 @@ export default function Modulo() {
   const [cargando, setCargando] = useState(true)
   const [moduloActivoGrupo, setModuloActivoGrupo] = useState(null)
   const [moduloAnteriorCompleto, setModuloAnteriorCompleto] = useState(true)
+  const [saliendoGrupo, setSaliendoGrupo] = useState(false)
+  const [errorSalir, setErrorSalir] = useState('')
 
   const moduloIndex = MODULOS.findIndex(m => m.id === modulo?.id)
   const moduloAnterior = moduloIndex > 0 ? MODULOS[moduloIndex - 1] : null
@@ -78,6 +80,24 @@ export default function Modulo() {
 
   const bloqueadoPorGrupo = perfil?.rol === 'participante' && perfil?.grupo_id && modulo && moduloActivoGrupo !== modulo.id
   const bloqueadoPorOrden = perfil?.rol === 'participante' && !bloqueadoPorGrupo && !moduloAnteriorCompleto
+
+  async function salirDelGrupo() {
+    if (esPerfilExploracion(perfil)) {
+      setErrorSalir('Estás en modo de exploración — regístrate o inicia sesión para salir de un grupo real.')
+      return
+    }
+    if (!confirm('¿Salir de tu grupo? Podrás solicitar integrarte a uno nuevo, pero dejarás de ver el módulo activo y los compromisos de este grupo.')) return
+    setErrorSalir('')
+    setSaliendoGrupo(true)
+    const { error } = await supabase.from('usuarios').update({ grupo_id: null }).eq('id', perfil.id)
+    if (error) {
+      setErrorSalir('Ocurrió un error al salir del grupo. Intenta de nuevo.')
+      setSaliendoGrupo(false)
+    } else {
+      navigate('/dashboard')
+      window.location.reload()
+    }
+  }
 
   function avanzar() {
     const i = ORDEN_PASOS.indexOf(pasoActual)
@@ -137,7 +157,24 @@ export default function Modulo() {
         <p className="text-gray-500 text-sm mb-6">
           Debes terminar el Módulo {moduloAnterior?.numero} — {moduloAnterior?.titulo} (incluida tu sesión grupal) antes de avanzar a este.
         </p>
-        <button onClick={() => navigate(`/modulo/${moduloAnterior?.id}`)} className="text-morado font-semibold text-sm hover:underline">← Ir al módulo anterior</button>
+        {perfil?.grupo_id ? (
+          <div className="space-y-3">
+            <p className="text-xs text-gray-400">
+              Tu grupo ya avanzó a este módulo, así que no puedes volver a trabajar el anterior ahí. Puedes salir del grupo y solicitar integrarte a uno nuevo.
+            </p>
+            {errorSalir && <p className="text-red-500 text-xs">{errorSalir}</p>}
+            <button
+              onClick={salirDelGrupo}
+              disabled={saliendoGrupo}
+              className="inline-flex items-center gap-2 bg-red-600 text-white text-sm font-bold px-4 py-2.5 rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50"
+            >
+              <LogOut size={14} /> {saliendoGrupo ? 'Saliendo...' : 'Salir de mi grupo'}
+            </button>
+            <p><button onClick={() => navigate('/dashboard')} className="text-morado font-semibold text-sm hover:underline">← Volver al inicio</button></p>
+          </div>
+        ) : (
+          <button onClick={() => navigate(`/modulo/${moduloAnterior?.id}`)} className="text-morado font-semibold text-sm hover:underline">← Ir al módulo anterior</button>
+        )}
       </div>
     </div>
   )

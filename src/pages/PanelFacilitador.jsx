@@ -457,31 +457,33 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
         </div>
 
         {/* Cards info */}
-        <div className="grid sm:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-4 mb-6">
           <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
             <p className="text-xs text-gray-400 font-medium mb-1">Participantes</p>
             <p className="font-bold text-morado text-3xl">{participantes.length}</p>
             <p className="text-xs text-gray-400 mt-1">en este grupo</p>
           </div>
-          <div className="bg-white rounded-2xl border border-yellow-100 shadow-sm p-5 sm:col-span-2">
+          <div className="bg-white rounded-2xl border border-yellow-100 shadow-sm p-5">
             <p className="text-xs text-gray-400 font-medium mb-2">Invita participantes</p>
-            <div className="flex items-center gap-3 mb-3">
-              <p className="font-mono font-bold text-2xl text-morado tracking-widest">{grupo.codigo}</p>
-              <button onClick={copiarCodigo} className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition-all ${copiado ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-morado hover:bg-purple-200'}`}>
-                {copiado ? '✓ Copiado' : <><Clipboard size={12} className="inline mr-1" />Copiar código</>}
-              </button>
-            </div>
-            <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2 border border-gray-200">
-              <LinkIcon size={13} className="text-gray-400 flex-shrink-0" />
-              <p className="text-xs text-gray-500 truncate flex-1 font-mono">
-                {window.location.origin}/unirse/{grupo.codigo}
-              </p>
-              <button onClick={copiarLink} className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-lg transition-all ${copiadoLink ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-morado hover:bg-purple-200'}`}>
-                {copiadoLink ? '✓ Copiado' : 'Copiar link'}
-              </button>
-              <button onClick={enviarPorWhatsapp} className="flex-shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition-all">
-                <MessageCircle size={12} /> WhatsApp
-              </button>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <p className="font-mono font-bold text-xl text-morado tracking-widest">{grupo.codigo}</p>
+                <button onClick={copiarCodigo} className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-lg transition-all ${copiado ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-morado hover:bg-purple-200'}`}>
+                  {copiado ? '✓ Copiado' : <><Clipboard size={12} className="inline mr-1" />Copiar código</>}
+                </button>
+              </div>
+              <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2 border border-gray-200 flex-1 min-w-[220px]">
+                <LinkIcon size={13} className="text-gray-400 flex-shrink-0" />
+                <p className="text-xs text-gray-500 truncate flex-1 font-mono">
+                  {window.location.origin}/unirse/{grupo.codigo}
+                </p>
+                <button onClick={copiarLink} className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-lg transition-all ${copiadoLink ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-morado hover:bg-purple-200'}`}>
+                  {copiadoLink ? '✓ Copiado' : 'Copiar link'}
+                </button>
+                <button onClick={enviarPorWhatsapp} className="flex-shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition-all">
+                  <MessageCircle size={12} /> WhatsApp
+                </button>
+              </div>
             </div>
             <p className="text-xs text-gray-400 mt-2">Quien abra el link se registra y queda unido automáticamente</p>
           </div>

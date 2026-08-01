@@ -3,7 +3,7 @@ import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase, esPerfilExploracion } from '../lib/supabase'
 import { MODULOS } from '../data/modulos'
-import { CheckCircle, ChevronRight, Target, BookOpen, Trophy, Users, Zap, Printer, Lock, Clock, Send } from 'lucide-react'
+import { CheckCircle, ChevronRight, Target, BookOpen, Trophy, Users, Zap, Printer, Lock, Clock, Send, LogOut } from 'lucide-react'
 
 export default function Dashboard() {
   const { perfil } = useAuth()
@@ -18,6 +18,8 @@ export default function Dashboard() {
   const [uniendose, setUniendose] = useState(false)
   const [errorUnirse, setErrorUnirse] = useState('')
   const [exitoUnirse, setExitoUnirse] = useState('')
+  const [saliendoGrupo, setSaliendoGrupo] = useState(false)
+  const [errorSalir, setErrorSalir] = useState('')
 
   useEffect(() => {
     if (perfil) cargarDatos()
@@ -101,6 +103,23 @@ export default function Dashboard() {
     setUniendose(false)
   }
 
+  async function salirDelGrupo() {
+    if (esPerfilExploracion(perfil)) {
+      setErrorSalir('Estás en modo de exploración — regístrate o inicia sesión para salir de un grupo real.')
+      return
+    }
+    if (!confirm('¿Salir de tu grupo? Podrás solicitar integrarte a uno nuevo, pero dejarás de ver el módulo activo y los compromisos de este grupo.')) return
+    setErrorSalir('')
+    setSaliendoGrupo(true)
+    const { error } = await supabase.from('usuarios').update({ grupo_id: null }).eq('id', perfil.id)
+    if (error) {
+      setErrorSalir('Ocurrió un error al salir del grupo. Intenta de nuevo.')
+      setSaliendoGrupo(false)
+    } else {
+      window.location.reload()
+    }
+  }
+
   function pasoActual(moduloId) {
     const p = progresos[moduloId] || {}
     if (!p.video) return 'video'
@@ -133,6 +152,9 @@ export default function Dashboard() {
 
   const totalCompletados = MODULOS.filter((m) => pasoActual(m.id) === 'completado').length
   const moduloActivo = moduloActivoId ? MODULOS.find((m) => m.id === moduloActivoId) : null
+  const moduloActivoIndex = moduloActivo ? MODULOS.findIndex((m) => m.id === moduloActivo.id) : -1
+  const atoradoEnGrupo = perfil?.rol === 'participante' && perfil?.grupo_id && moduloActivo
+    && moduloActivoIndex > 0 && pasoActual(MODULOS[moduloActivoIndex - 1].id) !== 'completado'
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -264,8 +286,34 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* Aviso: el grupo avanzó a un módulo que este participante no completó */}
+        {atoradoEnGrupo && (
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6">
+            <div className="flex items-start gap-3 mb-3">
+              <div className="w-9 h-9 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Lock size={16} className="text-red-500" />
+              </div>
+              <div>
+                <p className="font-bold text-red-700 text-sm">Te quedaste atrás en tu grupo</p>
+                <p className="text-xs text-red-600 mt-0.5">
+                  Tu grupo ya avanzó al Módulo {moduloActivo.numero} — {moduloActivo.titulo}, pero no terminaste el módulo anterior.
+                  Ya no puedes acceder ni a ese módulo ni al activo. Puedes salir de este grupo y solicitar integrarte a uno nuevo.
+                </p>
+              </div>
+            </div>
+            {errorSalir && <p className="text-red-600 text-xs mb-2">{errorSalir}</p>}
+            <button
+              onClick={salirDelGrupo}
+              disabled={saliendoGrupo}
+              className="flex items-center gap-2 bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50"
+            >
+              <LogOut size={14} /> {saliendoGrupo ? 'Saliendo...' : 'Salir de mi grupo'}
+            </button>
+          </div>
+        )}
+
         {/* Indicador compacto: sesión/compromisos pendientes del módulo activo */}
-        {moduloActivo && pasoActual(moduloActivo.id) === 'pendiente' && (
+        {!atoradoEnGrupo && moduloActivo && pasoActual(moduloActivo.id) === 'pendiente' && (
           <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs px-4 py-2.5 rounded-xl mb-6">
             <Users size={14} className="flex-shrink-0" />
             {progresos[moduloActivo.id]?.habilitado
