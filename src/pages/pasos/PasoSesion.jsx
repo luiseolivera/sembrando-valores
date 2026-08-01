@@ -91,7 +91,7 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
       {habilitado ? (
         <div className="space-y-4">
           <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl">
-            <CheckCircle size={16} /> Tu facilitador ya habilitó tus compromisos de este módulo.
+            <CheckCircle size={16} /> Tu facilitador confirmó tu sesión grupal — ya puedes continuar a tus compromisos.
           </div>
           <button
             onClick={onAvanzar}
