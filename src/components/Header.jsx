@@ -96,10 +96,10 @@ export default function Header() {
             </button>
           </>
         ) : (
-          <div className="flex gap-3">
+          <div className="flex items-center gap-3">
             <Link
               to="/login"
-              className="hidden sm:block text-gray-600 hover:text-morado text-sm font-medium transition-colors"
+              className="text-gray-600 hover:text-morado text-sm font-medium transition-colors"
             >
               Iniciar sesión
             </Link>
