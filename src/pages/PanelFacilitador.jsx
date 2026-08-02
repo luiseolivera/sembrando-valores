@@ -938,7 +938,18 @@ function SolicitudesSesion({ facilitadorId, grupos, onGrupoCreado }) {
       onGrupoCreado?.({ ...nuevoGrupo, participantes_count: 0 })
     }
 
-    await supabase.from('usuarios').update({ grupo_id: grupoId }).eq('id', solicitud.usuario_id)
+    const { data: actualizado, error: errorAsignarUsuario } = await supabase
+      .from('usuarios')
+      .update({ grupo_id: grupoId })
+      .eq('id', solicitud.usuario_id)
+      .select()
+
+    if (errorAsignarUsuario || !actualizado || actualizado.length === 0) {
+      setErrorAsignar('No se pudo asignar al participante a este grupo. Intenta de nuevo.')
+      setEnviando(null)
+      return
+    }
+
     await supabase.from('solicitudes_sesion').update({
       estado: 'atendida', atendida_por: facilitadorId, facilitador_id: facilitadorId,
     }).eq('id', solicitud.id)
