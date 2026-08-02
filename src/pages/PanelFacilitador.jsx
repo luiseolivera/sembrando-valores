@@ -375,6 +375,8 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
     window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank')
   }
 
+  const completadosModulo = new Set(compromisosPersonales.map(c => c.usuario_id)).size
+
   const reflexionesPorUsuario = reflexiones.reduce((acc, r) => {
     if (!acc[r.usuario_id]) acc[r.usuario_id] = { nombre: r.usuarios?.nombre, preguntas: [], compromisos: [] }
     acc[r.usuario_id].preguntas.push(r)
@@ -491,7 +493,16 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
 
         {/* Selector módulo + activar */}
         <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5 mb-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Módulo de trabajo</label>
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <label className="block text-sm font-semibold text-gray-700">Módulo de trabajo</label>
+            {participantes.length > 0 && (
+              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0 ${
+                completadosModulo === participantes.length ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+              }`}>
+                {completadosModulo}/{participantes.length} completaron este módulo
+              </span>
+            )}
+          </div>
           <div className="flex gap-3 flex-wrap">
             <select
               value={moduloSeleccionado.id}
