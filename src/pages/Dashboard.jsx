@@ -111,8 +111,8 @@ export default function Dashboard() {
     if (!confirm('¿Salir de tu grupo? Podrás solicitar integrarte a uno nuevo, pero dejarás de ver el módulo activo y los compromisos de este grupo.')) return
     setErrorSalir('')
     setSaliendoGrupo(true)
-    const { error } = await supabase.from('usuarios').update({ grupo_id: null }).eq('id', perfil.id)
-    if (error) {
+    const { data, error } = await supabase.from('usuarios').update({ grupo_id: null }).eq('id', perfil.id).select()
+    if (error || !data || data.length === 0) {
       setErrorSalir('Ocurrió un error al salir del grupo. Intenta de nuevo.')
       setSaliendoGrupo(false)
     } else {
@@ -233,7 +233,7 @@ export default function Dashboard() {
               </div>
               <div>
                 <p className="font-bold text-morado text-sm">¿Tu equipo tiene un código de grupo?</p>
-                <p className="text-xs text-gray-500">Pídele el código de 6 letras a tu facilitador — es opcional, también puedes usar la app por tu cuenta</p>
+                <p className="text-xs text-gray-500">Pídele el código de 6 letras a tu facilitador</p>
               </div>
             </div>
             <div className="flex gap-2">

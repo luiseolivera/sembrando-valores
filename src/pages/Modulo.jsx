@@ -89,8 +89,8 @@ export default function Modulo() {
     if (!confirm('¿Salir de tu grupo? Podrás solicitar integrarte a uno nuevo, pero dejarás de ver el módulo activo y los compromisos de este grupo.')) return
     setErrorSalir('')
     setSaliendoGrupo(true)
-    const { error } = await supabase.from('usuarios').update({ grupo_id: null }).eq('id', perfil.id)
-    if (error) {
+    const { data, error } = await supabase.from('usuarios').update({ grupo_id: null }).eq('id', perfil.id).select()
+    if (error || !data || data.length === 0) {
       setErrorSalir('Ocurrió un error al salir del grupo. Intenta de nuevo.')
       setSaliendoGrupo(false)
     } else {

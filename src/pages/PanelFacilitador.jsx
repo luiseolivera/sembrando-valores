@@ -286,7 +286,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
     setGuardandoSesion(true)
     const { data } = await supabase.from('sesiones_grupales').insert({
       grupo_id: grupo.id, modulo_id: moduloSeleccionado.id,
-      fecha: sesionForm.fecha || null, link_reunion: sesionForm.link,
+      fecha: sesionForm.fecha ? new Date(sesionForm.fecha).toISOString() : null, link_reunion: sesionForm.link,
     }).select().maybeSingle()
     if (data) {
       setSesiones(prev => [...prev, data].sort((a, b) => (a.fecha || '').localeCompare(b.fecha || '')))

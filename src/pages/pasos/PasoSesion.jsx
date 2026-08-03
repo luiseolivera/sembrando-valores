@@ -74,6 +74,7 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
   }
 
   const sesionElegida = sesiones.find(s => s.id === sesionElegidaId)
+  const sesionesDisponibles = sesiones.filter(s => !s.fecha || new Date(s.fecha) > new Date())
 
   return (
     <div className="bg-yellow-50 rounded-2xl shadow-sm border border-yellow-200 p-6">
