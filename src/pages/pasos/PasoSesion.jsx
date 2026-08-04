@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase, DEMO_MODE, esPerfilExploracion } from '../../lib/supabase'
-import { Users, Send, Clock, CheckCircle, ArrowRight } from 'lucide-react'
+import { Users, Send, Clock, CheckCircle, ArrowRight, Video } from 'lucide-react'
 
 export default function PasoSesion({ modulo, perfil, onAvanzar }) {
   const [sesiones, setSesiones] = useState([])
@@ -79,10 +79,10 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
   return (
     <div className="bg-yellow-50 rounded-2xl shadow-sm border border-yellow-200 p-6">
       <h2 className="font-bold text-morado text-lg mb-1 flex items-center gap-2">
-        <Users size={20} className="text-dorado-dark" /> Paso — Sesión grupal
+        <Users size={20} className="text-dorado-dark" /> Paso 5 — Sesión grupal
       </h2>
       <p className="text-sm text-gray-600 mb-5">
-        Antes de registrar tus compromisos, necesitas tener tu sesión grupal de este módulo.
+        Para terminar este módulo, falta tu sesión grupal — tu facilitador confirmará tu asistencia después de que se realice.
       </p>
 
       {error && (
@@ -92,13 +92,13 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
       {habilitado ? (
         <div className="space-y-4">
           <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl">
-            <CheckCircle size={16} /> Tu facilitador confirmó tu sesión grupal — ya puedes continuar a tus compromisos.
+            <CheckCircle size={16} /> Tu facilitador confirmó tu sesión grupal — ¡módulo completado!
           </div>
           <button
             onClick={onAvanzar}
             className="w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors flex items-center justify-center gap-2"
           >
-            Continuar a compromisos <ArrowRight size={16} />
+            Volver al inicio <ArrowRight size={16} />
           </button>
         </div>
       ) : sesionElegida ? (
@@ -109,16 +109,25 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
                 ? new Date(sesionElegida.fecha).toLocaleString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
                 : 'Sin fecha definida'}
             </p>
-            <p className="text-xs text-gray-400 truncate">{sesionElegida.link_reunion}</p>
+            {sesionElegida.link_reunion && (
+              <a
+                href={sesionElegida.link_reunion}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 flex items-center justify-center gap-2 bg-morado text-white font-bold text-sm py-2.5 rounded-xl hover:bg-morado-dark transition-colors"
+              >
+                <Video size={16} /> Entrar a la sesión
+              </a>
+            )}
           </div>
           <div className="flex items-center gap-2 bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm px-4 py-3 rounded-xl">
-            <Clock size={16} /> Esperando que tu facilitador habilite tus compromisos tras la sesión.
+            <Clock size={16} /> Esperando que tu facilitador confirme tu asistencia tras la sesión.
           </div>
         </div>
-      ) : sesiones.length > 0 ? (
+      ) : sesionesDisponibles.length > 0 ? (
         <div className="space-y-2">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Elige una opción de horario</p>
-          {sesiones.map((s) => (
+          {sesionesDisponibles.map((s) => (
             <div key={s.id} className="flex items-center justify-between gap-3 bg-white rounded-xl border border-yellow-200 p-3">
               <p className="text-sm text-gray-700">
                 {s.fecha

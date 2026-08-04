@@ -21,19 +21,21 @@ export default function Constancia() {
       supabase.from('quiz_respuestas').select('modulo_id, aprobado').eq('usuario_id', perfil.id),
       supabase.from('reflexiones').select('modulo_id').eq('usuario_id', perfil.id),
       supabase.from('compromisos_personales').select('modulo_id').eq('usuario_id', perfil.id),
+      supabase.from('habilitaciones_compromisos').select('modulo_id').eq('usuario_id', perfil.id),
     ]
     if (perfil.grupo_id) {
       queries.push(
         supabase.from('grupos').select('logo_empresa_url').eq('id', perfil.grupo_id).maybeSingle(),
       )
     }
-    const [quizRes, reflexRes, compRes, grupoRes] = await Promise.all(queries)
+    const [quizRes, reflexRes, compRes, habilRes, grupoRes] = await Promise.all(queries)
 
     const todosCompletos = MODULOS.every((m) => {
       const quizOk = quizRes.data?.find((r) => r.modulo_id === m.id)?.aprobado
       const reflexOk = reflexRes.data?.some((r) => r.modulo_id === m.id)
       const compOk = compRes.data?.some((r) => r.modulo_id === m.id)
-      return quizOk && reflexOk && compOk
+      const sesionOk = habilRes.data?.some((r) => r.modulo_id === m.id)
+      return quizOk && reflexOk && compOk && sesionOk
     })
     setCompleto(todosCompletos)
     if (grupoRes?.data?.logo_empresa_url) setLogoEmpresa(grupoRes.data.logo_empresa_url)

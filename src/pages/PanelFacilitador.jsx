@@ -112,6 +112,22 @@ function ListaGrupos({ grupos, reporte, onSeleccionar, onCrear, creando, nombreN
                   </div>
                   <ChevronDown size={18} className="text-gray-300 group-hover:text-morado transition-colors -rotate-90" />
                 </div>
+                {g.participantes_count > 0 && (
+                  <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-gray-50">
+                    <div className="text-center">
+                      <div className="text-lg font-extrabold text-morado">{g.participantes_count}</div>
+                      <p className="text-[10px] text-gray-400 font-medium leading-tight">Participantes</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg font-extrabold text-morado">{g.quiz_aprobados_count}</div>
+                      <p className="text-[10px] text-gray-400 font-medium leading-tight">Quizzes aprobados</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg font-extrabold text-morado">{g.compromisos_count}</div>
+                      <p className="text-[10px] text-gray-400 font-medium leading-tight">Compromisos registrados</p>
+                    </div>
+                  </div>
+                )}
               </button>
             ))}
           </div>
@@ -130,6 +146,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
   const [compromisosPersonales, setCompromisosPersonales] = useState([])
   const [quizResultados, setQuizResultados] = useState([])
   const [compromisoTexto, setCompromisoTexto] = useState(['', '', ''])
+  const [compromisosGuardados, setCompromisosGuardados] = useState([])
   const [sesiones, setSesiones] = useState([])
   const [eleccionesPorSesion, setEleccionesPorSesion] = useState({})
   const [eleccionesPorUsuario, setEleccionesPorUsuario] = useState({})
@@ -181,6 +198,14 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
       .eq('modulo_id', moduloSeleccionado.id)
       .order('fecha')
     setSesiones(sesionesData || [])
+
+    const { data: compGrupoData } = await supabase
+      .from('compromisos')
+      .select('*')
+      .eq('grupo_id', grupo.id)
+      .eq('modulo_id', moduloSeleccionado.id)
+      .order('created_at')
+    setCompromisosGuardados(compGrupoData || [])
 
     const sesionIds = (sesionesData || []).map(s => s.id)
     if (sesionIds.length > 0) {
@@ -271,9 +296,10 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
     if (!validos.length) return
     if (bloqueadoPorExploracion()) return
     setGuardandoCompromisos(true)
-    await supabase.from('compromisos').insert(
+    const { data } = await supabase.from('compromisos').insert(
       validos.map(texto => ({ grupo_id: grupo.id, modulo_id: moduloSeleccionado.id, compromiso_texto: texto, facilitador_id: facilitadorId }))
-    )
+    ).select()
+    if (data) setCompromisosGuardados(data)
     setCompromisoTexto(['', '', ''])
     setGuardandoCompromisos(false)
     setExito('¡Compromisos guardados!')
@@ -330,7 +356,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
       return nuevo
     })
     setHabilitandoId(null)
-    setExito(`Compromisos habilitados para ${usuarioIds.length} participante${usuarioIds.length === 1 ? '' : 's'}.`)
+    setExito(`Asistencia confirmada para ${usuarioIds.length} participante${usuarioIds.length === 1 ? '' : 's'}.`)
     setTimeout(() => setExito(''), 4000)
   }
 
@@ -591,11 +617,13 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                     const sesionPendiente = !sesionElegida
                     const sesionFutura = sesionElegida?.fecha && new Date(sesionElegida.fecha) > new Date()
                     const puedeHabilitar = !sesionPendiente && !sesionFutura
-                    const estado = quiz?.aprobado && tieneReflexion ? 'Listo para sesión'
+                    const estado = quiz?.aprobado && tieneReflexion && tieneCompromisos ? 'Listo para sesión'
+                      : quiz?.aprobado && tieneReflexion ? 'Pendiente compromisos'
                       : quiz?.aprobado ? 'Pendiente reflexión'
                       : quiz ? 'Quiz no aprobado'
                       : 'Sin comenzar'
-                    const colorEstado = quiz?.aprobado && tieneReflexion ? 'bg-green-100 text-green-700'
+                    const colorEstado = quiz?.aprobado && tieneReflexion && tieneCompromisos ? 'bg-green-100 text-green-700'
+                      : quiz?.aprobado && tieneReflexion ? 'bg-purple-100 text-morado'
                       : quiz?.aprobado ? 'bg-blue-100 text-blue-700'
                       : quiz ? 'bg-red-100 text-red-600'
                       : 'bg-gray-100 text-gray-400'
@@ -623,7 +651,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                         <div className="text-center">
                           {habilitaciones[p.id] ? (
                             <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700">
-                              <Unlock size={12} /> Habilitada
+                              <Unlock size={12} /> Asistió a la sesión grupal
                             </span>
                           ) : puedeHabilitar ? (
                             <button
@@ -631,7 +659,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                               disabled={habilitandoId === p.id}
                               className="text-xs font-semibold text-morado bg-purple-50 hover:bg-purple-100 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50"
                             >
-                              {habilitandoId === p.id ? '...' : 'Habilitar'}
+                              {habilitandoId === p.id ? '...' : 'Asistió a la sesión grupal'}
                             </button>
                           ) : (
                             <span
@@ -789,7 +817,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                             disabled={habilitandoId === s.id}
                             className="flex items-center gap-1.5 text-xs font-semibold text-morado bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
                           >
-                            <Unlock size={13} /> {habilitandoId === s.id ? 'Habilitando...' : 'Habilitar a todos'}
+                            <Unlock size={13} /> {habilitandoId === s.id ? 'Guardando...' : 'Asistieron a la sesión grupal'}
                           </button>
                         )}
                         <button
@@ -839,21 +867,40 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
             <h3 className="font-bold text-morado text-lg mb-1 flex items-center gap-2">
               <Target size={18} className="text-dorado" /> Compromisos del grupo
             </h3>
-            <p className="text-sm text-gray-500 mb-5">Registra hasta 3 compromisos al cerrar la sesión.</p>
-            <div className="space-y-3 mb-5">
-              {compromisoTexto.map((texto, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="w-7 h-7 bg-dorado rounded-full flex items-center justify-center text-morado font-bold text-xs flex-shrink-0 mt-2">{i + 1}</div>
-                  <textarea value={texto} rows={2} placeholder={`Compromiso ${i + 1} (opcional)`}
-                    onChange={e => { const n = [...compromisoTexto]; n[i] = e.target.value; setCompromisoTexto(n) }}
-                    className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-morado resize-none" />
+            {compromisosGuardados.length > 0 ? (
+              <>
+                <p className="text-sm text-gray-500 mb-5">
+                  Estos son los compromisos que quedaron registrados para este módulo — se incluyen en las
+                  "Reflexiones y compromisos" que imprime cada participante.
+                </p>
+                <div className="space-y-3">
+                  {compromisosGuardados.map((c, i) => (
+                    <div key={c.id} className="flex items-start gap-3 bg-purple-50 border border-purple-100 rounded-xl p-3">
+                      <div className="w-7 h-7 bg-dorado rounded-full flex items-center justify-center text-morado font-bold text-xs flex-shrink-0">{i + 1}</div>
+                      <p className="text-sm text-gray-700 flex-1">{c.compromiso_texto}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <button onClick={guardarCompromisos} disabled={compromisoTexto.every(c => !c.trim()) || guardandoCompromisos}
-              className="w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 flex items-center justify-center gap-2">
-              <Plus size={16} /> {guardandoCompromisos ? 'Guardando...' : 'Registrar compromisos'}
-            </button>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-gray-500 mb-5">Registra hasta 3 compromisos al cerrar la sesión.</p>
+                <div className="space-y-3 mb-5">
+                  {compromisoTexto.map((texto, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <div className="w-7 h-7 bg-dorado rounded-full flex items-center justify-center text-morado font-bold text-xs flex-shrink-0 mt-2">{i + 1}</div>
+                      <textarea value={texto} rows={2} placeholder={`Compromiso ${i + 1} (opcional)`}
+                        onChange={e => { const n = [...compromisoTexto]; n[i] = e.target.value; setCompromisoTexto(n) }}
+                        className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-morado resize-none" />
+                    </div>
+                  ))}
+                </div>
+                <button onClick={guardarCompromisos} disabled={compromisoTexto.every(c => !c.trim()) || guardandoCompromisos}
+                  className="w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 flex items-center justify-center gap-2">
+                  <Plus size={16} /> {guardandoCompromisos ? 'Guardando...' : 'Registrar compromisos'}
+                </button>
+              </>
+            )}
           </div>
         )}
 
@@ -1094,13 +1141,45 @@ export default function PanelFacilitador() {
     const { data: gs } = await supabase.from('grupos').select('*').eq('facilitador_id', perfil.id).order('created_at')
     if (!gs) { setCargando(false); return }
 
-    // Contar participantes por grupo
-    const conConteo = await Promise.all(gs.map(async g => {
-      const { count } = await supabase.from('usuarios').select('*', { count: 'exact', head: true }).eq('grupo_id', g.id)
-      return { ...g, participantes_count: count || 0 }
+    const grupoIds = gs.map(g => g.id)
+    const { data: usuariosGrupo } = grupoIds.length
+      ? await supabase.from('usuarios').select('id, grupo_id').in('grupo_id', grupoIds)
+      : { data: [] }
+    const usuarioAGrupo = {}
+    const idsPorGrupo = {}
+    ;(usuariosGrupo || []).forEach(u => {
+      usuarioAGrupo[u.id] = u.grupo_id
+      if (!idsPorGrupo[u.grupo_id]) idsPorGrupo[u.grupo_id] = []
+      idsPorGrupo[u.grupo_id].push(u.id)
+    })
+    const todosIds = (usuariosGrupo || []).map(u => u.id)
+
+    const [{ data: quizData }, { data: compData }] = todosIds.length
+      ? await Promise.all([
+          supabase.from('quiz_respuestas').select('usuario_id').eq('aprobado', true).in('usuario_id', todosIds),
+          supabase.from('compromisos_personales').select('usuario_id').in('usuario_id', todosIds),
+        ])
+      : [{ data: [] }, { data: [] }]
+
+    const quizPorGrupo = {}
+    ;(quizData || []).forEach(q => {
+      const gid = usuarioAGrupo[q.usuario_id]
+      if (gid) quizPorGrupo[gid] = (quizPorGrupo[gid] || 0) + 1
+    })
+    const compPorGrupo = {}
+    ;(compData || []).forEach(c => {
+      const gid = usuarioAGrupo[c.usuario_id]
+      if (gid) compPorGrupo[gid] = (compPorGrupo[gid] || 0) + 1
+    })
+
+    const conConteo = gs.map(g => ({
+      ...g,
+      participantes_count: (idsPorGrupo[g.id] || []).length,
+      quiz_aprobados_count: quizPorGrupo[g.id] || 0,
+      compromisos_count: compPorGrupo[g.id] || 0,
     }))
     setGrupos(conConteo)
-    await cargarReporte(gs.map(g => g.id))
+    await cargarReporte(grupoIds)
     setCargando(false)
   }
 

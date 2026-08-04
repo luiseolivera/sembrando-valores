@@ -125,14 +125,15 @@ export default function Dashboard() {
     if (!p.video) return 'video'
     if (!p.quiz) return 'quiz'
     if (!p.reflexion) return 'reflexion'
-    if (!p.compromisos) return 'pendiente'
+    if (!p.compromisos) return 'compromisos'
+    if (!p.habilitado) return 'sesion'
     return 'completado'
   }
 
   function porciento(moduloId) {
     const p = progresos[moduloId] || {}
-    const completados = [p.video, p.quiz, p.reflexion, p.compromisos].filter(Boolean).length
-    return Math.round((completados / 4) * 100)
+    const completados = [p.video, p.quiz, p.reflexion, p.compromisos, p.habilitado].filter(Boolean).length
+    return Math.round((completados / 5) * 100)
   }
 
   if (perfil?.rol === 'facilitador') {
@@ -313,12 +314,12 @@ export default function Dashboard() {
         )}
 
         {/* Indicador compacto: sesión/compromisos pendientes del módulo activo */}
-        {!atoradoEnGrupo && moduloActivo && pasoActual(moduloActivo.id) === 'pendiente' && (
+        {!atoradoEnGrupo && moduloActivo && ['compromisos', 'sesion'].includes(pasoActual(moduloActivo.id)) && (
           <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs px-4 py-2.5 rounded-xl mb-6">
             <Users size={14} className="flex-shrink-0" />
-            {progresos[moduloActivo.id]?.habilitado
-              ? 'Te falta concluir con la sección de compromisos del módulo activo —'
-              : 'Te falta tu sesión grupal del módulo activo —'}
+            {pasoActual(moduloActivo.id) === 'sesion'
+              ? 'Te falta tu sesión grupal del módulo activo —'
+              : 'Te falta concluir con la sección de compromisos del módulo activo —'}
             <Link to={`/modulo/${moduloActivo.id}`} className="font-semibold hover:underline">continuar</Link>
           </div>
         )}
@@ -410,7 +411,8 @@ export default function Dashboard() {
                     <span className="text-xs text-morado font-medium">
                       {paso === 'quiz' && '📝 Hacer quiz'}
                       {paso === 'reflexion' && '✍️ Reflexionar'}
-                      {paso === 'pendiente' && '👉 Continuar módulo'}
+                      {paso === 'compromisos' && '🎯 Registrar compromisos'}
+                      {paso === 'sesion' && '👥 Sesión grupal'}
                     </span>
                   )}
                   {completado && (

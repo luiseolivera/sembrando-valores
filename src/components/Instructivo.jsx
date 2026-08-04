@@ -11,8 +11,8 @@ const pasosParticipante = [
   { icono: Headphones, texto: 'Escucha el audio completo y marca que lo escuchaste' },
   { icono: CheckSquare, texto: 'Responde el quiz de comprensión (mínimo 70% para avanzar)' },
   { icono: PenLine, texto: 'Escribe tu reflexión personal y envíala' },
-  { icono: Users, texto: 'Elige una sesión grupal disponible o, si no tienes grupo, solicita integrarte a uno con un facilitador específico o con cualquiera disponible' },
-  { icono: Target, texto: 'Registra tus compromisos personales — se habilitan cuando tu facilitador confirma que ya tuviste tu sesión' },
+  { icono: Target, texto: 'Registra tus compromisos personales' },
+  { icono: Users, texto: 'Elige una sesión grupal disponible o, si no tienes grupo, solicita integrarte a uno con un facilitador específico o con cualquiera disponible — tu facilitador confirma tu asistencia y el módulo queda completado' },
   { icono: Printer, texto: 'Imprime tus reflexiones y compromisos desde "Mis reflexiones y compromisos"' },
 ]
 
@@ -23,7 +23,7 @@ const pasosFacilitador = [
   { icono: FileText, texto: 'Revisa el progreso, las reflexiones y compromisos de cada participante' },
   { icono: Calendar, texto: 'Ofrece uno o varios horarios de sesión grupal (Zoom, Meet o Teams) y ve formando grupos con quienes solicitan integrarse, hasta completarlos' },
   { icono: MessageSquare, texto: 'Usa las preguntas del manual como guía durante la sesión' },
-  { icono: Award, texto: 'Tras la sesión, habilita los compromisos de cada participante (individual o en bloque)' },
+  { icono: Award, texto: 'Tras la sesión, confirma la asistencia de cada participante (individual o en bloque) para dar el módulo por completado' },
   { icono: Target, texto: 'Registra hasta 3 compromisos grupales al terminar' },
   { icono: Star, texto: 'Deja tu retroalimentación sobre la sesión o sugerencias para mejorar la app' },
 ]

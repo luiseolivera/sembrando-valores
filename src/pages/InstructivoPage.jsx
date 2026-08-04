@@ -26,7 +26,7 @@ const FAQS = [
   },
   {
     pregunta: '¿Cuál es el papel del facilitador?',
-    respuesta: 'El facilitador es un guía, no un expositor. Su cuenta debe ser aprobada por el equipo de MMT antes de poder operar. Una vez aprobado, desde la plataforma puede crear uno o varios grupos —cada uno con su propio código e invitación—, compartir el link con los participantes (por la app o WhatsApp), activar el módulo que trabajará el grupo, revisar el progreso y las reflexiones y compromisos de cada participante, ofrecer uno o varios horarios de sesión (Zoom, Google Meet o Teams), ir formando grupos con quienes le solicitan integrarse (o crear uno nuevo para ellos), habilitar los compromisos de cada quien tras la sesión, registrar los compromisos grupales al finalizar, y dejar retroalimentación sobre la sesión.',
+    respuesta: 'El facilitador es un guía, no un expositor. Su cuenta debe ser aprobada por el equipo de MMT antes de poder operar. Una vez aprobado, desde la plataforma puede crear uno o varios grupos —cada uno con su propio código e invitación—, compartir el link con los participantes (por la app o WhatsApp), activar el módulo que trabajará el grupo, revisar el progreso y las reflexiones y compromisos de cada participante, ofrecer uno o varios horarios de sesión (Zoom, Google Meet o Teams), ir formando grupos con quienes le solicitan integrarse (o crear uno nuevo para ellos), confirmar la asistencia de cada quien tras la sesión (lo que da el módulo por completado), registrar los compromisos grupales al finalizar, y dejar retroalimentación sobre la sesión.',
   },
   {
     pregunta: '¿Cómo se aprueba a un nuevo facilitador?',
@@ -34,7 +34,7 @@ const FAQS = [
   },
   {
     pregunta: '¿Cómo me entero de cuándo y dónde es la sesión grupal?',
-    respuesta: 'Dentro de cada módulo, después de tu reflexión, hay un paso de "Sesión grupal": ahí ves todos los horarios que tu facilitador ofreció y eliges el que te convenga. Si no tienes grupo, en ese mismo paso puedes solicitar integrarte a uno, con un facilitador específico o con cualquiera disponible — te asignan a un grupo y desde ahí ves sus horarios como cualquier otro miembro. Después de la sesión, tu facilitador habilita tus compromisos y puedes continuar.',
+    respuesta: 'Dentro de cada módulo, después de registrar tus compromisos personales, hay un paso de "Sesión grupal": ahí ves todos los horarios que tu facilitador ofreció y eliges el que te convenga. Si no tienes grupo, en ese mismo paso puedes solicitar integrarte a uno, con un facilitador específico o con cualquiera disponible — te asignan a un grupo y desde ahí ves sus horarios como cualquier otro miembro. Después de la sesión, tu facilitador confirma tu asistencia y el módulo queda completado.',
   },
   {
     pregunta: '¿Qué son los compromisos grupales?',
@@ -50,7 +50,7 @@ const FAQS = [
   },
   {
     pregunta: '¿Puedo usar la app sin pertenecer a un equipo o grupo?',
-    respuesta: 'Sí, puedes registrarte y avanzar por tu cuenta —contenido, quiz y reflexión— sin un código de grupo. Pero toda sesión es grupal: cuando llegues a ese paso, solicitas integrarte a un grupo (con un facilitador específico o con cualquiera disponible) y el facilitador te asigna a uno de los suyos, o forma uno nuevo. Desde ese momento sigues como cualquier otro participante de ese grupo, con sus horarios de sesión. Después de la sesión, el facilitador habilita tus compromisos personales y el módulo se marca como completado al registrarlos. Puedes imprimir todas tus reflexiones y compromisos cuando quieras desde "Mis reflexiones y compromisos" en tu pantalla principal.',
+    respuesta: 'Sí, puedes registrarte y avanzar por tu cuenta —contenido, quiz, reflexión y compromisos personales— sin un código de grupo. Pero toda sesión es grupal: cuando llegues a ese paso (el último del módulo), solicitas integrarte a un grupo (con un facilitador específico o con cualquiera disponible) y el facilitador te asigna a uno de los suyos, o forma uno nuevo. Desde ese momento sigues como cualquier otro participante de ese grupo, con sus horarios de sesión. Después de la sesión, el facilitador confirma tu asistencia y el módulo se marca como completado. Puedes imprimir todas tus reflexiones y compromisos cuando quieras desde "Mis reflexiones y compromisos" en tu pantalla principal.',
   },
   {
     pregunta: '¿Qué necesito para usar la plataforma digital?',

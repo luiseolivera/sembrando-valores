@@ -14,11 +14,11 @@ const PASOS_CONFIG = [
   { key: 'contenido', label: 'Contenido', icono: BookOpen },
   { key: 'quiz', label: 'Quiz', icono: CheckSquare },
   { key: 'reflexion', label: 'Reflexión', icono: PenLine },
-  { key: 'sesion', label: 'Sesión', icono: Users },
   { key: 'compromisos', label: 'Compromisos', icono: Target },
+  { key: 'sesion', label: 'Sesión', icono: Users },
 ]
 
-const ORDEN_PASOS = ['contenido', 'quiz', 'reflexion', 'sesion', 'compromisos']
+const ORDEN_PASOS = ['contenido', 'quiz', 'reflexion', 'compromisos', 'sesion']
 
 export default function Modulo() {
   const { id } = useParams()
@@ -26,7 +26,7 @@ export default function Modulo() {
   const navigate = useNavigate()
   const modulo = MODULOS.find(m => m.id === parseInt(id))
   const [pasoActual, setPasoActual] = useState('contenido')
-  const [progreso, setProgreso] = useState({ contenido: false, quiz: false, reflexion: false, sesion: false, compromisos: false })
+  const [progreso, setProgreso] = useState({ contenido: false, quiz: false, reflexion: false, compromisos: false, sesion: false })
   const [cargando, setCargando] = useState(true)
   const [moduloActivoGrupo, setModuloActivoGrupo] = useState(null)
   const [moduloAnteriorCompleto, setModuloAnteriorCompleto] = useState(true)
@@ -53,7 +53,10 @@ export default function Modulo() {
       promesas.grupo = supabase.from('grupos').select('modulo_activo_id').eq('id', perfil.grupo_id).maybeSingle()
     }
     if (perfil.rol === 'participante' && moduloAnterior) {
-      promesas.anterior = supabase.from('compromisos_personales').select('id').eq('usuario_id', perfil.id).eq('modulo_id', moduloAnterior.id).limit(1)
+      // "Módulo anterior terminado" ahora significa que la sesión grupal de ese
+      // módulo ya fue confirmada por el facilitador (último paso), no solo que
+      // se guardaron los compromisos personales (que ahora se hacen antes).
+      promesas.anterior = supabase.from('habilitaciones_compromisos').select('id').eq('usuario_id', perfil.id).eq('modulo_id', moduloAnterior.id).limit(1)
     }
     const claves = Object.keys(promesas)
     const results = await Promise.all(claves.map((k) => promesas[k]))
@@ -67,14 +70,14 @@ export default function Modulo() {
     const sesionOk = !!res.habilitacion.data
     const compOk = (res.compromisos.data?.length || 0) > 0
 
-    const nuevo = { contenido: quizOk || reflexOk, quiz: quizOk, reflexion: reflexOk, sesion: sesionOk, compromisos: compOk }
+    const nuevo = { contenido: quizOk || reflexOk, quiz: quizOk, reflexion: reflexOk, compromisos: compOk, sesion: sesionOk }
     setProgreso(nuevo)
 
     if (!nuevo.contenido) setPasoActual('contenido')
     else if (!nuevo.quiz) setPasoActual('quiz')
     else if (!nuevo.reflexion) setPasoActual('reflexion')
-    else if (!nuevo.compromisos) setPasoActual(nuevo.sesion ? 'compromisos' : 'sesion')
-    else setPasoActual('compromisos')
+    else if (!nuevo.compromisos) setPasoActual('compromisos')
+    else setPasoActual('sesion')
     setCargando(false)
   }
 
@@ -105,7 +108,6 @@ export default function Modulo() {
     if (i < ORDEN_PASOS.length - 1) {
       setPasoActual(ORDEN_PASOS[i + 1])
     } else {
-      setProgreso(p => ({ ...p, compromisos: true }))
       navigate('/dashboard')
     }
   }
@@ -245,8 +247,8 @@ export default function Modulo() {
         {pasoActual === 'contenido' && <PasoContenido modulo={modulo} onAvanzar={avanzar} />}
         {pasoActual === 'quiz' && <PasoQuiz modulo={modulo} perfil={perfil} onAvanzar={avanzar} />}
         {pasoActual === 'reflexion' && <PasoReflexion modulo={modulo} perfil={perfil} onAvanzar={avanzar} />}
-        {pasoActual === 'sesion' && <PasoSesion modulo={modulo} perfil={perfil} onAvanzar={avanzar} />}
         {pasoActual === 'compromisos' && <PasoCompromisos modulo={modulo} perfil={perfil} onAvanzar={avanzar} />}
+        {pasoActual === 'sesion' && <PasoSesion modulo={modulo} perfil={perfil} onAvanzar={avanzar} />}
       </div>
     </div>
   )

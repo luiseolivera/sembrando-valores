@@ -9,6 +9,7 @@ export default function MiResumen() {
   const { perfil } = useAuth()
   const [reflexionesPorModulo, setReflexionesPorModulo] = useState({})
   const [compromisosPorModulo, setCompromisosPorModulo] = useState({})
+  const [compromisosGrupoPorModulo, setCompromisosGrupoPorModulo] = useState({})
   const [comentariosPorModulo, setComentariosPorModulo] = useState({})
   const [cargando, setCargando] = useState(true)
 
@@ -17,11 +18,15 @@ export default function MiResumen() {
   }, [perfil])
 
   async function cargarDatos() {
-    const [reflexRes, compRes, comentRes] = await Promise.all([
+    const queries = [
       supabase.from('reflexiones').select('modulo_id, pregunta_numero, respuesta_texto').eq('usuario_id', perfil.id),
       supabase.from('compromisos_personales').select('modulo_id, compromiso_texto').eq('usuario_id', perfil.id),
       supabase.from('comentarios_reflexion').select('modulo_id, comentario, reaccion').eq('usuario_id', perfil.id),
-    ])
+    ]
+    if (perfil.grupo_id) {
+      queries.push(supabase.from('compromisos').select('modulo_id, compromiso_texto').eq('grupo_id', perfil.grupo_id))
+    }
+    const [reflexRes, compRes, comentRes, compGrupoRes] = await Promise.all(queries)
 
     const reflex = {}
     ;(reflexRes.data || []).forEach((r) => {
@@ -36,11 +41,18 @@ export default function MiResumen() {
       comp[c.modulo_id].push(c)
     })
 
+    const compGrupo = {}
+    ;(compGrupoRes?.data || []).forEach((c) => {
+      if (!compGrupo[c.modulo_id]) compGrupo[c.modulo_id] = []
+      compGrupo[c.modulo_id].push(c)
+    })
+
     const coment = {}
     ;(comentRes.data || []).forEach((c) => { coment[c.modulo_id] = c })
 
     setReflexionesPorModulo(reflex)
     setCompromisosPorModulo(comp)
+    setCompromisosGrupoPorModulo(compGrupo)
     setComentariosPorModulo(coment)
     setCargando(false)
   }
@@ -53,9 +65,9 @@ export default function MiResumen() {
     )
   }
 
-  const modulosConDatos = MODULOS.filter(
-    (m) => reflexionesPorModulo[m.id]?.length || compromisosPorModulo[m.id]?.length
-  )
+  // Un módulo solo se muestra/imprime una vez que el participante lo terminó
+  // (guardó sus compromisos personales) — mientras esté a medias, no se incluye.
+  const modulosConDatos = MODULOS.filter((m) => compromisosPorModulo[m.id]?.length)
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 print:bg-white print:py-0">
@@ -132,6 +144,24 @@ export default function MiResumen() {
                   </p>
                   <div className="space-y-2">
                     {compromisosPorModulo[modulo.id].map((c, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <Target size={15} className="text-dorado flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-gray-700">
+                          {c.compromiso_texto}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {compromisosGrupoPorModulo[modulo.id]?.length > 0 && (
+                <div className="mt-5">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-1">
+                    <Target size={13} className="text-dorado" /> Compromisos del grupo
+                  </p>
+                  <div className="space-y-2">
+                    {compromisosGrupoPorModulo[modulo.id].map((c, i) => (
                       <div key={i} className="flex items-start gap-2">
                         <Target size={15} className="text-dorado flex-shrink-0 mt-0.5" />
                         <p className="text-sm text-gray-700">

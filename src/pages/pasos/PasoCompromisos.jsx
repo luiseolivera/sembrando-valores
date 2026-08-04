@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase, DEMO_MODE, esPerfilExploracion } from '../../lib/supabase'
-import { Target, Plus, CheckCircle, Trash2, Trophy, Sparkles, AlertTriangle } from 'lucide-react'
+import { Target, Plus, CheckCircle, Trash2, ArrowRight, Sparkles, AlertTriangle } from 'lucide-react'
 
 const SUGERENCIAS = {
   1: ['Llamar a alguien por su nombre y mirarle a los ojos al hablar', 'Reconocer en voz alta un aporte de un compañero esta semana', 'Evitar hablar de alguien en términos que reduzcan su dignidad'],
@@ -75,7 +75,7 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6">
       <h2 className="font-bold text-morado text-lg mb-1 flex items-center gap-2">
-        <Target size={20} className="text-dorado" /> Paso 3 — Mis compromisos personales
+        <Target size={20} className="text-dorado" /> Paso 4 — Mis compromisos personales
       </h2>
       <p className="text-sm text-gray-500 mb-6">
         ¿Qué vas a hacer diferente después de este módulo? Escribe de 1 a 3 compromisos concretos.
@@ -164,12 +164,11 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
           onClick={onAvanzar}
           className={`flex-1 flex items-center justify-center gap-2 font-bold py-3 rounded-xl transition-colors ${
             exito
-              ? 'bg-green-600 text-white hover:bg-green-700'
+              ? 'bg-morado text-white hover:bg-morado-dark'
               : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
           }`}
         >
-          <Trophy size={16} />
-          {exito ? '¡Módulo completado!' : 'Terminar sin compromisos'}
+          {exito ? 'Continuar a la sesión grupal' : 'Continuar sin registrar compromisos'} <ArrowRight size={16} />
         </button>
       </div>
     </div>
