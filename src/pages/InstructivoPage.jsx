@@ -26,7 +26,7 @@ const FAQS = [
   },
   {
     pregunta: '¿Cuál es el papel del facilitador?',
-    respuesta: 'El facilitador es un guía, no un expositor. Su cuenta debe ser aprobada por el equipo de MMT antes de poder operar. Una vez aprobado, desde la plataforma puede crear uno o varios grupos —cada uno con su propio código e invitación—, compartir el link con los participantes (por la app o WhatsApp), activar el módulo que trabajará el grupo, revisar el progreso y las reflexiones y compromisos de cada participante, ofrecer uno o varios horarios de sesión (Zoom, Google Meet o Teams), ir formando grupos con quienes le solicitan integrarse (o crear uno nuevo para ellos), confirmar la asistencia de cada quien tras la sesión (lo que da el módulo por completado), registrar los compromisos grupales al finalizar, y dejar retroalimentación sobre la sesión.',
+    respuesta: 'El facilitador es un guía, no un expositor. Su cuenta debe ser aprobada por el equipo de MMT antes de poder operar. Una vez aprobado, desde la plataforma puede crear uno o varios grupos —cada uno con su propio código e invitación—, compartir el link con los participantes (por la app o WhatsApp), activar el módulo que trabajará el grupo, revisar el progreso y las reflexiones y compromisos de cada participante (dejándole un comentario o reacción si quiere), ofrecer uno o varios horarios de sesión (Zoom, Google Meet o Teams), ir formando grupos con quienes le solicitan integrarse (o crear uno nuevo para ellos), confirmar la asistencia de cada quien tras la sesión (lo que da el módulo por completado), registrar los compromisos grupales al finalizar, y dejar retroalimentación sobre la sesión.',
   },
   {
     pregunta: '¿Cómo se aprueba a un nuevo facilitador?',
@@ -58,7 +58,7 @@ const FAQS = [
   },
   {
     pregunta: '¿Cuánto tiempo toma completar un módulo?',
-    respuesta: 'Depende del ritmo del grupo. El programa está diseñado para sesiones de trabajo presenciales o virtuales de entre 60 y 90 minutos aproximadamente. La parte digital (leer los textos, hacer el quiz y escribir la reflexión) puede realizarse antes de la sesión grupal o durante ella.',
+    respuesta: 'Depende del ritmo del grupo. El programa está diseñado para sesiones de trabajo presenciales o virtuales de entre 60 y 90 minutos aproximadamente. La parte digital (leer los textos, hacer el quiz, escribir la reflexión y registrar tus compromisos) se hace antes de la sesión grupal — es justamente lo que la hace posible.',
   },
   {
     pregunta: '¿Las reflexiones son confidenciales?',

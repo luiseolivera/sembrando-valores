@@ -6,7 +6,7 @@ import {
 const pasos = [
   { icono: UserPlus, titulo: 'Registro', color: 'bg-purple-700', num: 1 },
   { icono: Share2, titulo: 'Únete al Grupo', color: 'bg-purple-600', num: 2 },
-  { icono: Headphones, titulo: 'Escucha el Audio', color: 'bg-purple-500', num: 3 },
+  { icono: Headphones, titulo: 'Lee o Escucha', color: 'bg-purple-500', num: 3 },
   { icono: CheckSquare, titulo: 'Quiz', color: 'bg-yellow-500', num: 4 },
   { icono: PenLine, titulo: 'Reflexión Personal', color: 'bg-yellow-600', num: 5 },
   { icono: Target, titulo: 'Compromisos', color: 'bg-purple-800', num: 6 },
