@@ -21,7 +21,7 @@ export default function MiResumen() {
     const queries = [
       supabase.from('reflexiones').select('modulo_id, pregunta_numero, respuesta_texto').eq('usuario_id', perfil.id),
       supabase.from('compromisos_personales').select('modulo_id, compromiso_texto').eq('usuario_id', perfil.id),
-      supabase.from('comentarios_reflexion').select('modulo_id, comentario, reaccion').eq('usuario_id', perfil.id),
+      supabase.from('comentarios_reflexion').select('modulo_id, comentario, reaccion, visto').eq('usuario_id', perfil.id),
     ]
     if (perfil.grupo_id) {
       queries.push(supabase.from('compromisos').select('modulo_id, compromiso_texto').eq('grupo_id', perfil.grupo_id))
@@ -49,6 +49,10 @@ export default function MiResumen() {
 
     const coment = {}
     ;(comentRes.data || []).forEach((c) => { coment[c.modulo_id] = c })
+
+    if ((comentRes.data || []).some((c) => !c.visto && (c.comentario || c.reaccion))) {
+      supabase.rpc('marcar_comentarios_vistos')
+    }
 
     setReflexionesPorModulo(reflex)
     setCompromisosPorModulo(comp)

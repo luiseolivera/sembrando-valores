@@ -20,6 +20,7 @@ export default function Dashboard() {
   const [exitoUnirse, setExitoUnirse] = useState('')
   const [saliendoGrupo, setSaliendoGrupo] = useState(false)
   const [errorSalir, setErrorSalir] = useState('')
+  const [hayRetroSinVer, setHayRetroSinVer] = useState(false)
 
   useEffect(() => {
     if (perfil) cargarDatos()
@@ -34,6 +35,7 @@ export default function Dashboard() {
       supabase.from('reflexiones').select('modulo_id').eq('usuario_id', perfil.id),
       supabase.from('compromisos_personales').select('modulo_id').eq('usuario_id', perfil.id),
       supabase.from('habilitaciones_compromisos').select('modulo_id').eq('usuario_id', perfil.id),
+      supabase.from('comentarios_reflexion').select('comentario, reaccion, visto').eq('usuario_id', perfil.id),
     ]
 
     if (perfil.grupo_id) {
@@ -43,7 +45,7 @@ export default function Dashboard() {
       )
     }
 
-    const [quizRes, reflexRes, compPersRes, habilRes, compRes, grupoRes] = await Promise.all(queries)
+    const [quizRes, reflexRes, compPersRes, habilRes, comentRes, compRes, grupoRes] = await Promise.all(queries)
 
     const mapa = {}
     MODULOS.forEach((m) => {
@@ -62,6 +64,7 @@ export default function Dashboard() {
     setProgresos(mapa)
     setCompromisos(compRes?.data || [])
     setCompromisosPersonalesCount(compPersRes.data?.length || 0)
+    setHayRetroSinVer((comentRes.data || []).some((c) => !c.visto && (c.comentario || c.reaccion)))
     if (grupoRes?.data?.logo_empresa_url) setLogoEmpresa(grupoRes.data.logo_empresa_url)
     if (grupoRes?.data?.modulo_activo_id) setModuloActivoId(grupoRes.data.modulo_activo_id)
   }
@@ -178,9 +181,15 @@ export default function Dashboard() {
           {perfil?.rol === 'participante' && (
             <Link
               to="/mi-resumen"
-              className="flex-shrink-0 flex items-center gap-2 bg-white border border-purple-200 text-morado text-xs font-bold px-4 py-2 rounded-xl hover:bg-purple-50 transition-colors"
+              className="relative flex-shrink-0 flex items-center gap-2 bg-white border border-purple-200 text-morado text-xs font-bold px-4 py-2 rounded-xl hover:bg-purple-50 transition-colors"
             >
               <Printer size={14} /> Mis reflexiones y compromisos
+              {hayRetroSinVer && (
+                <span
+                  className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-white"
+                  title="Tienes retroalimentación nueva de tu facilitador"
+                />
+              )}
             </Link>
           )}
         </div>

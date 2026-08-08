@@ -751,3 +751,28 @@ create policy "usuarios_facilitador_asigna_grupo" on usuarios
       select 1 from grupos g where g.id = usuarios.grupo_id and g.facilitador_id = auth.uid()
     )
   );
+
+-- -----------------------------------------------
+-- Migración: aviso de retroalimentación nueva del facilitador
+-- Agrega una marca de "visto" a comentarios_reflexion. El participante
+-- no puede editar comentario/reacción (eso lo deja intacto la política
+-- existente), pero sí necesita poder marcar que ya lo leyó — se hace con
+-- una función security definer acotada solo a esa columna, para no
+-- abrir una política de update genérica sobre la tabla.
+-- -----------------------------------------------
+alter table comentarios_reflexion add column if not exists visto boolean not null default false;
+
+create or replace function public.marcar_comentarios_vistos()
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update comentarios_reflexion
+  set visto = true
+  where usuario_id = auth.uid() and visto = false;
+end;
+$$;
+
+grant execute on function public.marcar_comentarios_vistos() to authenticated;

@@ -191,7 +191,7 @@ export default function InstructivoPage() {
               info@misionerosmt.org
             </a>
           </p>
-          <p className="text-purple-400 text-xs mt-1">Tel: 722 145 9192 · www.misionerosmt.org</p>
+          <p className="text-purple-400 text-xs mt-1">Tel: 55 2818 1466 · www.misionerosmt.org</p>
         </div>
       </div>
     </div>

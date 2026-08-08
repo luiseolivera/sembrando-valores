@@ -95,7 +95,7 @@ export default function ParaEmpresas() {
         </div>
 
         <div className="text-center mt-12">
-          <p className="text-gray-500 text-sm mb-4">¿Prefieres apoyar el programa como donativo personal?</p>
+          <p className="text-gray-500 text-sm mb-4">¿No buscas una alianza empresarial? También puedes apoyar el programa con un donativo personal, desde la portada.</p>
           <Link to="/" className="inline-flex items-center gap-2 text-morado font-semibold text-sm hover:underline">
             Volver a la portada <ArrowRight size={14} />
           </Link>

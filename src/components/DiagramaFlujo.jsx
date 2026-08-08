@@ -69,7 +69,8 @@ export default function DiagramaFlujo() {
           Si te unes a un grupo, tu facilitador activa el módulo que trabajan juntos y no podrás avanzar a otro hasta que lo haga.
           Todo el grupo avanza junto — si tu facilitador activa el siguiente módulo antes de que termines el actual, te quedas
           bloqueado y tendrías que salir del grupo para solicitar integrarte a uno nuevo.
-          Si prefieres ir por tu cuenta, puedes usar la app sin unirte a ningún grupo y avanzar libremente entre los 14 módulos.
+          Si prefieres ir por tu cuenta, puedes usar la app sin unirte a ningún grupo — pero cada módulo igual necesita
+          su sesión grupal: al llegar a ese paso, un facilitador te integra a un grupo para tenerla y confirmar tu asistencia.
         </p>
       </div>
     </div>

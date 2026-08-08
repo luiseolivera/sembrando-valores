@@ -10,18 +10,18 @@ export const MODULOS = [
     preguntas_quiz: [
       {
         pregunta: '¿Cuál es el fundamento de la dignidad de la persona según la Doctrina Social de la Iglesia?',
-        opciones: ['Su nivel educativo', 'Su posición económica', 'Ser imagen y semejanza de Dios', 'Su cultura y tradición'],
+        opciones: ['Su posición económica', 'Su nivel educativo', 'Ser imagen y semejanza de Dios', 'Su cultura y tradición'],
         correcta: 2,
       },
       {
         pregunta: '¿Qué implica reconocer la dignidad de la persona en el trabajo?',
-        opciones: ['Solo pagar un salario justo', 'Tratar a cada persona como un fin en sí misma', 'Dar premios de productividad', 'Aplicar las leyes laborales'],
-        correcta: 1,
+        opciones: ['Solo pagar un salario justo', 'Aplicar las leyes laborales', 'Dar premios de productividad', 'Tratar a cada persona como un fin en sí misma'],
+        correcta: 3,
       },
       {
         pregunta: '¿Dónde se manifiesta principalmente la dignidad de la persona?',
-        opciones: ['Solo en los actos religiosos', 'En todos los ámbitos de la vida', 'Únicamente en la familia', 'Solo en el trabajo'],
-        correcta: 1,
+        opciones: ['Únicamente en la familia', 'Solo en los actos religiosos', 'Solo en el trabajo', 'En todos los ámbitos de la vida'],
+        correcta: 3,
       },
     ],
     preguntas_reflexion: [
@@ -46,13 +46,13 @@ export const MODULOS = [
       },
       {
         pregunta: '¿Cómo debe orientarse el trabajo según la centralidad de la persona?',
-        opciones: ['Al máximo beneficio económico', 'Al desarrollo integral del ser humano', 'A la competitividad entre compañeros', 'A cumplir metas de producción'],
-        correcta: 1,
+        opciones: ['A cumplir metas de producción', 'Al máximo beneficio económico', 'A la competitividad entre compañeros', 'Al desarrollo integral del ser humano'],
+        correcta: 3,
       },
       {
         pregunta: '¿Qué elementos conforman el desarrollo integral de la persona?',
-        opciones: ['Solo el aspecto económico', 'Solo el aspecto espiritual', 'Cuerpo, mente, espíritu y relaciones sociales', 'Solo el aspecto laboral'],
-        correcta: 2,
+        opciones: ['Cuerpo, mente, espíritu y relaciones sociales', 'Solo el aspecto económico', 'Solo el aspecto espiritual', 'Solo el aspecto laboral'],
+        correcta: 0,
       },
     ],
     preguntas_reflexion: [
@@ -77,13 +77,13 @@ export const MODULOS = [
       },
       {
         pregunta: '¿Cómo afecta el trabajo a la familia?',
-        opciones: ['No tiene ninguna relación', 'Puede fortalecer o debilitar los vínculos familiares', 'Solo la afecta económicamente', 'La familia no influye en el trabajo'],
-        correcta: 1,
+        opciones: ['Puede fortalecer o debilitar los vínculos familiares', 'No tiene ninguna relación', 'La familia no influye en el trabajo', 'Solo la afecta económicamente'],
+        correcta: 0,
       },
       {
         pregunta: '¿Qué significa el "salario familiar" según la Doctrina Social?',
-        opciones: ['Un salario que gana toda la familia', 'Una remuneración suficiente para sostener dignamente a la familia', 'Un bono por tener hijos', 'El dinero que se da a la familia'],
-        correcta: 1,
+        opciones: ['Un salario que gana toda la familia', 'El dinero que se da a la familia', 'Un bono por tener hijos', 'Una remuneración suficiente para sostener dignamente a la familia'],
+        correcta: 3,
       },
     ],
     preguntas_reflexion: [
@@ -103,18 +103,18 @@ export const MODULOS = [
     preguntas_quiz: [
       {
         pregunta: '¿Cómo se manifiesta el amor en el ámbito del trabajo?',
-        opciones: ['Solo en relaciones románticas', 'En el servicio generoso y el respeto a los demás', 'En dar regalos a los compañeros', 'En decir palabras amables'],
-        correcta: 1,
+        opciones: ['Solo en relaciones románticas', 'En dar regalos a los compañeros', 'En decir palabras amables', 'En el servicio generoso y el respeto a los demás'],
+        correcta: 3,
       },
       {
         pregunta: '¿Qué es la "caridad social" según la Doctrina Social de la Iglesia?',
-        opciones: ['Dar limosna a los pobres', 'El amor que promueve el bien común y transforma las estructuras', 'Organizaciones de beneficencia', 'Solo ayuda material'],
-        correcta: 1,
+        opciones: ['El amor que promueve el bien común y transforma las estructuras', 'Dar limosna a los pobres', 'Solo ayuda material', 'Organizaciones de beneficencia'],
+        correcta: 0,
       },
       {
         pregunta: '¿De qué manera el amor puede transformar el ambiente de trabajo?',
-        opciones: ['Haciendo todo más sentimental', 'Fomentando la colaboración, el respeto y el servicio mutuo', 'Evitando los conflictos a toda costa', 'Siendo indiferente a los problemas'],
-        correcta: 1,
+        opciones: ['Haciendo todo más sentimental', 'Siendo indiferente a los problemas', 'Evitando los conflictos a toda costa', 'Fomentando la colaboración, el respeto y el servicio mutuo'],
+        correcta: 3,
       },
     ],
     preguntas_reflexion: [
@@ -134,18 +134,18 @@ export const MODULOS = [
     preguntas_quiz: [
       {
         pregunta: '¿Por qué la educación es considerada un derecho fundamental?',
-        opciones: ['Porque aumenta los ingresos económicos', 'Porque permite el desarrollo integral de la persona y la participación social', 'Porque es obligatoria por ley', 'Porque da un título profesional'],
-        correcta: 1,
+        opciones: ['Porque aumenta los ingresos económicos', 'Porque da un título profesional', 'Porque es obligatoria por ley', 'Porque permite el desarrollo integral de la persona y la participación social'],
+        correcta: 3,
       },
       {
         pregunta: '¿Qué es la "educación integral" según los principios del programa?',
-        opciones: ['Solo la educación formal escolar', 'La que desarrolla todas las dimensiones de la persona', 'La educación técnica y profesional', 'La educación religiosa únicamente'],
-        correcta: 1,
+        opciones: ['Solo la educación formal escolar', 'La educación religiosa únicamente', 'La que desarrolla todas las dimensiones de la persona', 'La educación técnica y profesional'],
+        correcta: 2,
       },
       {
         pregunta: '¿Quiénes son los primeros educadores de una persona?',
-        opciones: ['Los maestros de la escuela', 'El Estado', 'Los padres de familia', 'Los líderes religiosos'],
-        correcta: 2,
+        opciones: ['El Estado', 'Los padres de familia', 'Los líderes religiosos', 'Los maestros de la escuela'],
+        correcta: 1,
       },
     ],
     preguntas_reflexion: [
@@ -165,18 +165,18 @@ export const MODULOS = [
     preguntas_quiz: [
       {
         pregunta: '¿Qué es la participación según la Doctrina Social de la Iglesia?',
-        opciones: ['Asistir a reuniones obligatorias', 'El compromiso voluntario de contribuir al bien común', 'Votar en elecciones', 'Solo opinar cuando se pide'],
-        correcta: 1,
+        opciones: ['Asistir a reuniones obligatorias', 'Solo opinar cuando se pide', 'El compromiso voluntario de contribuir al bien común', 'Votar en elecciones'],
+        correcta: 2,
       },
       {
         pregunta: '¿Por qué es importante que todos participen en las decisiones del equipo?',
-        opciones: ['Para que el líder no tenga tanto trabajo', 'Porque enriquece las decisiones con diversas perspectivas', 'Para cumplir normas de gestión', 'Porque es más democrático'],
-        correcta: 1,
+        opciones: ['Porque enriquece las decisiones con diversas perspectivas', 'Para que el líder no tenga tanto trabajo', 'Porque es más democrático', 'Para cumplir normas de gestión'],
+        correcta: 0,
       },
       {
         pregunta: '¿Qué impide una participación genuina en un equipo?',
-        opciones: ['Tener muchos miembros', 'El miedo, la exclusión y la falta de información', 'Reunirse frecuentemente', 'Tener roles definidos'],
-        correcta: 1,
+        opciones: ['Tener muchos miembros', 'Reunirse frecuentemente', 'El miedo, la exclusión y la falta de información', 'Tener roles definidos'],
+        correcta: 2,
       },
     ],
     preguntas_reflexion: [
@@ -196,33 +196,18 @@ export const MODULOS = [
     preguntas_quiz: [
       {
         pregunta: '¿Qué es la solidaridad según la Doctrina Social de la Iglesia?',
-        opciones: [
-          'Un sentimiento ocasional de compasión',
-          'La determinación firme de empeñarse por el bien común',
-          'Una obligación legal entre ciudadanos',
-          'Un programa de gobierno',
-        ],
-        correcta: 1,
+        opciones: ['La determinación firme de empeñarse por el bien común', 'Una obligación legal entre ciudadanos', 'Un sentimiento ocasional de compasión', 'Un programa de gobierno'],
+        correcta: 0,
       },
       {
         pregunta: '¿Cómo nos ayuda la solidaridad a ver al otro?',
-        opciones: [
-          'Como un recurso para explotar',
-          'Como alguien inferior que necesita ayuda',
-          'Como un semejante invitado al banquete de la vida',
-          'Como una carga para la sociedad',
-        ],
-        correcta: 2,
+        opciones: ['Como un recurso para explotar', 'Como un semejante invitado al banquete de la vida', 'Como alguien inferior que necesita ayuda', 'Como una carga para la sociedad'],
+        correcta: 1,
       },
       {
         pregunta: '¿Dónde comienza la solidaridad según los textos?',
-        opciones: [
-          'En las grandes organizaciones internacionales',
-          'En las leyes del gobierno',
-          'Desde el pequeño lugar de cada persona en el mundo',
-          'Solo en momentos de crisis',
-        ],
-        correcta: 2,
+        opciones: ['Solo en momentos de crisis', 'En las leyes del gobierno', 'En las grandes organizaciones internacionales', 'Desde el pequeño lugar de cada persona en el mundo'],
+        correcta: 3,
       },
     ],
     preguntas_reflexion: [
@@ -242,18 +227,18 @@ export const MODULOS = [
     preguntas_quiz: [
       {
         pregunta: '¿Qué establece el principio de subsidiaridad?',
-        opciones: ['Que el Estado debe resolver todo', 'Que las instancias superiores deben ayudar sin suplantar a las menores', 'Que cada uno trabaja solo', 'Que los líderes toman todas las decisiones'],
+        opciones: ['Que cada uno trabaja solo', 'Que las instancias superiores deben ayudar sin suplantar a las menores', 'Que el Estado debe resolver todo', 'Que los líderes toman todas las decisiones'],
         correcta: 1,
       },
       {
         pregunta: '¿Cómo se aplica la subsidiaridad en un equipo de trabajo?',
-        opciones: ['El jefe decide todo', 'Cada persona tiene autonomía para resolver lo que le corresponde', 'Se ignoran los problemas pequeños', 'Solo los expertos participan'],
-        correcta: 1,
+        opciones: ['Solo los expertos participan', 'Se ignoran los problemas pequeños', 'Cada persona tiene autonomía para resolver lo que le corresponde', 'El jefe decide todo'],
+        correcta: 2,
       },
       {
         pregunta: '¿Qué riesgo evita el principio de subsidiaridad?',
-        opciones: ['La eficiencia excesiva', 'El paternalismo y la dependencia', 'La independencia', 'El trabajo en equipo'],
-        correcta: 1,
+        opciones: ['La eficiencia excesiva', 'La independencia', 'El paternalismo y la dependencia', 'El trabajo en equipo'],
+        correcta: 2,
       },
     ],
     preguntas_reflexion: [
@@ -273,17 +258,17 @@ export const MODULOS = [
     preguntas_quiz: [
       {
         pregunta: '¿Qué es el bien común según la Doctrina Social?',
-        opciones: ['El beneficio de la mayoría', 'Las condiciones que permiten a todos alcanzar su pleno desarrollo', 'Los bienes materiales compartidos', 'El interés del grupo dominante'],
+        opciones: ['El beneficio de la mayoría', 'Las condiciones que permiten a todos alcanzar su pleno desarrollo', 'El interés del grupo dominante', 'Los bienes materiales compartidos'],
         correcta: 1,
       },
       {
         pregunta: '¿Quién tiene la responsabilidad de promover el bien común?',
-        opciones: ['Solo el Estado', 'Solo los líderes', 'Cada persona y toda la sociedad', 'Las organizaciones internacionales'],
+        opciones: ['Solo el Estado', 'Las organizaciones internacionales', 'Cada persona y toda la sociedad', 'Solo los líderes'],
         correcta: 2,
       },
       {
         pregunta: '¿Cuándo una decisión favorece el bien común?',
-        opciones: ['Cuando beneficia solo a quien decide', 'Cuando es rentable económicamente', 'Cuando permite que todos puedan desarrollarse plenamente', 'Cuando agrada a la mayoría'],
+        opciones: ['Cuando agrada a la mayoría', 'Cuando beneficia solo a quien decide', 'Cuando permite que todos puedan desarrollarse plenamente', 'Cuando es rentable económicamente'],
         correcta: 2,
       },
     ],
@@ -304,18 +289,18 @@ export const MODULOS = [
     preguntas_quiz: [
       {
         pregunta: '¿Por qué la verdad es esencial en las relaciones de trabajo?',
-        opciones: ['Porque evita conflictos legales', 'Porque construye confianza y permite relaciones justas y sanas', 'Porque es una norma de comportamiento', 'Porque impresiona a los demás'],
+        opciones: ['Porque es una norma de comportamiento', 'Porque construye confianza y permite relaciones justas y sanas', 'Porque evita conflictos legales', 'Porque impresiona a los demás'],
         correcta: 1,
       },
       {
         pregunta: '¿Qué implica ser una persona honesta en el trabajo?',
-        opciones: ['Solo no robar', 'Actuar con integridad en palabras, hechos y omisiones', 'Decir lo que los demás quieren escuchar', 'Cumplir los contratos legales'],
+        opciones: ['Decir lo que los demás quieren escuchar', 'Actuar con integridad en palabras, hechos y omisiones', 'Solo no robar', 'Cumplir los contratos legales'],
         correcta: 1,
       },
       {
         pregunta: '¿Cuál es el impacto de la mentira en un equipo de trabajo?',
-        opciones: ['Puede ser útil para proteger a alguien', 'Destruye la confianza y daña las relaciones', 'No tiene impacto si no se descubre', 'Solo afecta al que miente'],
-        correcta: 1,
+        opciones: ['Puede ser útil para proteger a alguien', 'No tiene impacto si no se descubre', 'Solo afecta al que miente', 'Destruye la confianza y daña las relaciones'],
+        correcta: 3,
       },
     ],
     preguntas_reflexion: [
@@ -335,18 +320,18 @@ export const MODULOS = [
     preguntas_quiz: [
       {
         pregunta: '¿Qué es la libertad auténtica según la Doctrina Social?',
-        opciones: ['Hacer lo que uno quiera sin consecuencias', 'La capacidad de elegir el bien y actuar de manera responsable', 'No tener ninguna restricción', 'Independencia total de los demás'],
-        correcta: 1,
+        opciones: ['No tener ninguna restricción', 'Independencia total de los demás', 'Hacer lo que uno quiera sin consecuencias', 'La capacidad de elegir el bien y actuar de manera responsable'],
+        correcta: 3,
       },
       {
         pregunta: '¿Cómo se relacionan libertad y responsabilidad?',
-        opciones: ['Son opuestas', 'La libertad verdadera implica responsabilidad por nuestras elecciones', 'La responsabilidad limita la libertad', 'No tienen relación'],
-        correcta: 1,
+        opciones: ['No tienen relación', 'Son opuestas', 'La libertad verdadera implica responsabilidad por nuestras elecciones', 'La responsabilidad limita la libertad'],
+        correcta: 2,
       },
       {
         pregunta: '¿Qué amenaza la libertad de las personas en el trabajo?',
-        opciones: ['Tener demasiadas opciones', 'La presión, el miedo y las estructuras injustas', 'El trabajo en equipo', 'Tener un horario definido'],
-        correcta: 1,
+        opciones: ['La presión, el miedo y las estructuras injustas', 'Tener demasiadas opciones', 'El trabajo en equipo', 'Tener un horario definido'],
+        correcta: 0,
       },
     ],
     preguntas_reflexion: [
@@ -366,18 +351,18 @@ export const MODULOS = [
     preguntas_quiz: [
       {
         pregunta: '¿Qué es la justicia como virtud social?',
-        opciones: ['Aplicar las leyes con exactitud', 'La firme voluntad de dar a cada uno lo que le corresponde', 'Castigar a quien hace el mal', 'Repartir todo por igual'],
-        correcta: 1,
+        opciones: ['La firme voluntad de dar a cada uno lo que le corresponde', 'Castigar a quien hace el mal', 'Aplicar las leyes con exactitud', 'Repartir todo por igual'],
+        correcta: 0,
       },
       {
         pregunta: '¿Cuáles son los tipos de justicia mencionados en la Doctrina Social?',
-        opciones: ['Justicia civil y penal', 'Justicia conmutativa, distributiva y social', 'Justicia laboral y familiar', 'Justicia retributiva y restaurativa'],
+        opciones: ['Justicia laboral y familiar', 'Justicia conmutativa, distributiva y social', 'Justicia civil y penal', 'Justicia retributiva y restaurativa'],
         correcta: 1,
       },
       {
         pregunta: '¿Cómo se manifiesta la injusticia en el ámbito laboral?',
-        opciones: ['En diferencias de opinión', 'En la discriminación, salarios injustos y falta de oportunidades', 'En el trabajo competitivo', 'En tener jefes exigentes'],
-        correcta: 1,
+        opciones: ['En la discriminación, salarios injustos y falta de oportunidades', 'En diferencias de opinión', 'En tener jefes exigentes', 'En el trabajo competitivo'],
+        correcta: 0,
       },
     ],
     preguntas_reflexion: [
@@ -397,18 +382,18 @@ export const MODULOS = [
     preguntas_quiz: [
       {
         pregunta: '¿Qué es la participación ciudadana?',
-        opciones: ['Solo votar en las elecciones', 'El involucramiento activo de la persona en la vida política, social y comunitaria', 'Pagar impuestos', 'Obedecer las leyes'],
-        correcta: 1,
+        opciones: ['El involucramiento activo de la persona en la vida política, social y comunitaria', 'Pagar impuestos', 'Solo votar en las elecciones', 'Obedecer las leyes'],
+        correcta: 0,
       },
       {
         pregunta: '¿Por qué los trabajadores tienen un papel importante en la ciudadanía?',
-        opciones: ['Porque son mayoría en la población', 'Porque desde el trabajo contribuyen al bien común y tienen derechos que defender', 'Porque están organizados en sindicatos', 'Porque pagan los impuestos'],
-        correcta: 1,
+        opciones: ['Porque desde el trabajo contribuyen al bien común y tienen derechos que defender', 'Porque son mayoría en la población', 'Porque están organizados en sindicatos', 'Porque pagan los impuestos'],
+        correcta: 0,
       },
       {
         pregunta: '¿Qué impide la participación ciudadana activa?',
-        opciones: ['Tener muchas responsabilidades', 'El desconocimiento de derechos, la apatía y la exclusión', 'Vivir en una ciudad grande', 'Trabajar muchas horas'],
-        correcta: 1,
+        opciones: ['Tener muchas responsabilidades', 'Vivir en una ciudad grande', 'El desconocimiento de derechos, la apatía y la exclusión', 'Trabajar muchas horas'],
+        correcta: 2,
       },
     ],
     preguntas_reflexion: [
@@ -428,18 +413,18 @@ export const MODULOS = [
     preguntas_quiz: [
       {
         pregunta: '¿Qué es la ecología integral según la encíclica Laudato Si\'?',
-        opciones: ['Solo el cuidado del medio ambiente natural', 'Una visión que conecta el cuidado de la tierra con la justicia social y humana', 'Un movimiento político ecologista', 'El reciclaje y ahorro de energía'],
+        opciones: ['Solo el cuidado del medio ambiente natural', 'Una visión que conecta el cuidado de la tierra con la justicia social y humana', 'El reciclaje y ahorro de energía', 'Un movimiento político ecologista'],
         correcta: 1,
       },
       {
         pregunta: '¿Cuál es nuestra responsabilidad con la "casa común"?',
-        opciones: ['Solo la tienen los científicos y políticos', 'Cuidarla y transmitirla en buen estado a las generaciones futuras', 'Aprovechar sus recursos para el desarrollo', 'Solo los países ricos tienen esa responsabilidad'],
+        opciones: ['Aprovechar sus recursos para el desarrollo', 'Cuidarla y transmitirla en buen estado a las generaciones futuras', 'Solo los países ricos tienen esa responsabilidad', 'Solo la tienen los científicos y políticos'],
         correcta: 1,
       },
       {
         pregunta: '¿Cómo se relaciona el trabajo con el cuidado de la creación?',
-        opciones: ['No tienen relación', 'El trabajo puede ser un medio de cuidado o de destrucción del ambiente', 'Solo las industrias contaminan', 'El trabajo siempre daña el medio ambiente'],
-        correcta: 1,
+        opciones: ['El trabajo puede ser un medio de cuidado o de destrucción del ambiente', 'El trabajo siempre daña el medio ambiente', 'Solo las industrias contaminan', 'No tienen relación'],
+        correcta: 0,
       },
     ],
     preguntas_reflexion: [

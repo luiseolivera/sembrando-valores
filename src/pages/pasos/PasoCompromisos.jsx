@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase, DEMO_MODE, esPerfilExploracion } from '../../lib/supabase'
-import { Target, Plus, CheckCircle, Trash2, ArrowRight, Sparkles, AlertTriangle } from 'lucide-react'
+import { Target, Plus, CheckCircle, Pencil, ArrowRight, Sparkles, AlertTriangle } from 'lucide-react'
 
 const SUGERENCIAS = {
   1: ['Llamar a alguien por su nombre y mirarle a los ojos al hablar', 'Reconocer en voz alta un aporte de un compañero esta semana', 'Evitar hablar de alguien en términos que reduzcan su dignidad'],
@@ -24,6 +24,7 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
   const [guardados, setGuardados] = useState([])
   const [guardando, setGuardando] = useState(false)
   const [exito, setExito] = useState(false)
+  const [editando, setEditando] = useState(false)
   const [exploracion, setExploracion] = useState(false)
   const sugerencias = SUGERENCIAS[modulo.id] || []
 
@@ -57,6 +58,14 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
     setGuardando(true)
 
     if (!DEMO_MODE) {
+      if (editando) {
+        // Reemplaza el set anterior por el nuevo (hasta 3 compromisos, no hay
+        // un id fijo por posición que se pueda "actualizar" uno a uno).
+        await supabase.from('compromisos_personales')
+          .delete()
+          .eq('usuario_id', perfil.id)
+          .eq('modulo_id', modulo.id)
+      }
       const registros = validos.map(texto => ({
         usuario_id: perfil.id,
         modulo_id: modulo.id,
@@ -68,6 +77,19 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
     setGuardados(validos.map((t, i) => ({ id: i, compromiso_texto: t })))
     setGuardando(false)
     setExito(true)
+    setEditando(false)
+  }
+
+  function iniciarEdicion() {
+    if (esPerfilExploracion(perfil)) { setExploracion(true); return }
+    const textos = guardados.map(c => c.compromiso_texto)
+    while (textos.length < 3) textos.push('')
+    setCompromisos(textos)
+    setEditando(true)
+  }
+
+  function cancelarEdicion() {
+    setEditando(false)
   }
 
   const hayCompromisos = compromisos.some(c => c.trim())
@@ -78,11 +100,11 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
         <Target size={20} className="text-dorado" /> Paso 4 — Mis compromisos personales
       </h2>
       <p className="text-sm text-gray-500 mb-6">
-        ¿Qué vas a hacer diferente después de este módulo? Escribe de 1 a 3 compromisos concretos.
+        Con lo leído y reflexionado, ¿qué vas a hacer diferente? Escribe de 1 a 3 compromisos concretos.
       </p>
 
       {/* Sugerencias */}
-      {sugerencias.length > 0 && !exito && (
+      {sugerencias.length > 0 && (!exito || editando) && (
         <div className="mb-5">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center gap-1">
             <Sparkles size={13} className="text-dorado" /> Ideas para inspirarte
@@ -105,9 +127,17 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
       )}
 
       {/* Compromisos ya guardados */}
-      {exito && guardados.length > 0 ? (
+      {exito && guardados.length > 0 && !editando ? (
         <div className="space-y-3 mb-6">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Tus compromisos</p>
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Tus compromisos</p>
+            <button
+              onClick={iniciarEdicion}
+              className="flex-shrink-0 flex items-center gap-1 text-xs font-semibold text-morado hover:underline"
+            >
+              <Pencil size={12} /> Editar
+            </button>
+          </div>
           {guardados.map((c) => (
             <div key={c.id} className="flex items-start gap-3 p-3 rounded-xl border bg-yellow-50 border-yellow-100">
               <Target size={16} className="text-dorado flex-shrink-0 mt-0.5" />
@@ -151,25 +181,35 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
       )}
 
       <div className="flex flex-col sm:flex-row gap-3">
-        {!exito && (
+        {(!exito || editando) && (
           <button
             onClick={guardar}
             disabled={!hayCompromisos || guardando}
             className="flex-1 flex items-center justify-center gap-2 bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            <Plus size={16} /> {guardando ? 'Guardando...' : 'Guardar mis compromisos'}
+            <Plus size={16} /> {guardando ? 'Guardando...' : editando ? 'Guardar cambios' : 'Guardar mis compromisos'}
           </button>
         )}
-        <button
-          onClick={onAvanzar}
-          className={`flex-1 flex items-center justify-center gap-2 font-bold py-3 rounded-xl transition-colors ${
-            exito
-              ? 'bg-morado text-white hover:bg-morado-dark'
-              : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-          }`}
-        >
-          {exito ? 'Continuar a la sesión grupal' : 'Continuar sin registrar compromisos'} <ArrowRight size={16} />
-        </button>
+        {editando ? (
+          <button
+            onClick={cancelarEdicion}
+            disabled={guardando}
+            className="flex-1 flex items-center justify-center gap-2 font-bold py-3 rounded-xl bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors disabled:opacity-40"
+          >
+            Cancelar
+          </button>
+        ) : (
+          <button
+            onClick={onAvanzar}
+            className={`flex-1 flex items-center justify-center gap-2 font-bold py-3 rounded-xl transition-colors ${
+              exito
+                ? 'bg-morado text-white hover:bg-morado-dark'
+                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+            }`}
+          >
+            {exito ? 'Continuar a la sesión grupal' : 'Continuar sin registrar compromisos'} <ArrowRight size={16} />
+          </button>
+        )}
       </div>
     </div>
   )

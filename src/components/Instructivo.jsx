@@ -8,7 +8,7 @@ import {
 const pasosParticipante = [
   { icono: UserPlus, texto: 'Regístrate con tu nombre y correo' },
   { icono: Share2, texto: '(Opcional) Si tu equipo tiene un código de grupo, únete con él — te lleva directo al módulo activo. Si no tienes uno, puedes recorrer los módulos por tu cuenta.' },
-  { icono: Headphones, texto: 'Escucha el audio completo y marca que lo escuchaste' },
+  { icono: Headphones, texto: 'Lee los textos o escucha el audio completo y marca que ya lo hiciste' },
   { icono: CheckSquare, texto: 'Responde el quiz de comprensión (mínimo 70% para avanzar)' },
   { icono: PenLine, texto: 'Escribe tu reflexión personal y envíala' },
   { icono: Target, texto: 'Registra tus compromisos personales' },
