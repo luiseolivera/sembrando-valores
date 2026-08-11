@@ -797,40 +797,68 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                 <p className="text-sm text-gray-400 mb-4">Todavía no hay ninguna sesión agendada para este módulo.</p>
               ) : (
                 <div className="space-y-2 mb-4">
-                  {sesiones.map((s) => (
-                    <div key={s.id} className="flex items-center justify-between gap-3 bg-gray-50 rounded-xl p-3">
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-gray-800">
-                          {s.fecha
-                            ? new Date(s.fecha).toLocaleString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
-                            : 'Sin fecha definida'}
-                        </p>
-                        <p className="text-xs text-gray-400 truncate">{s.link_reunion}</p>
-                        <p className="text-xs text-morado font-medium mt-0.5">
-                          {eleccionesPorSesion[s.id] || 0} participante{eleccionesPorSesion[s.id] === 1 ? '' : 's'} eligió esta opción
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        {(eleccionesPorSesion[s.id] || 0) > 0 && (
+                  {sesiones.map((s) => {
+                    const participantesDeSesion = participantes.filter(p => eleccionesPorUsuario[p.id] === s.id)
+                    return (
+                    <div key={s.id} className="bg-gray-50 rounded-xl p-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-gray-800">
+                            {s.fecha
+                              ? new Date(s.fecha).toLocaleString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
+                              : 'Sin fecha definida'}
+                          </p>
+                          <p className="text-xs text-gray-400 truncate">{s.link_reunion}</p>
+                          <p className="text-xs text-morado font-medium mt-0.5">
+                            {eleccionesPorSesion[s.id] || 0} participante{eleccionesPorSesion[s.id] === 1 ? '' : 's'} eligió esta opción
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          {participantesDeSesion.length > 0 && (
+                            <button
+                              onClick={() => habilitarTodosDeSesion(s.id)}
+                              disabled={habilitandoId === s.id}
+                              className="flex items-center gap-1.5 text-xs font-semibold text-morado bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                            >
+                              <Unlock size={13} /> {habilitandoId === s.id ? 'Guardando...' : 'Todos asistieron'}
+                            </button>
+                          )}
                           <button
-                            onClick={() => habilitarTodosDeSesion(s.id)}
-                            disabled={habilitandoId === s.id}
-                            className="flex items-center gap-1.5 text-xs font-semibold text-morado bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                            onClick={() => eliminarSesion(s.id)}
+                            disabled={eliminandoSesion === s.id}
+                            className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50"
+                            title="Eliminar"
                           >
-                            <Unlock size={13} /> {habilitandoId === s.id ? 'Guardando...' : 'Asistieron a la sesión grupal'}
+                            <Trash2 size={16} />
                           </button>
-                        )}
-                        <button
-                          onClick={() => eliminarSesion(s.id)}
-                          disabled={eliminandoSesion === s.id}
-                          className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50"
-                          title="Eliminar"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                        </div>
                       </div>
+
+                      {participantesDeSesion.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-gray-200 space-y-1.5">
+                          {participantesDeSesion.map(p => (
+                            <div key={p.id} className="flex items-center justify-between gap-2">
+                              <span className="text-xs text-gray-600 truncate">{p.nombre}</span>
+                              {habilitaciones[p.id] ? (
+                                <span className="flex-shrink-0 inline-flex items-center gap-1 text-xs font-bold text-green-700">
+                                  <Unlock size={11} /> Asistió
+                                </span>
+                              ) : (
+                                <button
+                                  onClick={() => habilitarCompromisos(p.id)}
+                                  disabled={habilitandoId === p.id}
+                                  className="flex-shrink-0 text-xs font-semibold text-morado bg-purple-50 hover:bg-purple-100 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50"
+                                >
+                                  {habilitandoId === p.id ? '...' : 'Asistió'}
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
 
