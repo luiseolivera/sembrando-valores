@@ -112,7 +112,7 @@ export default function PasoReflexion({ modulo, perfil, onAvanzar }) {
           disabled={!guardado}
           className="flex-1 bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          Continuar a la sesión grupal →
+          Continuar a compromisos →
         </button>
       </div>
     </div>

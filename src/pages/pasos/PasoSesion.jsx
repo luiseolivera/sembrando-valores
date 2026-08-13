@@ -147,7 +147,10 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
       ) : esIndividual ? (
         solicitud ? (
           <div className="flex items-center gap-2 bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm px-4 py-3 rounded-xl">
-            <Clock size={16} /> Tu solicitud está pendiente — un facilitador te integrará a un grupo pronto.
+            <Clock size={16} />
+            {solicitud.facilitador_id
+              ? `Tu solicitud está pendiente — ${facilitadores.find(f => f.id === solicitud.facilitador_id)?.nombre || 'el facilitador que elegiste'} te integrará a un grupo pronto.`
+              : 'Tu solicitud está pendiente — un facilitador disponible te integrará a un grupo pronto.'}
           </div>
         ) : (
           <div className="space-y-4">

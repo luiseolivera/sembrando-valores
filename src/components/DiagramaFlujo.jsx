@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import {
   UserPlus, Share2, Headphones, CheckSquare, PenLine,
-  Users, Target, ChevronRight, ArrowRight
+  Users, Target, ChevronRight, ChevronDown, ChevronUp, ArrowRight
 } from 'lucide-react'
 
 const pasos = [
@@ -14,65 +15,78 @@ const pasos = [
   { icono: ArrowRight, titulo: 'Siguiente Módulo', color: 'bg-morado', num: 8 },
 ]
 
-export default function DiagramaFlujo() {
+export default function DiagramaFlujo({ defaultAbierto = false }) {
+  const [abierto, setAbierto] = useState(defaultAbierto)
+
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 border border-purple-100">
-      <h2 className="text-center text-morado font-bold text-lg mb-6">
-        ¿Cómo funciona el programa?
-      </h2>
+    <div className="bg-white rounded-2xl shadow-lg border border-purple-100 overflow-hidden">
+      <button
+        onClick={() => setAbierto(v => !v)}
+        className="w-full flex items-center justify-center gap-2 p-6 text-center hover:bg-purple-50 transition-colors"
+      >
+        <h2 className="text-morado font-bold text-lg">¿Cómo funciona el programa?</h2>
+        {abierto ? <ChevronUp size={20} className="text-morado flex-shrink-0" /> : <ChevronDown size={20} className="text-morado flex-shrink-0" />}
+      </button>
 
-      {/* Desktop: horizontal */}
-      <div className="hidden md:flex items-center justify-between gap-1 overflow-x-auto pb-2">
-        {pasos.map((paso, i) => {
-          const Icono = paso.icono
-          return (
-            <div key={paso.num} className="flex items-center gap-1 flex-shrink-0">
-              <div className="flex flex-col items-center gap-2 w-20">
-                <div className={`${paso.color} w-12 h-12 rounded-full flex items-center justify-center shadow-md`}>
-                  <Icono size={22} className="text-white" />
+      {abierto && (
+        <div className="px-6 pb-6">
+          {/* Desktop: horizontal */}
+          <div className="hidden md:flex items-center justify-between gap-1 overflow-x-auto pb-2">
+            {pasos.map((paso, i) => {
+              const Icono = paso.icono
+              return (
+                <div key={paso.num} className="flex items-center gap-1 flex-shrink-0">
+                  <div className="flex flex-col items-center gap-2 w-20">
+                    <div className={`${paso.color} w-12 h-12 rounded-full flex items-center justify-center shadow-md`}>
+                      <Icono size={22} className="text-white" />
+                    </div>
+                    <span className="text-xs font-semibold text-gray-700 text-center leading-tight">
+                      {paso.titulo}
+                    </span>
+                  </div>
+                  {i < pasos.length - 1 && (
+                    <ChevronRight size={20} className="text-dorado flex-shrink-0 mt-[-18px]" />
+                  )}
                 </div>
-                <span className="text-xs font-semibold text-gray-700 text-center leading-tight">
-                  {paso.titulo}
-                </span>
-              </div>
-              {i < pasos.length - 1 && (
-                <ChevronRight size={20} className="text-dorado flex-shrink-0 mt-[-18px]" />
-              )}
-            </div>
-          )
-        })}
-      </div>
+              )
+            })}
+          </div>
 
-      {/* Mobile: 2 columns grid */}
-      <div className="md:hidden grid grid-cols-2 gap-4">
-        {pasos.map((paso) => {
-          const Icono = paso.icono
-          return (
-            <div key={paso.num} className="flex items-center gap-3">
-              <div className={`${paso.color} w-10 h-10 rounded-full flex items-center justify-center shadow flex-shrink-0`}>
-                <Icono size={18} className="text-white" />
-              </div>
-              <div>
-                <span className="text-xs font-bold text-morado">Paso {paso.num}</span>
-                <p className="text-xs text-gray-700 font-medium leading-tight">{paso.titulo}</p>
-              </div>
-            </div>
-          )
-        })}
-      </div>
+          {/* Mobile: 2 columns grid */}
+          <div className="md:hidden grid grid-cols-2 gap-4">
+            {pasos.map((paso) => {
+              const Icono = paso.icono
+              return (
+                <div key={paso.num} className="flex items-center gap-3">
+                  <div className={`${paso.color} w-10 h-10 rounded-full flex items-center justify-center shadow flex-shrink-0`}>
+                    <Icono size={18} className="text-white" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-morado">Paso {paso.num}</span>
+                    <p className="text-xs text-gray-700 font-medium leading-tight">{paso.titulo}</p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
 
-      <div className="mt-5 p-3 bg-purple-50 rounded-xl border border-purple-100 text-center">
-        <p className="text-xs text-morado font-medium">
-          Cada paso se desbloquea al completar el anterior. ¡Avanza a tu ritmo!
-        </p>
-        <p className="text-xs text-gray-500 mt-1">
-          Si te unes a un grupo, tu facilitador activa el módulo que trabajan juntos y no podrás avanzar a otro hasta que lo haga.
-          Todo el grupo avanza junto — si tu facilitador activa el siguiente módulo antes de que termines el actual, te quedas
-          bloqueado y tendrías que salir del grupo para solicitar integrarte a uno nuevo.
-          Si prefieres ir por tu cuenta, puedes usar la app sin unirte a ningún grupo — pero cada módulo igual necesita
-          su sesión grupal: al llegar a ese paso, un facilitador te integra a un grupo para tenerla y confirmar tu asistencia.
-        </p>
-      </div>
+          <div className="mt-5 p-3 bg-purple-50 rounded-xl border border-purple-100 text-center">
+            <p className="text-xs text-morado font-medium">
+              Cada paso se desbloquea al completar el anterior. ¡Avanza a tu ritmo!
+            </p>
+            <p className="text-xs text-gray-500 mt-2">
+              Si estás en un grupo, avanzan todos juntos: tu facilitador activa el módulo que van a trabajar y no puedes
+              saltar a otro hasta que él lo active. Por eso conviene no atrasarte — si el grupo avanza y tú no, te quedas
+              bloqueado y tendrías que salir del grupo para pedir integrarte a uno nuevo.
+            </p>
+            <p className="text-xs text-gray-500 mt-2">
+              ¿Prefieres ir por tu cuenta? También puedes usar la app sin unirte a ningún grupo. Solo recuerda que cada
+              módulo, tarde o temprano, necesita su sesión grupal — al llegar a ese paso, un facilitador te integra a un
+              grupo para tenerla y confirmar tu asistencia.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

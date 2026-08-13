@@ -208,7 +208,7 @@ export default function PasoContenido({ modulo, onAvanzar }) {
             disabled={!visto}
             className="w-full bg-morado text-white font-bold py-3 rounded-xl hover:bg-morado-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Continuar a la reflexión →
+            Continuar al quiz →
           </button>
         </div>
       </div>
