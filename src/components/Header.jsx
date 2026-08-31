@@ -23,7 +23,7 @@ export default function Header() {
     <header className="bg-white border-b border-gray-200 shadow-sm print:hidden">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3 min-w-0">
-          <img src="/logommt.png" alt="MMT" className="h-[52px] w-auto object-contain flex-shrink-0" />
+          <img src="/logo-sembrando-valores.jpeg" alt="Sembrando Valores" className="h-[52px] w-auto object-contain flex-shrink-0" />
           <div className="hidden sm:block">
             <p className="text-morado font-bold text-sm leading-tight">Sembrando Valores Digital</p>
             <p className="text-dorado-dark text-xs font-medium">Misioneros en el Mundo del Trabajo</p>
@@ -45,7 +45,7 @@ export default function Header() {
                 </Link>
               )}
               {perfil.rol === 'facilitador' && !perfil.aprobado && !DEMO_MODE && (
-                <span className="text-xs text-yellow-600 bg-yellow-50 border border-yellow-200 px-2.5 py-1 rounded-full font-semibold">
+                <span className="text-xs text-orange-600 bg-orange-50 border border-orange-200 px-2.5 py-1 rounded-full font-semibold">
                   Facilitador pendiente
                 </span>
               )}
@@ -105,7 +105,7 @@ export default function Header() {
             </Link>
             <Link
               to="/registro"
-              className="bg-morado text-white text-sm font-bold px-4 py-1.5 rounded-full hover:bg-purple-800 transition-colors"
+              className="bg-morado text-white text-sm font-bold px-4 py-1.5 rounded-full hover:bg-green-800 transition-colors"
             >
               Registrarse
             </Link>

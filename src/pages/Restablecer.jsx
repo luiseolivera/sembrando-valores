@@ -55,7 +55,7 @@ export default function Restablecer() {
 
   if (!sesionValida) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-orange-50 flex items-center justify-center px-4">
         <div className="text-center max-w-sm">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertCircle size={32} className="text-red-500" />
@@ -70,7 +70,7 @@ export default function Restablecer() {
 
   if (exito) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-orange-50 flex items-center justify-center px-4">
         <div className="text-center max-w-sm">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle size={32} className="text-green-600" />
@@ -83,7 +83,7 @@ export default function Restablecer() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-orange-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-morado rounded-full mb-4 shadow-lg">
@@ -92,7 +92,7 @@ export default function Restablecer() {
           <h1 className="text-2xl font-bold text-morado">Crea tu nueva contraseña</h1>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-purple-100">
+        <div className="bg-white rounded-2xl shadow-xl p-8 border border-green-100">
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
               <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">

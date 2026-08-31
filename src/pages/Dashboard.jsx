@@ -181,7 +181,7 @@ export default function Dashboard() {
           {perfil?.rol === 'participante' && (
             <Link
               to="/mi-resumen"
-              className="relative flex-shrink-0 flex items-center gap-2 bg-white border border-purple-200 text-morado text-xs font-bold px-4 py-2 rounded-xl hover:bg-purple-50 transition-colors"
+              className="relative flex-shrink-0 flex items-center gap-2 bg-white border border-green-200 text-morado text-xs font-bold px-4 py-2 rounded-xl hover:bg-green-50 transition-colors"
             >
               <Printer size={14} /> Mis reflexiones y compromisos
               {hayRetroSinVer && (
@@ -201,12 +201,12 @@ export default function Dashboard() {
               <Trophy size={20} className="text-dorado" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-purple-200 text-xs font-medium">¡Felicidades!</p>
+              <p className="text-green-200 text-xs font-medium">¡Felicidades!</p>
               <p className="text-white font-bold text-sm">Completaste los 14 valores del programa</p>
             </div>
             <Link
               to="/constancia"
-              className="flex-shrink-0 bg-dorado text-morado font-bold text-xs px-4 py-2 rounded-xl hover:bg-yellow-400 transition-colors"
+              className="flex-shrink-0 bg-dorado text-morado font-bold text-xs px-4 py-2 rounded-xl hover:bg-orange-400 transition-colors"
             >
               Ver constancia
             </Link>
@@ -215,9 +215,9 @@ export default function Dashboard() {
 
         {/* Banner: facilitador pendiente de aprobación */}
         {perfil?.rol === 'facilitador' && !perfil?.aprobado && (
-          <div className="bg-white rounded-2xl border border-yellow-200 shadow-sm p-5 mb-6">
+          <div className="bg-white rounded-2xl border border-orange-200 shadow-sm p-5 mb-6">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <Clock size={20} className="text-dorado-dark" />
               </div>
               <div>
@@ -236,9 +236,9 @@ export default function Dashboard() {
 
         {/* Banner: unirse a grupo (participante sin grupo) */}
         {perfil?.rol === 'participante' && !perfil?.grupo_id && !banneroculto && (
-          <div className="bg-white rounded-2xl border border-purple-200 shadow-sm p-5 mb-6">
+          <div className="bg-white rounded-2xl border border-green-200 shadow-sm p-5 mb-6">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <Users size={20} className="text-morado" />
               </div>
               <div>
@@ -282,14 +282,14 @@ export default function Dashboard() {
               <Zap size={20} className="text-dorado" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-purple-200 text-xs font-medium">Módulo activo del grupo</p>
+              <p className="text-green-200 text-xs font-medium">Módulo activo del grupo</p>
               <p className="text-white font-bold text-sm truncate">
                 Módulo {moduloActivo.numero} — {moduloActivo.titulo}
               </p>
             </div>
             <Link
               to={`/modulo/${moduloActivo.id}`}
-              className="flex-shrink-0 bg-dorado text-morado font-bold text-xs px-4 py-2 rounded-xl hover:bg-yellow-400 transition-colors"
+              className="flex-shrink-0 bg-dorado text-morado font-bold text-xs px-4 py-2 rounded-xl hover:bg-orange-400 transition-colors"
             >
               Ir al módulo
             </Link>
@@ -324,7 +324,7 @@ export default function Dashboard() {
 
         {/* Indicador compacto: sesión/compromisos pendientes del módulo activo */}
         {!atoradoEnGrupo && moduloActivo && ['compromisos', 'sesion'].includes(pasoActual(moduloActivo.id)) && (
-          <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs px-4 py-2.5 rounded-xl mb-6">
+          <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-800 text-xs px-4 py-2.5 rounded-xl mb-6">
             <Users size={14} className="flex-shrink-0" />
             {pasoActual(moduloActivo.id) === 'sesion'
               ? 'Te falta tu sesión grupal del módulo activo —'
@@ -335,15 +335,15 @@ export default function Dashboard() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="bg-white rounded-2xl p-5 border border-purple-100 shadow-sm text-center">
+          <div className="bg-white rounded-2xl p-5 border border-green-100 shadow-sm text-center">
             <div className="text-3xl font-extrabold text-morado">{totalCompletados}</div>
             <p className="text-xs text-gray-500 mt-1 font-medium">Módulos completados</p>
           </div>
-          <div className="bg-white rounded-2xl p-5 border border-yellow-100 shadow-sm text-center">
+          <div className="bg-white rounded-2xl p-5 border border-orange-100 shadow-sm text-center">
             <div className="text-3xl font-extrabold text-dorado-dark">{MODULOS.length - totalCompletados}</div>
             <p className="text-xs text-gray-500 mt-1 font-medium">Por completar</p>
           </div>
-          <div className="bg-white rounded-2xl p-5 border border-purple-100 shadow-sm text-center">
+          <div className="bg-white rounded-2xl p-5 border border-green-100 shadow-sm text-center">
             <div className="text-3xl font-extrabold text-morado">
               {perfil?.grupo_id ? compromisos.length : compromisosPersonalesCount}
             </div>
@@ -378,13 +378,13 @@ export default function Dashboard() {
                   bloqueado ? 'opacity-60 cursor-not-allowed border-gray-100'
                     : completado ? 'border-green-200 hover:shadow-md'
                     : esActivo ? 'border-morado ring-1 ring-morado hover:shadow-md'
-                    : 'border-purple-100 hover:border-morado hover:shadow-md'
+                    : 'border-green-100 hover:border-morado hover:shadow-md'
                 }`}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
-                      completado ? 'bg-green-100 text-green-700' : esActivo ? 'bg-morado text-white' : 'bg-purple-100 text-morado'
+                      completado ? 'bg-green-100 text-green-700' : esActivo ? 'bg-morado text-white' : 'bg-green-100 text-morado'
                     }`}>
                       {completado ? <CheckCircle size={20} /> : esActivo ? <Zap size={18} /> : modulo.numero}
                     </div>
@@ -435,13 +435,13 @@ export default function Dashboard() {
 
         {/* Compromisos del grupo */}
         {compromisos.length > 0 && (
-          <div className="bg-white rounded-2xl border border-yellow-100 shadow-sm p-6">
+          <div className="bg-white rounded-2xl border border-orange-100 shadow-sm p-6">
             <h2 className="font-bold text-morado text-lg flex items-center gap-2 mb-4">
               <Target size={20} className="text-dorado" /> Compromisos del grupo
             </h2>
             <div className="space-y-3">
               {compromisos.map((c) => (
-                <div key={c.id} className="flex items-start gap-3 p-3 bg-yellow-50 rounded-xl border border-yellow-100">
+                <div key={c.id} className="flex items-start gap-3 p-3 bg-orange-50 rounded-xl border border-orange-100">
                   <div className="w-6 h-6 bg-dorado rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                     <Trophy size={12} className="text-white" />
                   </div>

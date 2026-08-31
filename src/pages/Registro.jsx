@@ -77,7 +77,7 @@ export default function Registro() {
 
   if (requiereConfirmacion) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-orange-50 flex items-center justify-center px-4">
         <div className="text-center max-w-sm">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-full mb-4">
             <MailCheck size={40} className="text-blue-600" />
@@ -101,9 +101,9 @@ export default function Registro() {
 
   if (exito && form.rol === 'facilitador') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-orange-50 flex items-center justify-center px-4">
         <div className="text-center max-w-sm">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-yellow-100 rounded-full mb-4">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-orange-100 rounded-full mb-4">
             <Clock size={40} className="text-dorado-dark" />
           </div>
           <h2 className="text-xl font-bold text-morado mb-2">Cuenta creada — pendiente de aprobación</h2>
@@ -127,7 +127,7 @@ export default function Registro() {
 
   if (exito) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-orange-50 flex items-center justify-center px-4">
         <div className="text-center max-w-sm">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-4">
             <CheckCircle size={40} className="text-green-600" />
@@ -140,7 +140,7 @@ export default function Registro() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-orange-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-morado rounded-full mb-4 shadow-lg">
@@ -150,7 +150,7 @@ export default function Registro() {
           <p className="text-gray-500 text-sm mt-1">Únete al programa Sembrando Valores</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-purple-100">
+        <div className="bg-white rounded-2xl shadow-xl p-8 border border-green-100">
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
               <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
@@ -231,8 +231,8 @@ export default function Registro() {
                   onClick={() => setForm({ ...form, rol: 'participante' })}
                   className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all ${
                     form.rol === 'participante'
-                      ? 'border-morado bg-purple-50 text-morado'
-                      : 'border-gray-200 text-gray-500 hover:border-purple-200'
+                      ? 'border-morado bg-green-50 text-morado'
+                      : 'border-gray-200 text-gray-500 hover:border-green-200'
                   }`}
                 >
                   <User size={16} /> Participante
@@ -242,8 +242,8 @@ export default function Registro() {
                   onClick={() => setForm({ ...form, rol: 'facilitador' })}
                   className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all ${
                     form.rol === 'facilitador'
-                      ? 'border-dorado bg-yellow-50 text-dorado-dark'
-                      : 'border-gray-200 text-gray-500 hover:border-yellow-200'
+                      ? 'border-dorado bg-orange-50 text-dorado-dark'
+                      : 'border-gray-200 text-gray-500 hover:border-orange-200'
                   }`}
                 >
                   <Users size={16} /> Facilitador

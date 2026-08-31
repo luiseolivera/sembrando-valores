@@ -44,10 +44,10 @@ export default function Instructivo({ defaultAbierto = false }) {
   return (
     <div>
     <div className="grid md:grid-cols-2 gap-6">
-      <div className="bg-white rounded-2xl shadow-md border border-purple-100 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-md border border-green-100 overflow-hidden">
         <button
           onClick={() => setAbiertoParticipante(v => !v)}
-          className="w-full flex items-center justify-between gap-3 p-6 text-left hover:bg-purple-50 transition-colors"
+          className="w-full flex items-center justify-between gap-3 p-6 text-left hover:bg-green-50 transition-colors"
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-morado rounded-full flex items-center justify-center flex-shrink-0">
@@ -77,10 +77,10 @@ export default function Instructivo({ defaultAbierto = false }) {
         )}
       </div>
 
-      <div className="bg-white rounded-2xl shadow-md border border-yellow-100 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-md border border-orange-100 overflow-hidden">
         <button
           onClick={() => setAbiertoFacilitador(v => !v)}
-          className="w-full flex items-center justify-between gap-3 p-6 text-left hover:bg-yellow-50 transition-colors"
+          className="w-full flex items-center justify-between gap-3 p-6 text-left hover:bg-orange-50 transition-colors"
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-dorado rounded-full flex items-center justify-center flex-shrink-0">
@@ -112,10 +112,10 @@ export default function Instructivo({ defaultAbierto = false }) {
     </div>
 
     <div className="grid md:grid-cols-2 gap-6 mt-6">
-      <div className="bg-purple-50 rounded-2xl border border-purple-100 overflow-hidden">
+      <div className="bg-green-50 rounded-2xl border border-green-100 overflow-hidden">
         <button
           onClick={() => setAbiertoSinEquipo(v => !v)}
-          className="w-full flex items-center justify-between gap-3 p-5 text-left hover:bg-purple-100/50 transition-colors"
+          className="w-full flex items-center justify-between gap-3 p-5 text-left hover:bg-green-100/50 transition-colors"
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center flex-shrink-0">
@@ -138,10 +138,10 @@ export default function Instructivo({ defaultAbierto = false }) {
           </div>
         )}
       </div>
-      <div className="bg-yellow-50 rounded-2xl border border-yellow-100 overflow-hidden">
+      <div className="bg-orange-50 rounded-2xl border border-orange-100 overflow-hidden">
         <button
           onClick={() => setAbiertoEmpresa(v => !v)}
-          className="w-full flex items-center justify-between gap-3 p-5 text-left hover:bg-yellow-100/50 transition-colors"
+          className="w-full flex items-center justify-between gap-3 p-5 text-left hover:bg-orange-100/50 transition-colors"
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center flex-shrink-0">

@@ -54,9 +54,9 @@ const BENEFICIOS = [
 
 export default function ParaEmpresas() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-orange-50">
       <section className="relative overflow-hidden py-16 px-4">
-        <div className="absolute inset-0 bg-gradient-to-br from-morado to-purple-800 opacity-95" />
+        <div className="absolute inset-0 bg-gradient-to-br from-morado to-green-800 opacity-95" />
         <div className="relative max-w-3xl mx-auto text-center">
           <div className="w-16 h-16 bg-dorado rounded-full flex items-center justify-center mx-auto mb-6">
             <Sprout size={32} className="text-morado" />
@@ -64,17 +64,17 @@ export default function ParaEmpresas() {
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
             Sembrando Valores para tu empresa
           </h1>
-          <p className="text-purple-100 text-base leading-relaxed mb-8">
+          <p className="text-green-100 text-base leading-relaxed mb-8">
             Lleva el programa de formación en valores de Misioneros en el Mundo del Trabajo a todos
             los equipos de tu organización, con seguimiento y evidencia para tu área de Personal.
           </p>
           <a
             href={mailtoEmpresas()}
-            className="inline-flex items-center gap-2 bg-dorado text-morado font-bold px-8 py-3 rounded-full text-base hover:bg-yellow-400 transition-all shadow-lg"
+            className="inline-flex items-center gap-2 bg-dorado text-morado font-bold px-8 py-3 rounded-full text-base hover:bg-orange-400 transition-all shadow-lg"
           >
             <Mail size={18} /> Contáctanos para tu empresa
           </a>
-          <p className="text-purple-200 text-xs mt-3">Facturación disponible — conversemos sobre las opciones para tu organización</p>
+          <p className="text-green-200 text-xs mt-3">Facturación disponible — conversemos sobre las opciones para tu organización</p>
         </div>
       </section>
 
@@ -83,8 +83,8 @@ export default function ParaEmpresas() {
           {BENEFICIOS.map((b, i) => {
             const Icono = b.icono
             return (
-              <div key={i} className="bg-white rounded-2xl shadow-sm border border-purple-100 p-5">
-                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mb-3">
+              <div key={i} className="bg-white rounded-2xl shadow-sm border border-green-100 p-5">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mb-3">
                   <Icono size={18} className="text-morado" />
                 </div>
                 <h3 className="font-bold text-morado text-sm mb-1.5">{b.titulo}</h3>

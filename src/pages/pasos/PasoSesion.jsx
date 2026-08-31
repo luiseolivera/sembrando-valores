@@ -67,7 +67,7 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
 
   if (cargando) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 text-center">
+      <div className="bg-white rounded-2xl shadow-sm border border-green-100 p-6 text-center">
         <div className="w-8 h-8 border-4 border-morado border-t-transparent rounded-full animate-spin mx-auto" />
       </div>
     )
@@ -77,7 +77,7 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
   const sesionesDisponibles = sesiones.filter(s => !s.fecha || new Date(s.fecha) > new Date())
 
   return (
-    <div className="bg-yellow-50 rounded-2xl shadow-sm border border-yellow-200 p-6">
+    <div className="bg-orange-50 rounded-2xl shadow-sm border border-orange-200 p-6">
       <h2 className="font-bold text-morado text-lg mb-1 flex items-center gap-2">
         <Users size={20} className="text-dorado-dark" /> Paso 5 — Sesión grupal
       </h2>
@@ -103,7 +103,7 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
         </div>
       ) : sesionElegida ? (
         <div className="space-y-3">
-          <div className="bg-white rounded-xl border border-yellow-200 p-4">
+          <div className="bg-white rounded-xl border border-orange-200 p-4">
             <p className="text-sm font-semibold text-gray-800">
               {sesionElegida.fecha
                 ? new Date(sesionElegida.fecha).toLocaleString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
@@ -120,7 +120,7 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
               </a>
             )}
           </div>
-          <div className="flex items-center gap-2 bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm px-4 py-3 rounded-xl">
+          <div className="flex items-center gap-2 bg-orange-100 border border-orange-300 text-orange-800 text-sm px-4 py-3 rounded-xl">
             <Clock size={16} /> Esperando que tu facilitador confirme tu asistencia tras la sesión.
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
         <div className="space-y-2">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Elige una opción de horario</p>
           {sesionesDisponibles.map((s) => (
-            <div key={s.id} className="flex items-center justify-between gap-3 bg-white rounded-xl border border-yellow-200 p-3">
+            <div key={s.id} className="flex items-center justify-between gap-3 bg-white rounded-xl border border-orange-200 p-3">
               <p className="text-sm text-gray-700">
                 {s.fecha
                   ? new Date(s.fecha).toLocaleString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
@@ -146,7 +146,7 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
         </div>
       ) : esIndividual ? (
         solicitud ? (
-          <div className="flex items-center gap-2 bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm px-4 py-3 rounded-xl">
+          <div className="flex items-center gap-2 bg-orange-100 border border-orange-300 text-orange-800 text-sm px-4 py-3 rounded-xl">
             <Clock size={16} />
             {solicitud.facilitador_id
               ? `Tu solicitud está pendiente — ${facilitadores.find(f => f.id === solicitud.facilitador_id)?.nombre || 'el facilitador que elegiste'} te integrará a un grupo pronto.`
@@ -177,7 +177,7 @@ export default function PasoSesion({ modulo, perfil, onAvanzar }) {
           </div>
         )
       ) : (
-        <div className="flex items-center gap-2 bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm px-4 py-3 rounded-xl">
+        <div className="flex items-center gap-2 bg-orange-100 border border-orange-300 text-orange-800 text-sm px-4 py-3 rounded-xl">
           <Clock size={16} /> Tu facilitador todavía no agenda una sesión para este módulo.
         </div>
       )}

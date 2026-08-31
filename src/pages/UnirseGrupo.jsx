@@ -90,7 +90,7 @@ export default function UnirseGrupo() {
   )
 
   if (errorGrupo) return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-orange-50 flex items-center justify-center px-4">
       <div className="text-center max-w-sm">
         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <AlertCircle size={32} className="text-red-500" />
@@ -103,7 +103,7 @@ export default function UnirseGrupo() {
   )
 
   if (exito) return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-orange-50 flex items-center justify-center px-4">
       <div className="text-center max-w-sm">
         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <CheckCircle size={40} className="text-green-600" />
@@ -118,7 +118,7 @@ export default function UnirseGrupo() {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-orange-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Cabecera: info del grupo */}
         <div className="text-center mb-8">
@@ -130,7 +130,7 @@ export default function UnirseGrupo() {
           <p className="text-gray-400 text-xs mt-1">Programa Sembrando Valores Digital</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-purple-100">
+        <div className="bg-white rounded-2xl shadow-xl p-8 border border-green-100">
           {/* Tabs registro/login */}
           <div className="flex gap-1 bg-gray-100 p-1 rounded-xl mb-6">
             <button

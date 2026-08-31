@@ -38,7 +38,7 @@ function limpiarParaTTS(lineas) {
 
 function RenderLinea({ linea, i }) {
   if (linea.startsWith('**') && linea.endsWith('**')) return (
-    <p key={i} className="bg-purple-50 border-l-4 border-morado px-4 py-3 rounded-r-xl text-morado font-medium italic text-sm">
+    <p key={i} className="bg-green-50 border-l-4 border-morado px-4 py-3 rounded-r-xl text-morado font-medium italic text-sm">
       {linea.replace(/\*\*/g, '')}
     </p>
   )
@@ -85,7 +85,7 @@ function BotonTTS({ texto, label }) {
       className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all flex-shrink-0 ${
         leyendo
           ? 'bg-red-100 text-red-600 hover:bg-red-200'
-          : 'bg-purple-100 text-morado hover:bg-purple-200'
+          : 'bg-green-100 text-morado hover:bg-green-200'
       }`}
     >
       {leyendo ? <><Square size={10} /> Detener</> : <><Play size={10} /> Escuchar</>}
@@ -101,7 +101,7 @@ export default function PasoContenido({ modulo, onAvanzar }) {
   const { titulo, secciones } = parsearSecciones(contenido.texto)
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-purple-100 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-sm border border-green-100 overflow-hidden">
       {/* Tabs */}
       <div className="flex border-b border-gray-100">
         {TABS.map(({ key, label, icono: Icono }) => {
@@ -113,9 +113,9 @@ export default function PasoContenido({ modulo, onAvanzar }) {
               disabled={!disponible}
               className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-semibold transition-all border-b-2 ${
                 tabActiva === key
-                  ? 'border-morado text-morado bg-purple-50'
+                  ? 'border-morado text-morado bg-green-50'
                   : disponible
-                  ? 'border-transparent text-gray-400 hover:text-morado hover:bg-purple-50'
+                  ? 'border-transparent text-gray-400 hover:text-morado hover:bg-green-50'
                   : 'border-transparent text-gray-200 cursor-not-allowed'
               }`}
             >
@@ -135,7 +135,7 @@ export default function PasoContenido({ modulo, onAvanzar }) {
             )}
 
             {secciones.length > 0 ? secciones.map((sec, si) => (
-              <div key={si} className="border border-purple-50 rounded-xl p-4 bg-gray-50">
+              <div key={si} className="border border-green-50 rounded-xl p-4 bg-gray-50">
                 {/* Encabezado de sección con botón */}
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-base font-bold text-gray-800">{sec.titulo}</h3>
@@ -159,7 +159,7 @@ export default function PasoContenido({ modulo, onAvanzar }) {
           <div className="flex flex-col items-center justify-center py-6 gap-4">
             {tieneAudio ? (
               <>
-                <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
                   <Headphones size={36} className="text-morado" />
                 </div>
                 <p className="text-sm font-semibold text-gray-700 text-center">

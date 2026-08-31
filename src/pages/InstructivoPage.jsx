@@ -69,10 +69,10 @@ const FAQS = [
 function FaqItem({ faq, idx }) {
   const [abierto, setAbierto] = useState(false)
   return (
-    <div className="border border-purple-100 rounded-xl overflow-hidden">
+    <div className="border border-green-100 rounded-xl overflow-hidden">
       <button
         onClick={() => setAbierto(!abierto)}
-        className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left bg-white hover:bg-purple-50 transition-colors"
+        className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left bg-white hover:bg-green-50 transition-colors"
       >
         <span className="font-semibold text-gray-800 text-sm">{faq.pregunta}</span>
         {abierto
@@ -81,7 +81,7 @@ function FaqItem({ faq, idx }) {
         }
       </button>
       {abierto && (
-        <div className="px-5 pb-4 pt-1 bg-purple-50 border-t border-purple-100">
+        <div className="px-5 pb-4 pt-1 bg-green-50 border-t border-green-100">
           <p className="text-sm text-gray-700 leading-relaxed">{faq.respuesta}</p>
         </div>
       )}
@@ -93,8 +93,8 @@ const VALORES_CARD = [
   { icono: Heart, label: 'Amor', color: 'text-red-500' },
   { icono: Users, label: 'Solidaridad', color: 'text-blue-500' },
   { icono: Target, label: 'Bien Común', color: 'text-green-600' },
-  { icono: Lightbulb, label: 'Verdad', color: 'text-yellow-500' },
-  { icono: Star, label: 'Justicia', color: 'text-purple-600' },
+  { icono: Lightbulb, label: 'Verdad', color: 'text-orange-500' },
+  { icono: Star, label: 'Justicia', color: 'text-green-600' },
   { icono: Clock, label: 'Perseverancia', color: 'text-orange-500' },
 ]
 
@@ -112,7 +112,7 @@ export default function InstructivoPage() {
         </div>
 
         {/* Descripción del programa */}
-        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-6 mb-8">
+        <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-6 mb-8">
           <h2 className="text-lg font-bold text-morado mb-3">Sobre el programa</h2>
           <p className="text-gray-700 text-sm leading-relaxed mb-4">
             <strong>Sembrando Valores</strong> es un programa de reflexión, formación y convivencia desarrollado por{' '}
@@ -132,7 +132,7 @@ export default function InstructivoPage() {
               { num: '5', desc: 'pasos por módulo' },
               { num: '60–90', desc: 'minutos por sesión' },
             ].map((s) => (
-              <div key={s.num} className="bg-purple-50 rounded-xl p-3 text-center">
+              <div key={s.num} className="bg-green-50 rounded-xl p-3 text-center">
                 <div className="text-2xl font-extrabold text-morado">{s.num}</div>
                 <div className="text-xs text-gray-500 mt-0.5">{s.desc}</div>
               </div>
@@ -152,7 +152,7 @@ export default function InstructivoPage() {
         </div>
 
         {/* Actitudes para participar */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 mb-10">
+        <div className="bg-orange-50 border border-orange-200 rounded-2xl p-6 mb-10">
           <h2 className="text-lg font-bold text-morado mb-4">Actitudes para participar bien</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             {[
@@ -185,13 +185,13 @@ export default function InstructivoPage() {
         {/* Contacto */}
         <div className="bg-morado rounded-2xl p-6 text-center">
           <p className="text-white font-semibold mb-2">¿Tienes más dudas?</p>
-          <p className="text-purple-300 text-sm">
+          <p className="text-green-300 text-sm">
             Contacta a tu facilitador o escríbenos a{' '}
             <a href="mailto:info@misionerosmt.org" className="text-dorado hover:underline">
               info@misionerosmt.org
             </a>
           </p>
-          <p className="text-purple-400 text-xs mt-1">Tel: 55 2818 1466 · www.misionerosmt.org</p>
+          <p className="text-green-400 text-xs mt-1">Tel: 55 2818 1466 · www.misionerosmt.org</p>
         </div>
       </div>
     </div>

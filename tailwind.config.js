@@ -5,14 +5,14 @@ export default {
     extend: {
       colors: {
         morado: {
-          DEFAULT: '#6B21A8',
-          light: '#9333EA',
-          dark: '#4C1D95',
+          DEFAULT: '#1E7A34',
+          light: '#4CAF50',
+          dark: '#145A26',
         },
         dorado: {
-          DEFAULT: '#EAB308',
-          light: '#FDE047',
-          dark: '#CA8A04',
+          DEFAULT: '#F5821F',
+          light: '#FDB813',
+          dark: '#C2410C',
         },
       },
       fontFamily: {

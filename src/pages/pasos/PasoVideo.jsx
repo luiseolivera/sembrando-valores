@@ -8,7 +8,7 @@ export default function PasoVideo({ modulo, onAvanzar }) {
   const audioUrl = contenido.audio_url || modulo.audio_url || ''
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6">
+    <div className="bg-white rounded-2xl shadow-sm border border-green-100 p-6">
       <h2 className="font-bold text-morado text-lg mb-2 flex items-center gap-2">
         <Headphones size={20} className="text-dorado" /> Paso 1 — Audio del módulo
       </h2>
@@ -17,7 +17,7 @@ export default function PasoVideo({ modulo, onAvanzar }) {
       </p>
 
       {/* Audio */}
-      <div className="bg-purple-50 rounded-xl p-6 mb-5 flex flex-col items-center gap-4">
+      <div className="bg-green-50 rounded-xl p-6 mb-5 flex flex-col items-center gap-4">
         {audioUrl ? (
           <>
             <div className="w-20 h-20 bg-morado rounded-full flex items-center justify-center shadow-md">
@@ -48,7 +48,7 @@ export default function PasoVideo({ modulo, onAvanzar }) {
       </div>
 
       {!audioUrl && (
-        <div className="flex items-start gap-2 bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs p-3 rounded-xl mb-5">
+        <div className="flex items-start gap-2 bg-orange-50 border border-orange-200 text-orange-800 text-xs p-3 rounded-xl mb-5">
           <AlertCircle size={15} className="flex-shrink-0 mt-0.5" />
           <span>
             Este módulo aún no tiene audio configurado. Puedes marcar que escuchaste el contenido

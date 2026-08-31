@@ -34,15 +34,15 @@ function ListaGrupos({ grupos, reporte, onSeleccionar, onCrear, creando, nombreN
 
         {reporte && grupos.length > 0 && (
           <div className="grid grid-cols-3 gap-3 mb-6">
-            <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm text-center">
+            <div className="bg-white rounded-2xl p-4 border border-green-100 shadow-sm text-center">
               <div className="text-2xl font-extrabold text-morado">{reporte.participantes}</div>
               <p className="text-xs text-gray-500 mt-0.5 font-medium">Participantes totales</p>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm text-center">
+            <div className="bg-white rounded-2xl p-4 border border-green-100 shadow-sm text-center">
               <div className="text-2xl font-extrabold text-morado">{reporte.quizAprobados}</div>
               <p className="text-xs text-gray-500 mt-0.5 font-medium">Quizzes aprobados</p>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm text-center">
+            <div className="bg-white rounded-2xl p-4 border border-green-100 shadow-sm text-center">
               <div className="text-2xl font-extrabold text-morado">{reporte.compromisosRegistrados}</div>
               <p className="text-xs text-gray-500 mt-0.5 font-medium">Compromisos registrados</p>
             </div>
@@ -51,7 +51,7 @@ function ListaGrupos({ grupos, reporte, onSeleccionar, onCrear, creando, nombreN
 
         {/* Form crear grupo */}
         {creando && (
-          <div className="bg-white rounded-2xl border border-purple-200 shadow-sm p-5 mb-6">
+          <div className="bg-white rounded-2xl border border-green-200 shadow-sm p-5 mb-6">
             <p className="font-semibold text-morado text-sm mb-3">Nombre del nuevo grupo</p>
             <div className="flex gap-3">
               <input
@@ -75,7 +75,7 @@ function ListaGrupos({ grupos, reporte, onSeleccionar, onCrear, creando, nombreN
         )}
 
         {grupos.length === 0 && !creando ? (
-          <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-12 text-center">
+          <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-12 text-center">
             <Users size={40} className="mx-auto text-gray-200 mb-4" />
             <p className="font-semibold text-gray-600 mb-1">Aún no tienes grupos</p>
             <p className="text-sm text-gray-400">Crea tu primer grupo y comparte el link con los participantes.</p>
@@ -86,11 +86,11 @@ function ListaGrupos({ grupos, reporte, onSeleccionar, onCrear, creando, nombreN
               <button
                 key={g.id}
                 onClick={() => onSeleccionar(g)}
-                className="w-full bg-white rounded-2xl border border-purple-100 shadow-sm p-5 hover:shadow-md hover:border-morado transition-all text-left group"
+                className="w-full bg-white rounded-2xl border border-green-100 shadow-sm p-5 hover:shadow-md hover:border-morado transition-all text-left group"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-11 h-11 bg-purple-100 rounded-full flex items-center justify-center">
+                    <div className="w-11 h-11 bg-green-100 rounded-full flex items-center justify-center">
                       <Users size={20} className="text-morado" />
                     </div>
                     <div>
@@ -445,13 +445,13 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
         )}
 
         {avisoExploracion && (
-          <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm px-4 py-3 rounded-xl mb-6">
+          <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-700 text-sm px-4 py-3 rounded-xl mb-6">
             <AlertTriangle size={16} /> Estás en modo de exploración — regístrate o inicia sesión para guardar cambios reales.
           </div>
         )}
 
         {/* Logo de la empresa (marca blanca ligera) — solo grupos marcados como empresa */}
-        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5 mb-6">
+        <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-5 mb-6">
           <p className="text-xs text-gray-400 font-medium mb-2">Logo de la empresa</p>
           {grupo.es_empresa ? (
             <>
@@ -486,17 +486,17 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
 
         {/* Cards info */}
         <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-4 mb-6">
-          <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+          <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-5">
             <p className="text-xs text-gray-400 font-medium mb-1">Participantes</p>
             <p className="font-bold text-morado text-3xl">{participantes.length}</p>
             <p className="text-xs text-gray-400 mt-1">en este grupo</p>
           </div>
-          <div className="bg-white rounded-2xl border border-yellow-100 shadow-sm p-5">
+          <div className="bg-white rounded-2xl border border-orange-100 shadow-sm p-5">
             <p className="text-xs text-gray-400 font-medium mb-2">Invita participantes</p>
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-2 flex-shrink-0">
                 <p className="font-mono font-bold text-xl text-morado tracking-widest">{grupo.codigo}</p>
-                <button onClick={copiarCodigo} className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-lg transition-all ${copiado ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-morado hover:bg-purple-200'}`}>
+                <button onClick={copiarCodigo} className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-lg transition-all ${copiado ? 'bg-green-100 text-green-700' : 'bg-green-100 text-morado hover:bg-green-200'}`}>
                   {copiado ? '✓ Copiado' : <><Clipboard size={12} className="inline mr-1" />Copiar código</>}
                 </button>
               </div>
@@ -505,7 +505,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                 <p className="text-xs text-gray-500 truncate flex-1 font-mono">
                   {window.location.origin}/unirse/{grupo.codigo}
                 </p>
-                <button onClick={copiarLink} className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-lg transition-all ${copiadoLink ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-morado hover:bg-purple-200'}`}>
+                <button onClick={copiarLink} className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-lg transition-all ${copiadoLink ? 'bg-green-100 text-green-700' : 'bg-green-100 text-morado hover:bg-green-200'}`}>
                   {copiadoLink ? '✓ Copiado' : 'Copiar link'}
                 </button>
                 <button onClick={enviarPorWhatsapp} className="flex-shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition-all">
@@ -518,7 +518,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
         </div>
 
         {/* Selector módulo + activar */}
-        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5 mb-6">
+        <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-5 mb-6">
           <div className="flex items-center justify-between gap-3 mb-2">
             <label className="block text-sm font-semibold text-gray-700">Módulo de trabajo</label>
             {participantes.length > 0 && (
@@ -584,7 +584,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
 
         {/* Tab: Progreso */}
         {tabActiva === 'progreso' && (
-          <div className="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-2xl border border-green-100 shadow-sm overflow-hidden">
             <div className="p-5 border-b border-gray-100">
               <h3 className="font-bold text-morado flex items-center gap-2">
                 <CheckCircle size={18} /> Progreso — Módulo {moduloSeleccionado.numero}: {moduloSeleccionado.titulo}
@@ -623,7 +623,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                       : quiz ? 'Quiz no aprobado'
                       : 'Sin comenzar'
                     const colorEstado = quiz?.aprobado && tieneReflexion && tieneCompromisos ? 'bg-green-100 text-green-700'
-                      : quiz?.aprobado && tieneReflexion ? 'bg-purple-100 text-morado'
+                      : quiz?.aprobado && tieneReflexion ? 'bg-green-100 text-morado'
                       : quiz?.aprobado ? 'bg-blue-100 text-blue-700'
                       : quiz ? 'bg-red-100 text-red-600'
                       : 'bg-gray-100 text-gray-400'
@@ -657,7 +657,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                             <button
                               onClick={() => habilitarCompromisos(p.id)}
                               disabled={habilitandoId === p.id}
-                              className="text-xs font-semibold text-morado bg-purple-50 hover:bg-purple-100 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50"
+                              className="text-xs font-semibold text-morado bg-green-50 hover:bg-green-100 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50"
                             >
                               {habilitandoId === p.id ? '...' : 'Asistió a la sesión grupal'}
                             </button>
@@ -696,15 +696,15 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
         {tabActiva === 'reflexiones' && (
           <div className="space-y-4">
             {Object.keys(reflexionesPorUsuario).length === 0 ? (
-              <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-8 text-center text-gray-400">
+              <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-8 text-center text-gray-400">
                 <FileText size={32} className="mx-auto mb-2 opacity-30" />
                 <p className="text-sm">Aún no hay reflexiones ni compromisos enviados para este módulo.</p>
               </div>
             ) : Object.entries(reflexionesPorUsuario).map(([uid, data]) => (
-              <div key={uid} className="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden">
+              <div key={uid} className="bg-white rounded-2xl border border-green-100 shadow-sm overflow-hidden">
                 <button
                   onClick={() => setReflexionesExpandidas(prev => ({ ...prev, [uid]: !prev[uid] }))}
-                  className="w-full flex items-center justify-between p-5 hover:bg-purple-50 transition-colors"
+                  className="w-full flex items-center justify-between p-5 hover:bg-green-50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 bg-morado rounded-full flex items-center justify-center text-white text-sm font-bold">
@@ -731,7 +731,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                         </p>
                         <div className="space-y-2">
                           {data.compromisos.map(c => (
-                            <div key={c.id} className="flex items-start gap-2 bg-yellow-50 rounded-xl p-3">
+                            <div key={c.id} className="flex items-start gap-2 bg-orange-50 rounded-xl p-3">
                               <Target size={14} className="text-dorado-dark flex-shrink-0 mt-0.5" />
                               <p className="text-sm text-gray-700">
                                 {c.compromiso_texto}
@@ -750,7 +750,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                             key={emoji}
                             onClick={() => actualizarDraft(uid, 'reaccion', comentariosDraft[uid]?.reaccion === emoji ? '' : emoji)}
                             className={`text-lg w-9 h-9 rounded-full border-2 transition-all ${
-                              comentariosDraft[uid]?.reaccion === emoji ? 'border-morado bg-purple-50' : 'border-gray-200 hover:border-purple-200'
+                              comentariosDraft[uid]?.reaccion === emoji ? 'border-morado bg-green-50' : 'border-gray-200 hover:border-green-200'
                             }`}
                           >
                             {emoji}
@@ -785,7 +785,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
         {/* Tab: Sesión */}
         {tabActiva === 'sesion' && (
           <div className="space-y-4">
-            <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-6">
+            <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-6">
               <h3 className="font-bold text-morado text-lg mb-1 flex items-center gap-2">
                 <Calendar size={18} /> Opciones de sesión grupal
               </h3>
@@ -818,7 +818,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                             <button
                               onClick={() => habilitarTodosDeSesion(s.id)}
                               disabled={habilitandoId === s.id}
-                              className="flex items-center gap-1.5 text-xs font-semibold text-morado bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                              className="flex items-center gap-1.5 text-xs font-semibold text-morado bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
                             >
                               <Unlock size={13} /> {habilitandoId === s.id ? 'Guardando...' : 'Todos asistieron'}
                             </button>
@@ -847,7 +847,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                                 <button
                                   onClick={() => habilitarCompromisos(p.id)}
                                   disabled={habilitandoId === p.id}
-                                  className="flex-shrink-0 text-xs font-semibold text-morado bg-purple-50 hover:bg-purple-100 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50"
+                                  className="flex-shrink-0 text-xs font-semibold text-morado bg-green-50 hover:bg-green-100 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50"
                                 >
                                   {habilitandoId === p.id ? '...' : 'Asistió'}
                                 </button>
@@ -891,7 +891,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
 
         {/* Tab: Compromisos */}
         {tabActiva === 'compromisos' && (
-          <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-6">
+          <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-6">
             <h3 className="font-bold text-morado text-lg mb-1 flex items-center gap-2">
               <Target size={18} className="text-dorado" /> Compromisos del grupo
             </h3>
@@ -903,7 +903,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
                 </p>
                 <div className="space-y-3">
                   {compromisosGuardados.map((c, i) => (
-                    <div key={c.id} className="flex items-start gap-3 bg-purple-50 border border-purple-100 rounded-xl p-3">
+                    <div key={c.id} className="flex items-start gap-3 bg-green-50 border border-green-100 rounded-xl p-3">
                       <div className="w-7 h-7 bg-dorado rounded-full flex items-center justify-center text-morado font-bold text-xs flex-shrink-0">{i + 1}</div>
                       <p className="text-sm text-gray-700 flex-1">{c.compromiso_texto}</p>
                     </div>
@@ -934,7 +934,7 @@ function DetalleGrupo({ grupo, facilitadorId, onVolver, onActualizarGrupo }) {
 
         {/* Tab: Retroalimentación */}
         {tabActiva === 'evaluacion' && (
-          <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-6">
+          <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-6">
             <h3 className="font-bold text-morado text-lg mb-4 flex items-center gap-2">
               <Star size={18} className="text-dorado" /> Retroalimentación
             </h3>
@@ -1058,7 +1058,7 @@ function SolicitudesSesion({ facilitadorId, grupos, onGrupoCreado }) {
   return (
     <div className="space-y-4">
       {avisoExploracion && (
-        <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm px-4 py-3 rounded-xl">
+        <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-700 text-sm px-4 py-3 rounded-xl">
           <AlertTriangle size={16} /> Estás en modo de exploración — regístrate o inicia sesión para asignar grupos reales.
         </div>
       )}
@@ -1070,7 +1070,7 @@ function SolicitudesSesion({ facilitadorId, grupos, onGrupoCreado }) {
       )}
 
       {solicitudes.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-12 text-center">
+        <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-12 text-center">
           <Inbox size={40} className="mx-auto text-gray-200 mb-4" />
           <p className="font-semibold text-gray-600 mb-1">No hay solicitudes pendientes</p>
           <p className="text-sm text-gray-400">Aquí verás a los participantes sin grupo que pidan integrarse a una sesión grupal.</p>
@@ -1078,14 +1078,14 @@ function SolicitudesSesion({ facilitadorId, grupos, onGrupoCreado }) {
       ) : solicitudes.map((s) => {
         const modulo = MODULOS.find(m => m.id === s.modulo_id)
         return (
-          <div key={s.id} className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+          <div key={s.id} className="bg-white rounded-2xl border border-green-100 shadow-sm p-5">
             <div className="flex items-center justify-between gap-3 mb-1">
               <div>
                 <p className="font-bold text-gray-800 text-sm">{s.usuarios?.nombre || 'Participante'}</p>
                 <p className="text-xs text-gray-400">{s.usuarios?.correo}</p>
               </div>
               {!s.facilitador_id && (
-                <span className="text-xs bg-yellow-100 text-yellow-700 font-semibold px-2 py-0.5 rounded-full flex-shrink-0">Bolsa común</span>
+                <span className="text-xs bg-orange-100 text-orange-700 font-semibold px-2 py-0.5 rounded-full flex-shrink-0">Bolsa común</span>
               )}
             </div>
             <p className="text-xs text-morado font-medium mb-3">
@@ -1111,7 +1111,7 @@ function SolicitudesSesion({ facilitadorId, grupos, onGrupoCreado }) {
                       })}
                     </select>
                     {grupoElegido && grupos.find(g => g.id === grupoElegido)?.modulo_activo_id !== s.modulo_id && (
-                      <p className="flex items-center gap-1 text-xs text-yellow-600 mt-1.5">
+                      <p className="flex items-center gap-1 text-xs text-orange-600 mt-1.5">
                         <AlertTriangle size={12} /> Este grupo va en otro módulo — si lo asignas aquí, quedará bloqueado hasta que alcance el módulo de este grupo.
                       </p>
                     )}
@@ -1139,7 +1139,7 @@ function SolicitudesSesion({ facilitadorId, grupos, onGrupoCreado }) {
             ) : (
               <button
                 onClick={() => abrirForm(s.id)}
-                className="flex items-center gap-1.5 text-xs font-semibold text-morado bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg transition-colors"
+                className="flex items-center gap-1.5 text-xs font-semibold text-morado bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-lg transition-colors"
               >
                 <Users size={13} /> Asignar a un grupo
               </button>

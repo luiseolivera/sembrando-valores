@@ -195,23 +195,23 @@ export default function Admin() {
 
         {resumen && (
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-10">
-            <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm text-center">
+            <div className="bg-white rounded-2xl p-4 border border-green-100 shadow-sm text-center">
               <div className="text-2xl font-extrabold text-morado">{resumen.participantes}</div>
               <p className="text-xs text-gray-500 mt-0.5 font-medium">Participantes</p>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm text-center">
+            <div className="bg-white rounded-2xl p-4 border border-green-100 shadow-sm text-center">
               <div className="text-2xl font-extrabold text-morado">{resumen.facilitadoresAprobados}</div>
               <p className="text-xs text-gray-500 mt-0.5 font-medium">Facilitadores</p>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-yellow-100 shadow-sm text-center">
+            <div className="bg-white rounded-2xl p-4 border border-orange-100 shadow-sm text-center">
               <div className="text-2xl font-extrabold text-dorado-dark">{pendientes.length}</div>
               <p className="text-xs text-gray-500 mt-0.5 font-medium">Facilitadores pendientes</p>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm text-center">
+            <div className="bg-white rounded-2xl p-4 border border-green-100 shadow-sm text-center">
               <div className="text-2xl font-extrabold text-morado">{resumen.gruposTotal}</div>
               <p className="text-xs text-gray-500 mt-0.5 font-medium">Grupos ({resumen.gruposEmpresa} empresa)</p>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm text-center">
+            <div className="bg-white rounded-2xl p-4 border border-green-100 shadow-sm text-center">
               <div className="text-2xl font-extrabold text-morado">{resumen.constanciasLiberadas}</div>
               <p className="text-xs text-gray-500 mt-0.5 font-medium">Constancias liberadas ({constancias.length} pendientes)</p>
             </div>
@@ -233,7 +233,7 @@ export default function Admin() {
             <div className="w-10 h-10 border-4 border-morado border-t-transparent rounded-full animate-spin" />
           </div>
         ) : pendientes.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-10 text-center text-gray-400">
+          <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-10 text-center text-gray-400">
             <CheckCircle size={32} className="mx-auto mb-3 opacity-30" />
             <p className="text-sm">No hay solicitudes pendientes por ahora.</p>
           </div>
@@ -243,7 +243,7 @@ export default function Admin() {
               <div
                 key={p.id}
                 className={`bg-white rounded-2xl border shadow-sm p-5 flex items-center justify-between gap-4 ${
-                  p.id === idDestacado ? 'border-morado ring-2 ring-purple-200' : 'border-purple-100'
+                  p.id === idDestacado ? 'border-morado ring-2 ring-green-200' : 'border-green-100'
                 }`}
               >
                 <div className="min-w-0">
@@ -287,7 +287,7 @@ export default function Admin() {
         </div>
 
         {solicitudesSesion.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-10 text-center text-gray-400">
+          <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-10 text-center text-gray-400">
             <Inbox size={32} className="mx-auto mb-3 opacity-30" />
             <p className="text-sm">No hay solicitudes de sesión pendientes por ahora.</p>
           </div>
@@ -296,7 +296,7 @@ export default function Admin() {
             {solicitudesSesion.map((s) => {
               const modulo = MODULOS.find((m) => m.id === s.modulo_id)
               return (
-                <div key={s.id} className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5 flex items-center justify-between gap-4">
+                <div key={s.id} className="bg-white rounded-2xl border border-green-100 shadow-sm p-5 flex items-center justify-between gap-4">
                   <div className="min-w-0">
                     <p className="font-bold text-gray-800 text-sm truncate">{s.usuarios?.nombre}</p>
                     <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
@@ -310,7 +310,7 @@ export default function Admin() {
                     {s.facilitador ? (
                       <p className="text-xs font-semibold text-morado">Para: {s.facilitador.nombre}</p>
                     ) : (
-                      <span className="text-xs bg-yellow-100 text-yellow-700 font-semibold px-2 py-0.5 rounded-full">Bolsa común</span>
+                      <span className="text-xs bg-orange-100 text-orange-700 font-semibold px-2 py-0.5 rounded-full">Bolsa común</span>
                     )}
                     <p className="text-xs text-gray-400 flex items-center gap-1 mt-1 justify-end">
                       <Clock size={11} /> {new Date(s.created_at).toLocaleDateString('es-MX')}
@@ -333,14 +333,14 @@ export default function Admin() {
         </div>
 
         {retros.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-10 text-center text-gray-400">
+          <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-10 text-center text-gray-400">
             <MessageSquare size={32} className="mx-auto mb-3 opacity-30" />
             <p className="text-sm">Todavía no hay retroalimentación registrada.</p>
           </div>
         ) : (
           <div className="space-y-3">
             {retros.map((r) => (
-              <div key={r.id} className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+              <div key={r.id} className="bg-white rounded-2xl border border-green-100 shadow-sm p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2 text-xs text-gray-400 mb-2 flex-wrap">
                     <span className="flex items-center gap-1 font-semibold text-morado">
@@ -380,7 +380,7 @@ export default function Admin() {
             <p className="text-gray-500 text-sm">Habilita el logo de empresa para un grupo específico.</p>
           </div>
         </div>
-        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5 mb-10">
+        <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-5 mb-10">
           <div className="flex gap-2 mb-3">
             <input
               type="text"
@@ -432,14 +432,14 @@ export default function Admin() {
         </div>
 
         {constancias.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-10 text-center text-gray-400">
+          <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-10 text-center text-gray-400">
             <Award size={32} className="mx-auto mb-3 opacity-30" />
             <p className="text-sm">No hay constancias pendientes por ahora.</p>
           </div>
         ) : (
           <div className="space-y-6">
             {Object.entries(gruposConPendientes).map(([grupoId, g]) => (
-              <div key={grupoId} className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+              <div key={grupoId} className="bg-white rounded-2xl border border-green-100 shadow-sm p-5">
                 <div className="flex items-center justify-between mb-3">
                   <p className="font-bold text-morado text-sm flex items-center gap-1">
                     <Users size={13} /> {g.nombre} — {g.items.length} pendiente{g.items.length !== 1 ? 's' : ''}
@@ -470,7 +470,7 @@ export default function Admin() {
             ))}
 
             {sinGrupo.length > 0 && (
-              <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+              <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-5">
                 <p className="font-bold text-morado text-sm mb-3">Sin grupo (uso individual)</p>
                 <div className="space-y-2">
                   {sinGrupo.map((c) => (

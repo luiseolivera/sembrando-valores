@@ -135,7 +135,7 @@ export default function Modulo() {
   if (bloqueadoPorGrupo) return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="text-center max-w-sm">
-        <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <Lock size={32} className="text-dorado-dark" />
         </div>
         <h2 className="text-xl font-bold text-gray-800 mb-2">Módulo no disponible todavía</h2>
@@ -152,7 +152,7 @@ export default function Modulo() {
   if (bloqueadoPorOrden) return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="text-center max-w-sm">
-        <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <Lock size={32} className="text-dorado-dark" />
         </div>
         <h2 className="text-xl font-bold text-gray-800 mb-2">Módulo no disponible todavía</h2>
@@ -191,13 +191,13 @@ export default function Modulo() {
         </button>
 
         {/* Cabecera del módulo */}
-        <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 mb-5">
+        <div className="bg-white rounded-2xl shadow-sm border border-green-100 p-6 mb-5">
           <div className="flex items-start justify-between mb-3">
             <div>
               <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide">Módulo {modulo.numero} de {MODULOS.length}</p>
               <h1 className="text-2xl font-extrabold text-morado">{modulo.titulo}</h1>
             </div>
-            <span className="text-sm font-bold text-morado bg-purple-50 px-3 py-1 rounded-full border border-purple-100">
+            <span className="text-sm font-bold text-morado bg-green-50 px-3 py-1 rounded-full border border-green-100">
               {porciento}%
             </span>
           </div>
@@ -224,8 +224,8 @@ export default function Modulo() {
                   >
                     <div className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
                       completado ? 'bg-green-500 text-white shadow-sm'
-                        : activo ? 'bg-morado text-white shadow-md ring-2 ring-purple-200'
-                        : accesible ? 'bg-gray-100 text-gray-400 hover:bg-purple-50 hover:text-morado'
+                        : activo ? 'bg-morado text-white shadow-md ring-2 ring-green-200'
+                        : accesible ? 'bg-gray-100 text-gray-400 hover:bg-green-50 hover:text-morado'
                         : 'bg-gray-50 text-gray-200'
                     }`}>
                       {completado ? <CheckCircle size={18} /> : <Icono size={16} />}

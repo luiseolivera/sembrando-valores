@@ -46,7 +46,7 @@ export default function PasoQuiz({ modulo, perfil, onAvanzar }) {
   const letras = ['a', 'b', 'c', 'd']
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6">
+    <div className="bg-white rounded-2xl shadow-sm border border-green-100 p-6">
       <h2 className="font-bold text-morado text-lg mb-1 flex items-center gap-2">
         <CheckSquare size={20} className="text-dorado" /> Paso 2 — Quiz de comprensión
       </h2>
@@ -55,7 +55,7 @@ export default function PasoQuiz({ modulo, perfil, onAvanzar }) {
       </p>
 
       {exploracion && (
-        <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm px-4 py-3 rounded-xl mb-6">
+        <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-700 text-sm px-4 py-3 rounded-xl mb-6">
           <AlertTriangle size={16} /> Estás en modo de exploración — regístrate o inicia sesión para guardar tus resultados.
         </div>
       )}
@@ -89,13 +89,13 @@ export default function PasoQuiz({ modulo, perfil, onAvanzar }) {
               {pregunta.opciones.map((op, oi) => {
                 const seleccionada = respuestas[pi] === oi
                 const esCorrecta = oi === pregunta.correcta
-                let estilo = 'border-gray-200 bg-gray-50 text-gray-700 hover:border-morado hover:bg-purple-50'
+                let estilo = 'border-gray-200 bg-gray-50 text-gray-700 hover:border-morado hover:bg-green-50'
                 if (enviado) {
                   if (esCorrecta) estilo = 'border-green-400 bg-green-50 text-green-800'
                   else if (seleccionada && !esCorrecta) estilo = 'border-red-400 bg-red-50 text-red-700'
                   else estilo = 'border-gray-100 bg-gray-50 text-gray-400'
                 } else if (seleccionada) {
-                  estilo = 'border-morado bg-purple-50 text-morado'
+                  estilo = 'border-morado bg-green-50 text-morado'
                 }
 
                 return (

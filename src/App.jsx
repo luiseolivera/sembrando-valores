@@ -39,9 +39,9 @@ function RutaFacilitador({ children }) {
 function DemoBanner() {
   if (!DEMO_MODE) return null
   return (
-    <div className="bg-yellow-400 text-yellow-900 text-xs text-center py-1.5 px-4 font-semibold">
+    <div className="bg-orange-400 text-orange-900 text-xs text-center py-1.5 px-4 font-semibold">
       ⚠️ Modo demo — La app funciona sin base de datos. Para habilitar auth y datos reales, configura{' '}
-      <code className="font-mono bg-yellow-300 px-1 rounded">.env.local</code> con tus credenciales de Supabase.
+      <code className="font-mono bg-orange-300 px-1 rounded">.env.local</code> con tus credenciales de Supabase.
     </div>
   )
 }

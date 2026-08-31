@@ -95,7 +95,7 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
   const hayCompromisos = compromisos.some(c => c.trim())
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6">
+    <div className="bg-white rounded-2xl shadow-sm border border-green-100 p-6">
       <h2 className="font-bold text-morado text-lg mb-1 flex items-center gap-2">
         <Target size={20} className="text-dorado" /> Paso 4 — Mis compromisos personales
       </h2>
@@ -117,7 +117,7 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
                   const idx = compromisos.findIndex(c => !c.trim())
                   if (idx !== -1) usarSugerencia(s, idx)
                 }}
-                className="text-left text-xs text-morado bg-purple-50 border border-purple-100 px-3 py-2 rounded-xl hover:bg-purple-100 transition-colors"
+                className="text-left text-xs text-morado bg-green-50 border border-green-100 px-3 py-2 rounded-xl hover:bg-green-100 transition-colors"
               >
                 + {s}
               </button>
@@ -139,7 +139,7 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
             </button>
           </div>
           {guardados.map((c) => (
-            <div key={c.id} className="flex items-start gap-3 p-3 rounded-xl border bg-yellow-50 border-yellow-100">
+            <div key={c.id} className="flex items-start gap-3 p-3 rounded-xl border bg-orange-50 border-orange-100">
               <Target size={16} className="text-dorado flex-shrink-0 mt-0.5" />
               <p className="text-sm flex-1 text-gray-700">
                 {c.compromiso_texto}
@@ -175,7 +175,7 @@ export default function PasoCompromisos({ modulo, perfil, onAvanzar }) {
       )}
 
       {exploracion && (
-        <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm px-4 py-3 rounded-xl mb-5">
+        <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-700 text-sm px-4 py-3 rounded-xl mb-5">
           <AlertTriangle size={16} /> Estás en modo de exploración — regístrate o inicia sesión para guardar tus compromisos.
         </div>
       )}

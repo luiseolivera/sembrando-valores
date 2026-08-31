@@ -5,13 +5,13 @@ import {
 } from 'lucide-react'
 
 const pasos = [
-  { icono: UserPlus, titulo: 'Registro', color: 'bg-purple-700', num: 1 },
-  { icono: Share2, titulo: 'Únete al Grupo', color: 'bg-purple-600', num: 2 },
-  { icono: Headphones, titulo: 'Lee o Escucha', color: 'bg-purple-500', num: 3 },
-  { icono: CheckSquare, titulo: 'Quiz', color: 'bg-yellow-500', num: 4 },
-  { icono: PenLine, titulo: 'Reflexión Personal', color: 'bg-yellow-600', num: 5 },
-  { icono: Target, titulo: 'Compromisos', color: 'bg-purple-800', num: 6 },
-  { icono: Users, titulo: 'Sesión Grupal', color: 'bg-purple-700', num: 7 },
+  { icono: UserPlus, titulo: 'Registro', color: 'bg-green-700', num: 1 },
+  { icono: Share2, titulo: 'Únete al Grupo', color: 'bg-green-600', num: 2 },
+  { icono: Headphones, titulo: 'Lee o Escucha', color: 'bg-green-500', num: 3 },
+  { icono: CheckSquare, titulo: 'Quiz', color: 'bg-orange-500', num: 4 },
+  { icono: PenLine, titulo: 'Reflexión Personal', color: 'bg-orange-600', num: 5 },
+  { icono: Target, titulo: 'Compromisos', color: 'bg-green-800', num: 6 },
+  { icono: Users, titulo: 'Sesión Grupal', color: 'bg-green-700', num: 7 },
   { icono: ArrowRight, titulo: 'Siguiente Módulo', color: 'bg-morado', num: 8 },
 ]
 
@@ -19,10 +19,10 @@ export default function DiagramaFlujo({ defaultAbierto = false }) {
   const [abierto, setAbierto] = useState(defaultAbierto)
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-purple-100 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-lg border border-green-100 overflow-hidden">
       <button
         onClick={() => setAbierto(v => !v)}
-        className="w-full flex items-center justify-center gap-2 p-6 text-center hover:bg-purple-50 transition-colors"
+        className="w-full flex items-center justify-center gap-2 p-6 text-center hover:bg-green-50 transition-colors"
       >
         <h2 className="text-morado font-bold text-lg">¿Cómo funciona el programa?</h2>
         {abierto ? <ChevronUp size={20} className="text-morado flex-shrink-0" /> : <ChevronDown size={20} className="text-morado flex-shrink-0" />}
@@ -70,7 +70,7 @@ export default function DiagramaFlujo({ defaultAbierto = false }) {
             })}
           </div>
 
-          <div className="mt-5 p-3 bg-purple-50 rounded-xl border border-purple-100 text-center">
+          <div className="mt-5 p-3 bg-green-50 rounded-xl border border-green-100 text-center">
             <p className="text-xs text-morado font-medium">
               Cada paso se desbloquea al completar el anterior. ¡Avanza a tu ritmo!
             </p>

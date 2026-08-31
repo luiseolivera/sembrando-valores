@@ -60,7 +60,7 @@ export default function AvisoPrivacidad() {
         </div>
         <p className="text-xs text-gray-400 mb-8">Última actualización: 24 de julio de 2026</p>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 sm:p-8 space-y-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-green-100 p-6 sm:p-8 space-y-8">
           {SECCIONES.map((s, i) => (
             <div key={i}>
               <h2 className="font-bold text-morado text-base mb-2">{s.titulo}</h2>

@@ -47,13 +47,13 @@ export default function PasoReflexion({ modulo, perfil, onAvanzar }) {
   const todasCompletas = respuestas.every((r) => r.trim().length >= 10)
 
   if (cargando) return (
-    <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 text-center">
+    <div className="bg-white rounded-2xl shadow-sm border border-green-100 p-6 text-center">
       <div className="w-8 h-8 border-4 border-morado border-t-transparent rounded-full animate-spin mx-auto" />
     </div>
   )
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6">
+    <div className="bg-white rounded-2xl shadow-sm border border-green-100 p-6">
       <h2 className="font-bold text-morado text-lg mb-1 flex items-center gap-2">
         <PenLine size={20} className="text-dorado" /> Paso 3 — Reflexión personal
       </h2>
@@ -87,7 +87,7 @@ export default function PasoReflexion({ modulo, perfil, onAvanzar }) {
       </div>
 
       {exploracion && (
-        <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm px-4 py-3 rounded-xl mt-5">
+        <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-700 text-sm px-4 py-3 rounded-xl mt-5">
           <AlertTriangle size={16} /> Estás en modo de exploración — regístrate o inicia sesión para guardar tu reflexión.
         </div>
       )}
@@ -103,7 +103,7 @@ export default function PasoReflexion({ modulo, perfil, onAvanzar }) {
         <button
           onClick={guardar}
           disabled={!todasCompletas || guardando}
-          className="flex-1 flex items-center justify-center gap-2 bg-gray-100 text-morado font-bold py-3 rounded-xl hover:bg-purple-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed border border-purple-100"
+          className="flex-1 flex items-center justify-center gap-2 bg-gray-100 text-morado font-bold py-3 rounded-xl hover:bg-green-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed border border-green-100"
         >
           <Save size={16} /> {guardando ? 'Guardando...' : 'Guardar reflexiones'}
         </button>

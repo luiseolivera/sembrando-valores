@@ -13,10 +13,10 @@ export default function Bienvenida() {
     navigate('/dashboard')
   }
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-orange-50">
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-morado to-purple-800 opacity-95" />
+        <div className="absolute inset-0 bg-gradient-to-br from-morado to-green-800 opacity-95" />
         <div
           className="absolute inset-0 opacity-10"
           style={{
@@ -30,17 +30,17 @@ export default function Bienvenida() {
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
             Sembrando Valores Digital
           </h1>
-          <p className="text-lg text-purple-200 mb-3 font-medium">
+          <p className="text-lg text-green-200 mb-3 font-medium">
             Misioneros en el Mundo del Trabajo
           </p>
-          <p className="text-purple-300 text-base max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-green-300 text-base max-w-2xl mx-auto mb-10 leading-relaxed">
             Un programa de formación en valores para equipos de trabajo, organizaciones y comunidades.
             Aprende, reflexiona y construye compromisos junto a tu grupo.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/registro"
-              className="inline-flex items-center justify-center gap-2 bg-dorado text-morado font-bold px-8 py-3 rounded-full text-base hover:bg-yellow-400 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center gap-2 bg-dorado text-morado font-bold px-8 py-3 rounded-full text-base hover:bg-orange-400 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
             >
               Comenzar ahora <ArrowRight size={18} />
             </Link>
@@ -54,13 +54,13 @@ export default function Bienvenida() {
               href="https://donorbox.org/misioneros-en-el-mundo-del-trabajo"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-dorado text-morado font-bold px-8 py-3 rounded-full text-base hover:bg-yellow-400 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center gap-2 bg-dorado text-morado font-bold px-8 py-3 rounded-full text-base hover:bg-orange-400 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
             >
               <Heart size={18} /> Donar
             </a>
           </div>
           <div className="mt-5 flex flex-col sm:flex-row gap-3 justify-center">
-            <p className="text-purple-300 text-sm self-center">¿Solo quieres explorar?</p>
+            <p className="text-green-300 text-sm self-center">¿Solo quieres explorar?</p>
             <button
               onClick={() => verDemo('participante')}
               className="inline-flex items-center justify-center gap-2 bg-white/10 text-white text-sm font-medium px-6 py-2 rounded-full hover:bg-white/20 transition-all border border-white/20"
@@ -75,7 +75,7 @@ export default function Bienvenida() {
             </button>
           </div>
           <div className="mt-4">
-            <Link to="/empresas" className="text-purple-300 text-sm hover:text-white hover:underline transition-colors">
+            <Link to="/empresas" className="text-green-300 text-sm hover:text-white hover:underline transition-colors">
               ¿Eres una empresa? Conoce nuestra propuesta →
             </Link>
           </div>
@@ -91,7 +91,7 @@ export default function Bienvenida() {
       <section className="bg-morado py-10">
         <div className="max-w-5xl mx-auto px-4 text-center">
           <h2 className="text-white font-bold text-2xl mb-2">14 valores para transformar tu entorno</h2>
-          <p className="text-purple-300 text-sm mb-8">Basado en la Doctrina Social de la Iglesia</p>
+          <p className="text-green-300 text-sm mb-8">Basado en la Doctrina Social de la Iglesia</p>
           <div className="flex flex-wrap justify-center gap-2">
             {[
               'La Persona', 'La Centralidad', 'La Familia', 'El Amor', 'La Educación',
@@ -115,7 +115,7 @@ export default function Bienvenida() {
       </section>
 
       {/* CTA final */}
-      <section className="bg-gradient-to-r from-dorado to-yellow-400 py-10">
+      <section className="bg-gradient-to-r from-dorado to-orange-400 py-10">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <h2 className="text-morado font-extrabold text-2xl mb-3">
             ¿Listo para comenzar?

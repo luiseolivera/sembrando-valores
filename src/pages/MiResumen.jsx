@@ -88,13 +88,13 @@ export default function MiResumen() {
           </button>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 mb-6 print:shadow-none print:border-0 print:p-0">
+        <div className="bg-white rounded-2xl shadow-sm border border-green-100 p-6 mb-6 print:shadow-none print:border-0 print:p-0">
           <h1 className="text-2xl font-extrabold text-morado mb-1">Mis reflexiones y compromisos</h1>
           <p className="text-sm text-gray-500">{perfil?.nombre}</p>
         </div>
 
         {modulosConDatos.length === 0 && (
-          <div className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 text-center text-gray-500 text-sm">
+          <div className="bg-white rounded-2xl shadow-sm border border-green-100 p-6 text-center text-gray-500 text-sm">
             Todavía no tienes reflexiones ni compromisos guardados.
           </div>
         )}
@@ -103,7 +103,7 @@ export default function MiResumen() {
           {modulosConDatos.map((modulo) => (
             <div
               key={modulo.id}
-              className="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 print:shadow-none print:border print:border-gray-300 print:break-inside-avoid"
+              className="bg-white rounded-2xl shadow-sm border border-green-100 p-6 print:shadow-none print:border print:border-gray-300 print:break-inside-avoid"
             >
               <h2 className="font-bold text-morado text-lg mb-4">
                 Módulo {modulo.numero} — {modulo.titulo}
@@ -128,7 +128,7 @@ export default function MiResumen() {
               )}
 
               {comentariosPorModulo[modulo.id] && (comentariosPorModulo[modulo.id].comentario || comentariosPorModulo[modulo.id].reaccion) && (
-                <div className="mb-5 bg-purple-50 border border-purple-100 rounded-xl p-3">
+                <div className="mb-5 bg-green-50 border border-green-100 rounded-xl p-3">
                   <p className="text-xs font-semibold text-morado uppercase tracking-wide mb-1 flex items-center gap-1">
                     <MessageCircle size={13} /> Retroalimentación de tu facilitador
                   </p>

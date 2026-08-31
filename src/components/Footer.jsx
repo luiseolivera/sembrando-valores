@@ -10,7 +10,7 @@ export default function Footer() {
           </div>
           <span className="font-semibold text-sm">Misioneros en el Mundo del Trabajo</span>
         </div>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs text-purple-300">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs text-green-300">
           <a href="https://www.misionerosmt.org" target="_blank" rel="noopener noreferrer" className="hover:text-dorado transition-colors">
             www.misionerosmt.org
           </a>
@@ -19,15 +19,15 @@ export default function Footer() {
             info@misionerosmt.org
           </a>
         </div>
-        <p className="text-xs text-purple-400 mt-3">
+        <p className="text-xs text-green-400 mt-3">
           Programa Sembrando Valores — Pastoral Social © {new Date().getFullYear()}
         </p>
         <div className="mt-1 flex items-center justify-center gap-3">
-          <Link to="/privacidad" className="text-xs text-purple-300 hover:text-dorado transition-colors underline">
+          <Link to="/privacidad" className="text-xs text-green-300 hover:text-dorado transition-colors underline">
             Aviso de Privacidad
           </Link>
-          <span className="text-xs text-purple-400">·</span>
-          <Link to="/empresas" className="text-xs text-purple-300 hover:text-dorado transition-colors underline">
+          <span className="text-xs text-green-400">·</span>
+          <Link to="/empresas" className="text-xs text-green-300 hover:text-dorado transition-colors underline">
             Para empresas
           </Link>
         </div>
