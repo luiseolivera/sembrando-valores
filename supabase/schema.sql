@@ -776,3 +776,63 @@ end;
 $$;
 
 grant execute on function public.marcar_comentarios_vistos() to authenticated;
+
+-- =====================================================================
+-- Migración: índices de rendimiento (reduce consumo de Disk IO)
+--
+-- Ninguna tabla tenía índices propios más allá de las llaves primarias
+-- y las restricciones "unique" — y varias columnas usadas constantemente
+-- en políticas RLS (que se evalúan por cada fila) y en filtros de la app
+-- no quedaban cubiertas por esas restricciones. Sin índice, Postgres
+-- recorre la tabla completa en cada consulta; con la base de datos
+-- creciendo, eso es lo que agota el presupuesto de Disk IO.
+--
+-- Son índices normales (no CONCURRENTLY): si las tablas ya tienen mucho
+-- volumen, cada "create index" bloquea escrituras en esa tabla mientras
+-- se construye. Con el tamaño actual de esta base debería ser cuestión
+-- de segundos, pero conviene correrlo en un momento de baja actividad.
+-- =====================================================================
+
+-- usuarios.grupo_id y grupos.facilitador_id: son, con mucho, los más
+-- importantes — casi todas las políticas RLS de la app (quiz_respuestas,
+-- reflexiones, compromisos_personales, sesiones_grupales, compromisos,
+-- comentarios_reflexion, sesion_elecciones) hacen un join
+-- "usuarios -> grupos" filtrando por estas dos columnas, por cada fila.
+create index if not exists idx_usuarios_grupo_id on usuarios (grupo_id);
+create index if not exists idx_grupos_facilitador_id on grupos (facilitador_id);
+
+-- Directorio de facilitadores aprobados (se consulta al elegir con quién
+-- pedir sesión) y la propia política "usuarios_directorio_facilitadores".
+create index if not exists idx_usuarios_rol_aprobado on usuarios (rol, aprobado);
+
+-- Consultas del panel del facilitador que filtran por módulo (y acotan
+-- por una lista de usuarios) — el índice unique(usuario_id, modulo_id)
+-- que ya tienen estas tablas no sirve para un filtro que empieza por
+-- modulo_id.
+create index if not exists idx_quiz_respuestas_modulo_id on quiz_respuestas (modulo_id);
+create index if not exists idx_reflexiones_modulo_id on reflexiones (modulo_id);
+create index if not exists idx_comentarios_reflexion_modulo_id on comentarios_reflexion (modulo_id);
+create index if not exists idx_habilitaciones_compromisos_modulo_id on habilitaciones_compromisos (modulo_id);
+
+-- compromisos_personales no tiene ninguna restricción unique (hasta 3
+-- filas por usuario+módulo), así que hoy no tiene ningún índice propio,
+-- pese a ser de las tablas más consultadas (Dashboard, MiResumen,
+-- Modulo, Constancia, panel del facilitador).
+create index if not exists idx_compromisos_personales_usuario_modulo on compromisos_personales (usuario_id, modulo_id);
+
+-- sesiones_grupales perdió su índice único cuando se permitieron varios
+-- horarios por módulo; sigue filtrándose constantemente por estas dos
+-- columnas (elegir sesión, panel del facilitador).
+create index if not exists idx_sesiones_grupales_grupo_modulo on sesiones_grupales (grupo_id, modulo_id);
+
+-- Conteo de "cuántos eligieron cada sesión" en el panel del facilitador.
+create index if not exists idx_sesion_elecciones_sesion_id on sesion_elecciones (sesion_id);
+
+-- compromisos (grupales): sin índice propio, se filtra por grupo_id solo
+-- (Dashboard, MiResumen) y por grupo_id+modulo_id (panel del facilitador).
+create index if not exists idx_compromisos_grupo_modulo on compromisos (grupo_id, modulo_id);
+
+-- Bandeja de solicitudes del facilitador: la política RLS evalúa
+-- "facilitador_id = auth.uid() or (facilitador_id is null and estado =
+-- 'pendiente')" en cada fila — sin índice, recorre toda la tabla.
+create index if not exists idx_solicitudes_sesion_facilitador_estado on solicitudes_sesion (facilitador_id, estado);
